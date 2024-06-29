@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}
+Bookkeeping
+{% endblock %}
+
+
+{% block content %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}><div
+            class="alert alert-success alert-dismissible">
+  <a href="/bookkeeping/" class="close" data-dismiss="alert" aria-label="close">&times;
+  </a>
+  <strong>Success!</strong> {{message}}.
+</div></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+    <div class="container">
+
+     <table class="table table-hover table-borderless gap-3">
+         <thead>
+            <tr>
+                <th>Bookkeeping</th>
+                <th></th>
+            </tr>
+
+            <tr>
+                <th>Description</th>
+                <th>Initial Amount</th>
+                <th>Created Date</th>
+
+
+            </tr>
+         </thead>
+         <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.description}}</td>
+                <td>{{ expense.initial_amount }}</td>
+                <td>{{ expense.created_date }}</td>
+                <td>{{ users.JackJones }}</td>
+<!--                filter data just for Jack Jones -->
+
+          </tr>
+            {% endfor %}
+            <tr>
+
+            </tr>
+
+
+         </tbody>
+     </table>
+    </div>
+    </div>
+
+{% endblock %}

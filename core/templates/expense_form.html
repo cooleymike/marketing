@@ -1,0 +1,10 @@
+{% extends 'team_expenses.html' %}
+{% load static %}
+{% block content %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="submit" name="Submit">
+    </form>
+
+{% endblock %}

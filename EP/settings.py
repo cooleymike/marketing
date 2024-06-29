@@ -2,6 +2,9 @@
 
 from pathlib import Path
 
+AUTH_USER_MODEL = "core.Employee"
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,17 +26,26 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     #my apps
     
+
+
     
-    
-    #django appps
+    #django appps (checks these in sequence, make sure all apps are listed
+    # here in order of importance
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core'
+    'core',
+    'accounts'
 ]
+
+# EMAIL_BACKEND = [
+#     'django.core.mail.backends.console.EmailBackend'
+#                  ]
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = 'app-messages' # change this to a proper location
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -72,7 +84,7 @@ WSGI_APPLICATION = 'EP.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite32',
     }
 }
 

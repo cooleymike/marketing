@@ -1,19 +1,69 @@
 {% extends "base.html" %}
 
 {% block title%}
-Team Management Tracking
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-image {
+            background-image: url('idea.png');
+            /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            height: 100%;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <div class="col-md-6 bg-image"></div>
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="form-container">
+                    <h2>Sign In</h2>
+                    <form>
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" class="form-control" id="email" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {%endblock%}
 
-{% block content %}
-      <main class="px-3">
-      <h1>Team Management Tracking</h1>
-      <p class="lead">Welcome to the future of accountability</p>
-      <p class="lead">
-      <a href="{% url 'signup' %}" class="btn btn-lg btn-light fw-bold border-white bg-white">Sign up</a>
-      <a href="{% url 'signin' %}" class="btn btn-lg btn-light fw-bold border-white bg-white">Sign in</a>
-      </p>
-      </main>
-{% endblock %}
 
 
 
