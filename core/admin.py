@@ -9,7 +9,7 @@ admin.site.register(Expense, ExpenseAdmin)
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ["account_number", "first_name", "last_name"]
+    list_display = ["email", "username", "account_number"]
 
 admin.site.register(Employee, EmployeeAdmin)
 

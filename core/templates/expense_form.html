@@ -1,9 +1,15 @@
-{% extends 'team_expenses.html' %}
+{% extends 'bookkeeping.html' %}
 {% load static %}
 {% block content %}
 
+
+
     <form action="" method="POST">
         {% csrf_token %}
+        {{form.description}}
+        {{form.initial_amount}}
+        {{form.employee}}
+
         <input type="submit" name="Submit">
     </form>
 

@@ -1,16 +1,26 @@
-from django.forms import ModelForm, CharField, PasswordInput
-from core.models import Employee
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.forms import ModelForm, CharField, PasswordInput, Form
+
+from core.models import Employee, Expense
+
 
 class EmployeeForm(ModelForm):
     class Meta:
         model = Employee
         fields = '__all__'
 
-class CreateEmployeeForm(ModelForm):
-    password_check = CharField(widget= PasswordInput())
-    password = CharField(widget= PasswordInput())
+class CreateUserForm(UserCreationForm):
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
+        model = Employee
+        fields = ['username', 'email', 'password1','password2']
+
+class SigninForm(Form):
+    username = CharField()
+    password = CharField(max_length=32, widget=PasswordInput)
+
+
+class ExpenseForm(ModelForm):
+    class Meta:
+        model = Expense
+        fields = ['description', 'initial_amount', 'employee' ]
 
