@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-
+{{form.errors}}
 <section class="vh-100 gradient-custom">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
@@ -19,34 +19,64 @@
                     {% csrf_token %}
               <div class="input-group mb-3">
                 </div>
-              <div>
-                  {{form.username}}
-                <label class="form-label" form="username">Username</label>
-              </div>
-             <div class="input-group mb-3">
-                </div>
-              <div>
-                  {{form.email}}
-                <label class="form-label" form="email">Email</label>
-              </div>
-              <div class="input-group mb-3">
-                </div>
-              <div>
-                  {{form.password1}}
-                <label class="form-label" form="password1">Password</label>
-              </div>
-             <div class="input-group mb-3">
-                </div>
-              <div>
-                  {{form.password2}}
-                <label class="form-label" form="password2">Re-type
-                  password</label>
-              </div>
+
+                      <table>
+                    <tr>
+                        <td class="text-right">
+                             <label class="form-label"
+                                    form="username">
+                                 Username:</label>
+                        </td>
+                        <td>
+                              {{form.username}}
+                        </td>
+
+                    </tr>
+                     <tr>
+                        <td>
+                             <label class="form-label text-right"
+                                    form="email">
+                                 Email:</label>
+                        </td>
+                        <td>
+                              {{form.email}}
+                        </td>
+                     </tr>
+                       <tr>
+                        <td>
+                             <label class="form-label text-right"
+                                    form="password1">
+                                 Password:</label>
+                        </td>
+                        <td>
+                              {{form.password1}}
+                        </td>
+
+                    </tr>
+                     <tr>
+                        <td>
+                             <label class="form-label text-right"
+                                    form="password2">
+                                 Re-type password:</label>
+                        </td>
+                        <td>
+                              {{form.password2}}
+                        </td>
+
+                    </tr>
+
+                    </tr>
+                </table>
+
+
+
 
               <div class="d-flex justify-content-center mt-3 login_container">
-                <input class="btn login_btn" type="submit" value="Register Account">
+                <input class="btn btn-secondary" type="submit" value="Register Account">
               </div>
             </form>
+
+
 
 
 
@@ -57,6 +87,7 @@
       </div>
     </div>
   </div>
+</div>
 </section>
 
 

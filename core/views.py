@@ -1,8 +1,9 @@
-from django.http import request
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login
-
+from django.contrib import messages
 from core.models import Expense
 from .forms import ExpenseForm, CreateUserForm, SigninForm
 
@@ -11,42 +12,29 @@ def homepage(request):
    return TemplateResponse(request, "home.html", {"title": "homepage"})
 
 def signin(request):
-    print("valid")
     if request.method == "POST":
         signinform = SigninForm(request.POST)
-        print(signinform)
-        request.POST.get('username')
-        request.POST.get('password')
-
-
-
         if signinform.is_valid():
-
-            print("it's valid")
-
-            user = authenticate(username=request.POST.get('username'),
-                                    password=request.POST.get('password'))
-            print(request.POST.get('username'), request.POST.get(
-                'password'))
-
+            username = signinform.cleaned_data["username"]
+            password = signinform.cleaned_data["password"]
+            user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('homepage_view')
-            print(user)
-
+                return redirect("homepage")
+            else:
+                messages.error(request, "Invalid username or password")
 
     else:
         signinform = SigninForm()
 
-
-
     return TemplateResponse(request, "signin.html", {"signinform": signinform})
 
 
-def bookkeeping(request):
-    print(Expense.objects.all())
-    expenses = Expense.objects.filter(employee__username='JackJones')
-    return TemplateResponse(request,'bookkeeping.html', {"expenses": expenses})
+@login_required
+def expenses_view(request):
+    expenses = Expense.objects.filter(employee=request.user)
+    return render(request,'expenses.html', {"expenses": expenses})
+
 
 # registration and login part
 
@@ -56,21 +44,18 @@ def confirm(request):
     return TemplateResponse(request,'confirm.html', {"title": "confirm"})
 
 def register(request):
-
-    if request.method == 'POST':
-        request.POST.get('username')
-        request.POST.get('password')
-
-
-
+   if request.method == 'POST':
         form = CreateUserForm(request.POST)
 
         if form.is_valid():
             form.save()
-        print(form.errors)
-    else:
+            messages.success(request, "Registration successful")
+            return redirect('signin_view') # redirect to signin or maybe home
+
+   else:
         form = CreateUserForm()
-    return TemplateResponse(request,'register.html',
+
+   return TemplateResponse(request,'register.html',
                             {"form":form})
 
 
@@ -86,8 +71,48 @@ def team_expense(request):
 
 
 def expense_form(request):
-    form = ExpenseForm()
-    return render(request, "expense_form.html", {"form":form})
+
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            print(form.cleaned_data)
+            expense_to_save = form.save(commit=False) #save data, return saved
+            # obj.
+            expense_to_save.employee = request.user #auth. user for this expense
+            expense_to_save.save()
+        else:
+            print(form.errors)
+
+    else:
+        form = ExpenseForm()
+    print(request.user)
+    active_entry = Expense.objects.filter(employee=request.user)
+    print(active_entry)
+    total_expense = (active_entry.aggregate(total=Sum('initial_amount'))[
+        'total'] or 0)
+    context = {
+        'form': form,
+        'active_entry': active_entry,
+        'total_expense':total_expense,
+    }
+
+    return render(request, "expense_form.html", context)
+
+def total_allocated_expense(request):
+
+    total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
+    return render(request, "expenses.html", {'total_expense':
+                                                                total_expense})
+
+# def handle_upload(request):
+#    form = FileUploadForm()
+#    if request.method == "POST":
+#        form = FileUploadForm(request.POST, request.FILES)
+#        if form.is_valid():
+#            form.save()
+#
+#    return render(request, "form.html", context={"form": form})
 
 
 

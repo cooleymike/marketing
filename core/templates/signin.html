@@ -5,6 +5,16 @@
 
 {% block content %}
 
+{% if messages %}
+
+        {% for message in messages %}
+            <div class="alert alert-light" role="alert" style="text-align: center">
+                         {{message}}            </div>
+
+        {% endfor %}
+
+{% endif %}
+
 <section class="vh-100 gradient-custom">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">

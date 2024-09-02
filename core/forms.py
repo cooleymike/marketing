@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import ModelForm, CharField, PasswordInput, Form
+from django.forms import ModelForm, CharField, PasswordInput, Form, forms
+from form import form
 
 from core.models import Employee, Expense
 
@@ -19,8 +20,18 @@ class SigninForm(Form):
     password = CharField(max_length=32, widget=PasswordInput)
 
 
+
+
+
+
+
 class ExpenseForm(ModelForm):
     class Meta:
         model = Expense
-        fields = ['description', 'initial_amount', 'employee' ]
+        fields = ['description', 'initial_amount','upload']
+
+
+
+
+
 

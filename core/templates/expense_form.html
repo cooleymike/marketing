@@ -1,16 +1,22 @@
-{% extends 'bookkeeping.html' %}
+{% extends 'expenses.html' %}
 {% load static %}
 {% block content %}
 
 
 
-    <form action="" method="POST">
+    <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{form.description}}
         {{form.initial_amount}}
-        {{form.employee}}
+        {{form.upload}}
+
 
         <input type="submit" name="Submit">
     </form>
+    {{total_expense}}
+    <h3>Active Entry</h3>
+    {% for active_entry in active_entry %}
+    <p>{{active_entry.description}} - {{active_entry.initial_amount}}</p>
+    {% endfor %}
 
 {% endblock %}
