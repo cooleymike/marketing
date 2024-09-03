@@ -33,6 +33,8 @@ def signin(request):
 @login_required
 def expenses_view(request):
     expenses = Expense.objects.filter(employee=request.user)
+    # for expense in expenses:
+    #     expense.remaining_budget = expense.remaining_budget
     return render(request,'expenses.html', {"expenses": expenses})
 
 
@@ -69,16 +71,16 @@ def about(request):
 def team_expense(request):
     return TemplateResponse(request, "team_expense.html", {"title": "team_expense"})
 
-
+@login_required
 def expense_form(request):
+    total_budget = 10000
 
     if request.method == 'POST':
         form = ExpenseForm(request.POST, request.FILES)
 
         if form.is_valid():
             print(form.cleaned_data)
-            expense_to_save = form.save(commit=False) #save data, return saved
-            # obj.
+            expense_to_save = form.save(commit=False) #save data, return saved obj.
             expense_to_save.employee = request.user #auth. user for this expense
             expense_to_save.save()
         else:
@@ -88,13 +90,14 @@ def expense_form(request):
         form = ExpenseForm()
     print(request.user)
     active_entry = Expense.objects.filter(employee=request.user)
-    print(active_entry)
-    total_expense = (active_entry.aggregate(total=Sum('initial_amount'))[
-        'total'] or 0)
+    total_spent = (active_entry.aggregate(total=Sum('initial_amount'))['total'] or 0)
+    remaining_budget = total_budget - total_spent
+
     context = {
         'form': form,
         'active_entry': active_entry,
-        'total_expense':total_expense,
+        'total_expense':total_spent,
+        'remaining_budget': remaining_budget
     }
 
     return render(request, "expense_form.html", context)
@@ -104,15 +107,5 @@ def total_allocated_expense(request):
     total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
     return render(request, "expenses.html", {'total_expense':
                                                                 total_expense})
-
-# def handle_upload(request):
-#    form = FileUploadForm()
-#    if request.method == "POST":
-#        form = FileUploadForm(request.POST, request.FILES)
-#        if form.is_valid():
-#            form.save()
-#
-#    return render(request, "form.html", context={"form": form})
-
 
 

@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
 {% block title %}
 Expenses
 {% endblock %}
@@ -32,6 +33,7 @@ Expenses
                 <th>Description</th>
                 <th>Initial Amount</th>
                 <th>Created Date</th>
+                <th>Remaining Budget</th>
 
 
             </tr>
@@ -42,6 +44,7 @@ Expenses
                 <td>{{ expense.description}}</td>
                 <td>{{ expense.initial_amount }}</td>
                 <td>{{ expense.created_date }}</td>
+                <td>{{ expense.remaining_budget }}</td>
 
           </tr>
            {% endfor %}

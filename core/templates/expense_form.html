@@ -2,21 +2,55 @@
 {% load static %}
 {% block content %}
 
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-1" align="center" >Expense Entry</h4>
+                </div>
+                <div class="card-body">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Initial Amount</label>
+                            {{ form.initial_amount }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Receipt</label>
+                            {{ form.upload }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
+            <div class="mt-4">
+                <h3 class="text-center">Total Expense: <span
+                        class="badge bg-dark">{{ total_expense }}</span></h3>
+                <h3 class="text-center">Remaining Budget: <span
+                        class="badge bg-dark">{{ remaining_budget }}</span></h3>
+            </div>
 
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{form.description}}
-        {{form.initial_amount}}
-        {{form.upload}}
-
-
-        <input type="submit" name="Submit">
-    </form>
-    {{total_expense}}
-    <h3>Active Entry</h3>
-    {% for active_entry in active_entry %}
-    <p>{{active_entry.description}} - {{active_entry.initial_amount}}</p>
-    {% endfor %}
+            <div class="mt-5">
+                <h4>Active Entries</h4>
+                <ul class="list-group">
+                    {% for active_entry in active_entry %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ active_entry.description }}</span>
+                        <span class="badge bg-dark">{{ active_entry.initial_amount }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
