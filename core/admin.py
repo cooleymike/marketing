@@ -1,5 +1,22 @@
 from django.contrib import admin
 from core.models import Expense, Employee, Receipt
+from .models import ProjectEmployeeAllocatedBudget, Expense, Project
+
+
+
+
+class ProjectEmployeeAllocatedAmountAdmin(admin.ModelAdmin):
+    list_display = ['employee', 'project', 'allocated_budget']
+    search_fields = ['employee__username', 'project__name']
+
+
+admin.site.register(ProjectEmployeeAllocatedBudget)
+admin.site.register(Project)
+
+
+
+
+
 
 class ExpenseAdmin(admin.ModelAdmin):
     list_display = ["description", "initial_amount", "created_date",

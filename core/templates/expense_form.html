@@ -10,6 +10,13 @@
                     <h4 class="mb-1" align="center" >Expense Entry</h4>
                 </div>
                 <div class="card-body">
+
+                    {% for field in form %}
+                        <div class="fieldWrapper">
+                            {{ field.errors }}
+
+                        </div>
+                    {% endfor %}
                     <form action="" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -24,7 +31,8 @@
                             <label class="form-label">Upload Receipt</label>
                             {{ form.upload }}
                         </div>
-                        <div class="d-grid">
+                             {{ form.employee }}
+                          <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>

@@ -1,10 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
+from django.template import context
+from django.template.defaultfilters import first
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from core.models import Expense
+from core.models import Expense, ProjectEmployeeAllocatedBudget
 from .forms import ExpenseForm, CreateUserForm, SigninForm
 
 
@@ -32,7 +34,18 @@ def signin(request):
 
 @login_required
 def expenses_view(request):
-    expenses = Expense.objects.filter(employee=request.user)
+    current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
+        is_active=True, employee=request.user).first()
+    #if current allocated budget is none then redirect to homepage with
+    # message you have not been attached to an allocated budget
+    if current_allocated_budget is None:
+        messages.error(request, "You have not been attached to any budget")
+        return redirect("homepage")
+    project_id = current_allocated_budget.project_id
+
+    expenses = Expense.objects.filter(employee=request.user, project_id=project_id)
+
+
     # for expense in expenses:
     #     expense.remaining_budget = expense.remaining_budget
     return render(request,'expenses.html', {"expenses": expenses})
@@ -71,41 +84,72 @@ def about(request):
 def team_expense(request):
     return TemplateResponse(request, "team_expense.html", {"title": "team_expense"})
 
+
 @login_required
 def expense_form(request):
-    total_budget = 10000
+    # Get the project ID from the request or default to 1
+    #project_id = request.GET.get('project_id', 1)
 
+    # Fetch allocated budget for the project
+    allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+        employee=request.user, is_active=True
+    ).first()
+    project_id = allocated_budget_record.project_id
     if request.method == 'POST':
+        print(request.POST)
         form = ExpenseForm(request.POST, request.FILES)
-
         if form.is_valid():
-            print(form.cleaned_data)
-            expense_to_save = form.save(commit=False) #save data, return saved obj.
-            expense_to_save.employee = request.user #auth. user for this expense
+
+
+            if not allocated_budget_record:
+                messages.error(request,
+                               "You do not have an allocated budget for this project.")
+                return redirect('homepage')  # or another appropriate page
+
+            expense_to_save = form.save(commit=False)
+            expense_to_save.employee = request.user
+            expense_to_save.project_id = project_id # this sets the project id
+
             expense_to_save.save()
+            messages.success(request, "Expense recorded successfully.")
+            return redirect('homepage')  # Redirect to the same page or
+            # another page
         else:
             print(form.errors)
-
     else:
-        form = ExpenseForm()
-    print(request.user)
-    active_entry = Expense.objects.filter(employee=request.user)
-    total_spent = (active_entry.aggregate(total=Sum('initial_amount'))['total'] or 0)
+        form = ExpenseForm(initial={
+            "employee": request.user
+
+        })
+
+    # For GET request
+
+    active_entry = Expense.objects.filter(employee=request.user,
+                                          project_id=project_id)
+    total_spent = active_entry.aggregate(total=Sum('initial_amount'))[
+                      'total'] or 0
+
+    total_budget = allocated_budget_record.allocated_budget if (
+        allocated_budget_record) else 0
     remaining_budget = total_budget - total_spent
 
     context = {
         'form': form,
         'active_entry': active_entry,
-        'total_expense':total_spent,
+        'total_expense': total_spent,
         'remaining_budget': remaining_budget
     }
 
     return render(request, "expense_form.html", context)
+
 
 def total_allocated_expense(request):
 
     total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
     return render(request, "expenses.html", {'total_expense':
                                                                 total_expense})
+def project_list(request):
 
+    return render(request, 'projects.html')
+#make migrations, migrate
 

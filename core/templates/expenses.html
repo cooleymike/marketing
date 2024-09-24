@@ -21,6 +21,7 @@ Expenses
 {% endif %}
 
 <div class="container">
+
     {% if expenses %}
      <table class="table table-hover table-borderless gap-3">
          <thead>
@@ -54,7 +55,13 @@ Expenses
         <p>You have no recorded expenses</p>
 {% endif %}
         <div>
-        <a class="btn btn-primary btn-sm btn-block" href="{% url 'expense_form' %}">Create Expense</a>
+
+
+        <a class="btn btn-primary btn-sm btn-block"
+           href="{% url 'expense_form' %}">Create
+            Expense</a>
+
+
     </div>
     </div>
 {% endblock %}
