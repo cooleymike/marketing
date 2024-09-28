@@ -15,7 +15,8 @@ urlpatterns = [
     path('team_expense/', views.team_expense, name='team_expense'),
     #path('total-expenses/', views.total_allocated_expenses(),
     # name='total_allocated_expenses'),
-    path('expense_form/', views.expense_form, name='expense_form')
+    path('expense_form/', views.expense_form, name='expense_form'),
+    path('active_project/', views.active_project, name='active_project')
 
 
 

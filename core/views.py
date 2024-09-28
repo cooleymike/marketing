@@ -6,7 +6,7 @@ from django.template.defaultfilters import first
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from core.models import Expense, ProjectEmployeeAllocatedBudget
+from core.models import Expense, ProjectEmployeeAllocatedBudget, Project
 from .forms import ExpenseForm, CreateUserForm, SigninForm
 
 
@@ -92,8 +92,8 @@ def expense_form(request):
 
     # Fetch allocated budget for the project
     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=request.user, is_active=True
-    ).first()
+        employee=request.user, is_active=True).first()
+
     project_id = allocated_budget_record.project_id
     if request.method == 'POST':
         print(request.POST)
@@ -152,4 +152,31 @@ def project_list(request):
 
     return render(request, 'projects.html')
 #make migrations, migrate
+
+@login_required
+def active_project(request):
+    #here we find the active budget record
+    active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+        employee=request.user, is_active=True).first()
+
+    #check if active budget exists - this would be nice to have
+    if not active_budget_record:
+        messages.error(request, "You do not have an active budget")
+        return redirect('homepage')
+
+    #pull project from active budget record
+    active_project = active_budget_record.project
+
+    #fetch related expenses for current project
+    expenses = Expense.objects.filter(employee=request.user, project=active_project)
+
+    # here we render as always, passing the project and expenses
+    return render(request,
+      'active_project.html', {
+                    'active_project': active_project,
+                    'expenses': expenses
+    })
+
+
+
 

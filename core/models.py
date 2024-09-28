@@ -48,7 +48,9 @@ class Expense(models.Model):
     @property
     def remaining_budget(self):
         # subtract the sum of all associated receipts from  initial amount
-        total_budget = 10000
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=self.employee, is_active=True).first()
+        total_budget = allocated_budget_record.allocated_budget
         # look at clean_amount to complete this
         # project allocated budget and current user and
         # is active = true
