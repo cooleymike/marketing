@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Expenses
+{% endblock %}
+
+
+{% block content %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}><div
+            class="alert alert-success alert-dismissible">
+  <a href="/expenses/" class="close" data-dismiss="alert"
+     aria-label="close">&times;&times;</a>
+  <strong>Success!</strong> {{message}}.
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div class="container">
+
+    {% if expenses %}
+     <table class="table table-hover table-borderless gap-3">
+         <thead>
+            <tr>
+                <th>Expenses</th>
+                <th></th>
+            </tr>
+
+            <tr>
+                <th>Description</th>
+                <th>Initial Amount</th>
+                <th>Created Date</th>
+                <th>Remaining Budget</th>
+
+
+            </tr>
+         </thead>
+         <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.description}}</td>
+                <td>{{ expense.initial_amount }}</td>
+                <td>{{ expense.created_date }}</td>
+                <td>{{ expense.remaining_budget }}</td>
+
+          </tr>
+           {% endfor %}
+        </tbody>
+     </table>
+{% else %}
+        <p>You have no recorded expenses</p>
+{% endif %}
+        <div>
+
+
+        <a class="btn btn-primary btn-sm btn-block"
+           href="{% url 'expense_form' %}">Create
+            Expense</a>
+
+
+    </div>
+    </div>
+{% endblock %}

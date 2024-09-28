@@ -1,19 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-</head>
-<body>
-    <h1>
-        Please confirm your selection
-    </h1> 
-        <p><a href="/confirm">confirm</a>
-        </p>
-   
-  
-    Uplaod files
+{% extends "base.html" %}
+{% block title %}
+  Manager Sign-in
+{% endblock %}
 
-</body>
+{% block content %}
 
-</html>
+<section class="vh-100 gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-dark text-white" style="border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+
+            <div class="mb-md-5 mt-md-4 pb-5">
+
+                <div class="upload" data-bs-theme="light">
+   <div class="custom-file">
+    <input type="file" class="custom-file-input" id="inputGroupFile01"
+      aria-describedby="inputGroupFileAddon01">
+    <label class="custom-file-label" for="inputGroupFile01">Upload
+        Receipt</label>
+  </div>
+
+                     <div class="custom-file">
+    <input type="file" class="custom-file-input" id="inputGroupFile01"
+      aria-describedby="inputGroupFileAddon01">
+    <label class="custom-file-label" for="inputGroupFile01">Upload
+        Screenshot</label>
+  </div>
+   <a class="confirm btn btn-success" href="/confirm/">Confirm</a>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+{% endblock %}
