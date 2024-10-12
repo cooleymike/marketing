@@ -1,10 +1,15 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from django.forms import ModelForm, CharField, PasswordInput, Form, forms, \
-    ModelMultipleChoiceField, HiddenInput, ModelChoiceField
-from core.models import Employee, Expense, Project, \
+from django.forms import (
+    ModelForm, CharField, PasswordInput, Form,
+    HiddenInput, ModelChoiceField, TextInput,
+    DecimalField, NumberInput, ImageField, FileInput
+)
+from core.models import (
+    Employee, Expense,
     ProjectEmployeeAllocatedBudget
+)
 
 
 class EmployeeForm(ModelForm):
@@ -28,6 +33,52 @@ class ExpenseForm(ModelForm):
         queryset=Employee.objects.all(),
         widget=HiddenInput()
     )
+    description = CharField(
+        label='Description',
+        max_length=100,
+        widget=TextInput(
+            attrs={
+                'class': (
+                    "shadow appearance-none"
+                    "border rounded w-full py-2 "
+                    "px-3 text-gray-700" 
+                    "leading-tight focus:outline-none"
+                    "focus:shadow-outline"
+                )
+            }
+        )
+    )
+
+    initial_amount = DecimalField(
+        label='Initial amount',
+        widget=NumberInput(
+            attrs={
+                'class': (
+                    "shadow appearance-none "
+                    "border rounded w-full py-2 "
+                    "px-3 text-gray-700 "
+                    "leading-tight "
+                    "focus:outline-none focus:shadow-outline"
+                )
+            }
+        )
+    )
+
+    upload = ImageField(
+        label='Upload',
+        widget=FileInput(
+            attrs={
+                'class': (
+                    "shadow appearance-none "
+                    "border rounded w-full py-2 "
+                    "px-3 text-gray-700 "
+                    "leading-tight "
+                    "focus:outline-none focus:shadow-outline"
+                )
+            }
+        )
+    )
+
 
 
     class Meta:

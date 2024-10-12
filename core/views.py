@@ -1,12 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
-from django.template import context
-from django.template.defaultfilters import first
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from core.models import Expense, ProjectEmployeeAllocatedBudget, Project
+from core.models import Expense, ProjectEmployeeAllocatedBudget
 from .forms import ExpenseForm, CreateUserForm, SigninForm
 
 
@@ -50,14 +48,6 @@ def expenses_view(request):
     #     expense.remaining_budget = expense.remaining_budget
     return render(request,'expenses.html', {"expenses": expenses})
 
-
-# registration and login part
-
-
-
-def confirm(request):
-    return TemplateResponse(request,'confirm.html', {"title": "confirm"})
-
 def register(request):
    if request.method == 'POST':
         form = CreateUserForm(request.POST)
@@ -72,14 +62,6 @@ def register(request):
 
    return TemplateResponse(request,'register.html',
                             {"form":form})
-
-
-def upload(request):
-   return TemplateResponse(request, "upload.html", {"title": "upload"})
-
-def about(request):
-   return TemplateResponse(request, "about.html", {"title": "about"})
-
 
 def team_expense(request):
     return TemplateResponse(request, "team_expense.html", {"title": "team_expense"})

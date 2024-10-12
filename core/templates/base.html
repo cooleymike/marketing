@@ -3,10 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-<!--    <link href="{% static 'css/style.css'  %}" rel="stylesheet">-->
+
+
 </head>
 {% block header %}
 <body>
@@ -25,56 +27,39 @@
 </ul>
 {% endif %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <button class="btn btn-action mr-5" type="button"
-                onclick="toggleDarkMode()" aria-label="Toggle dark mode">
-           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-circle-half" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+<nav class="bg-gray-800 text-white p-4">
+    <div class="max-w-screen-lg mx-auto flex justify-between items-center">
+        <!-- Dark mode toggle button -->
+        <button class="mr-5" onclick="toggleDarkMode()">
+            <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-circle-half" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
             </svg>
         </button>
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
-                </li>
-                    {% if not user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/register">Register</a>
-                </li>
-                    {% endif %}
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/expenses">Expenses</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/active_project">Active
-                        Project</a>
-                </li>
-
-            </ul>
-
-        </div>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
-           <ul class="navbar-nav">
-               {% if user.is_authenticated %}
-               <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
-               </li>
-               {% endif %}
-           </ul>
-        </div>
+<!-- Navbar Toggle Button -->
+    <button
+        class="text-white md:hidden"
+        id="navbar-toggle"
+        aria-expanded="false"
+        aria-controls="navbarSupportedContent"
+        aria-label="Toggle navigation"
+    >
+        <!-- Icon for the menu button -->
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+    </button>
+     <div class="hidden md:flex flex-col md:flex-row space-x-4 mt-4 md:mt-0 justify-center items-center" id="navbarSupportedContent">
+    <a class="hover:text-gray-300" href="/">Home</a>
+    {% if not user.is_authenticated %}
+    <a class="hover:text-gray-300" href="/register">Register</a>
+    {% endif %}
+    <a class="hover:text-gray-300" href="/expenses">Expenses</a>
+    <a class="hover:text-gray-300" href="/active_project">Active Project</a>
+    {% if user.is_authenticated %}
+    <a class="hover:text-gray-300" href="/logout">Logout</a>
+    {% endif %}
+</div>
     </div>
 
 </nav>
@@ -88,49 +73,65 @@
 
             </div>
         </div>
-        <div class="row my-5">
-            <div class="col">
-                <div class=" my-3 py-3 card text-center ">
-                    <div class="h1 text-bg-primary">
-                        Team Management Tracking
-                    </div>
-                </div>
-            </div>
+   <div class="my-5">
+    <div class="w-full">
+        <div class="my-3 py-3 bg-white shadow-md rounded-lg text-center">
+            <h1 class="text-2xl font-semibold text-blue-600">
+                Team Management Tracking
+            </h1>
         </div>
     </div>
-    <div class="col-md-12">
-        <h1 class="mt-6 text-center">Welcome</h1>
-        <p class="mt-6 text-center">
-            Welcome to the future of accountability
-        </p>
-    </div>
-    {% if not user.is_authenticated %}
-    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-        <a href="/signin/" class="btn btn-primary me-2">
-            Sign-in
-        </a>
+</div>
 
-        <a href="/register" class="btn btn-primary ms-2">
-            Register
-        </a>
-    </div>
-    {% endif %}
+<div class="w-full">
+    <h1 class="mt-6 text-center text-3xl font-bold">
+        Welcome
+    </h1>
+    <p class="mt-6 text-center text-lg">
+        Welcome to the future of accountability
+    </p>
+</div>
 
-    </div>
-    </div>
+{% if not user.is_authenticated %}
+<div class="flex justify-center mx-4 my-3 space-x-4">
+    <a href="/signin/" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        Sign-in
+    </a>
+    <a href="/register" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        Register
+    </a>
+</div>
+{% endif %}
 </main>
+
 <script
         src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
         integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
-        crossorigin="anonymous"
-></script>
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
-        crossorigin="anonymous"
-></script>
+        crossorigin="anonymous">
+</script>
+
 {% endblock %}
 
-<!--<script src="{% static 'js/index.js' %}"></script>-->
+<script>
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDarkMode = html.classList.toggle('dark');
+
+            // Save the preference in localStorage
+            if (isDarkMode) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Apply the saved theme when the page loads
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        };
+    </script>
 </body>
 </html>
