@@ -6,7 +6,10 @@ from django.db.models import Sum
 
 
 class Employee(AbstractUser):
-    account_number = models.CharField(max_length=10, unique=True)
+    account_number = models.CharField(max_length=10, unique=True, null=True)
+    avatar = models.ImageField(upload_to='avatars/',
+                               default="avatars/default.png", blank=True,
+                               null=True)
 
 
 class Project (models.Model):

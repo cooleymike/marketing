@@ -3,8 +3,6 @@ from core.models import Expense, Employee, Receipt
 from .models import ProjectEmployeeAllocatedBudget, Expense, Project
 
 
-
-
 class ProjectEmployeeAllocatedAmountAdmin(admin.ModelAdmin):
     list_display = ['employee', 'project', 'allocated_budget']
     search_fields = ['employee__username', 'project__name']
@@ -12,10 +10,7 @@ class ProjectEmployeeAllocatedAmountAdmin(admin.ModelAdmin):
 
 admin.site.register(ProjectEmployeeAllocatedBudget)
 admin.site.register(Project)
-
-
-
-
+# admin.site.register(Project, EmployeeAdmin, Employee)
 
 
 class ExpenseAdmin(admin.ModelAdmin):
@@ -27,6 +22,7 @@ admin.site.register(Expense, ExpenseAdmin)
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ["email", "username", "account_number"]
+    search_fields = ['username', 'email', 'first_name', 'last_name']
 
 admin.site.register(Employee, EmployeeAdmin)
 

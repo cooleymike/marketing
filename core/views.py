@@ -5,7 +5,7 @@ from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from core.models import Expense, ProjectEmployeeAllocatedBudget
-from .forms import ExpenseForm, CreateUserForm, SigninForm
+from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm
 
 
 def homepage(request):
@@ -30,7 +30,7 @@ def signin(request):
     return TemplateResponse(request, "signin.html", {"signinform": signinform})
 
 
-@login_required
+
 def expenses_view(request):
     current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
         is_active=True, employee=request.user).first()
@@ -44,21 +44,20 @@ def expenses_view(request):
     expenses = Expense.objects.filter(employee=request.user, project_id=project_id)
 
 
-    # for expense in expenses:
-    #     expense.remaining_budget = expense.remaining_budget
     return render(request,'expenses.html', {"expenses": expenses})
 
 def register(request):
    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
+        form = RegisterForm(request.POST)
 
         if form.is_valid():
+            form.instance.set_password(form.cleaned_data['password1'])
             form.save()
             messages.success(request, "Registration successful")
             return redirect('signin_view') # redirect to signin or maybe home
 
    else:
-        form = CreateUserForm()
+        form = RegisterForm()
 
    return TemplateResponse(request,'register.html',
                             {"form":form})
@@ -158,7 +157,6 @@ def active_project(request):
                     'active_project': active_project,
                     'expenses': expenses
     })
-
 
 
 

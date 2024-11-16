@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
 
+
 AUTH_USER_MODEL = "core.Employee"
 
 LOGIN_URL = "/signin/"
-LOGOUT_REDIRECT_URL = "/homepage/"
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,6 +22,8 @@ SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://6047-45-10-153-83.ngrok-free.app']
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 
 # Application definition
@@ -32,13 +35,20 @@ INSTALLED_APPS = [
     #django appps (checks these in sequence, make sure all apps are listed
     # here in order of importance
     'django.contrib.admin',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'accounts'
+    'accounts',
+    'django.contrib.sites',
+
 ]
 
 # EMAIL_BACKEND = [
@@ -55,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'EP.urls'
@@ -62,7 +73,7 @@ ROOT_URLCONF = 'EP.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,3 +142,57 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+#google
+GOOGLE_CLIENT_ID = ('661675223391-rqe1191gcv19q6g6i89s0vi8md51v5qt.apps'
+                    '.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = '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'
+#facebook
+SOCIAL_AUTH_FACEBOOK_KEY = '460827666572910'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'b17adee16d805838649aaad9dac0031d'
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'APP': {
+            'client_id':GOOGLE_CLIENT_ID,
+            'secret': GOOGLE_CLIENT_SECRET,
+        },
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+    },
+    'facebook': {
+            'METHOD': 'oauth2',  # Set to 'js_sdk' to use the Facebook connect SDK
+            'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
+            # 'SCOPE': ['email', 'public_profile'],
+            'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+            'INIT_PARAMS': {'cookie': True},
+            'FIELDS': [
+                'id',
+                'first_name',
+                'last_name',
+                'middle_name',
+                'name',
+                'name_format',
+                'picture',
+                'short_name'
+            ],
+            'EXCHANGE_TOKEN': True,
+            'LOCALE_FUNC': 'path.to.callable',
+            'VERIFIED_EMAIL': False,
+            'VERSION': 'v13.0',
+            'GRAPH_API_URL': 'https://graph.facebook.com/v13.0',
+        }
+
+}
+
+

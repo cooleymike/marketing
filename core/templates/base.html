@@ -1,137 +1,177 @@
 {% load static %}
 
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
 </head>
-{% block header %}
-<body>
+<body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out">
+<!-- Modal for messages will go here -->
+<!-- Tailwind Modal -->
+<div id="messageModal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50">
+  <div class="relative w-full max-w-md mx-auto mt-20 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+    <div class="flex items-center justify-between px-4 py-2 border-b dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Messages</h3>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="p-4">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="p-3 mb-2 text-white bg-{{ message.tags|default:'blue' }}-500 rounded">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No messages to display.</p>
+      {% endif %}
+    </div>
+    <div class="flex items-center justify-end px-4 py-2 border-t dark:border-gray-700">
+      <button onclick="closeModal()" class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
 
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}><div
-            class="alert alert-success alert-dismissible">
-  <a href="/" class="close" data-dismiss="alert"
-     aria-label="close">&times;</a>
-  <strong>Success!</strong> {{message}}.
-        </div>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
 
-<nav class="bg-gray-800 text-white p-4">
-    <div class="max-w-screen-lg mx-auto flex justify-between items-center">
-        <!-- Dark mode toggle button -->
-        <button class="mr-5" onclick="toggleDarkMode()">
-            <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-circle-half" fill="currentColor">
-                <path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
-            </svg>
-        </button>
-
-<!-- Navbar Toggle Button -->
-    <button
-        class="text-white md:hidden"
-        id="navbar-toggle"
-        aria-expanded="false"
-        aria-controls="navbarSupportedContent"
-        aria-label="Toggle navigation"
-    >
-        <!-- Icon for the menu button -->
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+   <!-- Dark mode toggle button -->
+    <button class="mr-5" onclick="toggleDarkMode()">
+        <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-circle-half" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
         </svg>
     </button>
-     <div class="hidden md:flex flex-col md:flex-row space-x-4 mt-4 md:mt-0 justify-center items-center" id="navbarSupportedContent">
-    <a class="hover:text-gray-300" href="/">Home</a>
-    {% if not user.is_authenticated %}
-    <a class="hover:text-gray-300" href="/register">Register</a>
-    {% endif %}
-    <a class="hover:text-gray-300" href="/expenses">Expenses</a>
-    <a class="hover:text-gray-300" href="/active_project">Active Project</a>
-    {% if user.is_authenticated %}
-    <a class="hover:text-gray-300" href="/logout">Logout</a>
-    {% endif %}
-</div>
+
+    <div class="flex justify-between items-center px-8 py-4">
+        {% if user.is_authenticated %}
+        <!-- Sign Out Button for Authenticated Users -->
+        <a href="{% url 'logout' %}"
+           class="absolute top-5 right-5 bg-pink-700 text-white py-2 px-4 rounded-full hover:bg-pink-600">
+           Sign Out
+        </a>
+        {% endif %}
     </div>
 
-</nav>
-{% endblock %}
+    <div class="flex">
 
-{% block content %}
-<main class="my-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7">
+        {% block header %}
+        <!-- Sidebar -->
+        <aside class="w-64 h-screen px-4 py-8 bg-white border-r dark:bg-gray-900 dark:border-gray-700">
+            <!-- Sidebar Logo Section -->
+        <div class="flex items-center justify-center">
+            <img
+                class="w-auto h-10 sm:h-11"
+                src="{% static 'images/company_logo.jpg' %}"
+                alt="company logo">
+        </div>
 
+
+            <!-- Search Bar -->
+            <div class="relative mt-6">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </span>
+                <input type="text" class="w-full py-2 pl-10 pr-4 text-gray-700 bg-white border rounded-md dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none" placeholder="Search" />
             </div>
-        </div>
-   <div class="my-5">
-    <div class="w-full">
-        <div class="my-3 py-3 bg-white shadow-md rounded-lg text-center">
-            <h1 class="text-2xl font-semibold text-blue-600">
-                Team Management Tracking
-            </h1>
-        </div>
+
+            <!-- Navigation Links -->
+            <nav class="mt-6">
+                <a href="{% url 'homepage' %}"
+                   class="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200">
+                    <span class="mx-4 font-medium">Home</span>
+                </a>
+                <a href="{% url 'register' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
+                    <span class="mx-4 font-medium">Register</span>
+                </a>
+                <a href="{% url 'expenses' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
+                    <span class="mx-4 font-medium">Expenses</span>
+                </a>
+                <a href="{% url 'active_project' %}"
+                   class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
+                    <span class="mx-4 font-medium">Active Project</span>
+                </a>
+                <a href="team_expense"
+                   class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
+                    <span class="mx-4 font-medium">Team_expense</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
+                    <span class="mx-4 font-medium">Settings</span>
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="mt-6">
+                <a href="#" class="flex items-center px-4">
+                    <img class="object-cover w-9 h-9 rounded-full" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="avatar">
+                    <span class="mx-2 font-medium text-gray-800 dark:text-gray-200">Jack Jones</span>
+                </a>
+            </div>
+        </aside>
+        {% endblock header %}
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            {% block content %}
+            <div class="text-center my-5 bg-white dark:bg-gray-800 shadow-md rounded-lg">
+                <h1 class="text-2xl font-semibold text-gray-700 dark:text-gray-400">Team Management Tracking</h1>
+            </div>
+
+            <!-- Welcome Text -->
+            <div class="w-full">
+                <h1 class="mt-6 text-center text-3xl font-bold text-gray-700 dark:text-gray-300">
+                    Welcome
+                </h1>
+            </div>
+
+            <!-- Sign-in and Register Links for Unauthenticated Users -->
+            {% if not user.is_authenticated %}
+            <div class="flex justify-center mx-4 my-3 space-x-4">
+                <a href="/signin/"
+                   class="bg-pink-700 text-white py-2 px-4 rounded-full hover:bg-pink-600">
+                    Sign-in
+                </a>
+                <a href="/register"
+                   class="bg-pink-700 text-white py-2 px-4 rounded-full hover:bg-pink-600">
+                    Register
+                </a>
+            </div>
+            {% endif %}
+            {% endblock %}
+        </main>
     </div>
-</div>
 
-<div class="w-full">
-    <h1 class="mt-6 text-center text-3xl font-bold">
-        Welcome
-    </h1>
-    <p class="mt-6 text-center text-lg">
-        Welcome to the future of accountability
-    </p>
-</div>
+    <!-- Dark Mode Toggle Script -->
+   <script src="{% static 'js/index.js' %}"></script>
+    <!--JS trigger modal-->
+<!--<script>-->
+<!--  document.addEventListener('DOMContentLoaded', function () {-->
+<!--    const messageModal = document.getElementById('messageModal');-->
+<!--    const messageContent = messageModal.querySelector('p');-->
 
-{% if not user.is_authenticated %}
-<div class="flex justify-center mx-4 my-3 space-x-4">
-    <a href="/signin/" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-        Sign-in
-    </a>
-    <a href="/register" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-        Register
-    </a>
-</div>
-{% endif %}
-</main>
+<!--    if (messageContent && messageContent.textContent.trim() !== '') {-->
+<!--      messageModal.classList.remove('hidden');-->
+<!--    }-->
+<!--  });-->
 
-<script
-        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
-        crossorigin="anonymous">
-</script>
+<!--  function closeModal() {-->
+<!--    const messageModal = document.getElementById('messageModal');-->
+<!--    messageModal.classList.add('hidden');-->
+<!--  }-->
+<!--</script>-->
 
-{% endblock %}
 
-<script>
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            const isDarkMode = html.classList.toggle('dark');
-
-            // Save the preference in localStorage
-            if (isDarkMode) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Apply the saved theme when the page loads
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            }
-        };
-    </script>
 </body>
 </html>

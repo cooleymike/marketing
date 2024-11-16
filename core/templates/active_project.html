@@ -1,21 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-    <h2>Active Project for {{ request.user.username }}</h2>
-    
-                <p><strong>Project Name:</strong> {{ active_project.name }}</p>
-                <p><strong>Project Description:</strong> {{ active_project.description }}</p>
-                <p><strong>Total Budget:</strong> {{ active_project.total_budget }}</p>
-                <p><strong>Due Date:</strong> {{ active_project.due_date }}</p>
+<div class="container mx-auto mt-10 p-6 bg-pink-50 dark:bg-pink-900 shadow-lg rounded-lg">
+    <h2 class="text-3xl font-bold text-pink-700 dark:text-pink-300 mb-6 text-center">Active Project for {{ request.user.username }}</h2>
 
-    <h3>Expenses</h3>
-<ul class="list-group">
-                    {% for expense in expenses %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-                 <span>{{ expense.description }}</span>
-                <span class="badge bg-dark">{{ expense.initial_amount }}</span>
+    <!-- Active Project Details -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <p class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <strong>Project Name:</strong> {{ active_project.name }}
+        </p>
+        <p class="text-gray-600 dark:text-gray-400 mb-2">
+            <strong>Project Description:</strong> {{ active_project.description }}
+        </p>
+        <p class="text-gray-600 dark:text-gray-400 mb-2">
+            <strong>Total Budget:</strong> <span class="text-pink-600 dark:text-pink-400">{{ active_project.total_budget }}</span>
+        </p>
+        <p class="text-gray-600 dark:text-gray-400 mb-2">
+            <strong>Due Date:</strong> <span class="text-blue-600 dark:text-blue-300">{{ active_project.due_date }}</span>
+        </p>
+    </div>
+
+    <!-- Expenses Section -->
+    <h3 class="text-2xl font-semibold text-pink-600 dark:text-pink-400 mt-8">Expenses</h3>
+    <ul class="space-y-4 mt-4">
+        {% for expense in expenses %}
+        <li class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm flex justify-between items-center">
+            <span class="text-gray-700 dark:text-gray-300">{{ expense.description }}</span>
+            <span class="bg-pink-200 dark:bg-pink-600 text-pink-700 dark:text-pink-200 py-2 px-4 rounded-full text-sm font-medium">
+                {{ expense.initial_amount }}
+            </span>
         </li>
-{% endfor %}
-</ul>
+        {% endfor %}
+        {% if not expenses %}
+        <li class="text-gray-500 dark:text-gray-400">No expenses recorded yet.</li>
+        {% endif %}
+    </ul>
 </div>
 {% endblock %}
