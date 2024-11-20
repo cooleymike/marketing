@@ -2,63 +2,124 @@
 {% load static %}
 {% block content %}
 
-<div class="container mx-auto mt-5 max-w-md">
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <div class="bg-blue-500 text-white text-center py-4">
-            <h4 class="text-lg font-semibold">Expense Entry</h4>
-        </div>
-        <div class="p-6">
-            {% for field in form %}
-                <div class="mb-4">
-                    {{ field.errors }}
-                </div>
-            {% endfor %}
+<div class="container mx-auto mt-10 max-w-4xl space-y-10">
+    <!-- Title -->
+    <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white">
+        Expense Entry Form
+    </h2>
+
+    <!-- Expense Form Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Description Card -->
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6">
+            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase tracking-wide">
+                Expense Description
+            </h3>
+<!--             {% for field in form %}-->
+<!--                <div class="mb-4">-->
+<!--                    {{ field.errors }}-->
+<!--                </div>-->
+<!--             {% endfor %}-->
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                    {{ form.description}}
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Initial Amount</label>
-                    {{ form.initial_amount }}
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Upload Receipt</label>
-                    {{ form.upload }}
-                </div>
-                {{ form.employee }}
                 <div>
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline">
-                        Submit
-                    </button>
+                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                        Detailed Description
+                    </label>
+                    {{ form.description }}
+                    <div class="text-red-500 text-sm">{{ form.description.errors }}</div>
                 </div>
             </form>
         </div>
+
+        <!-- Other Fields Card -->
+<div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase tracking-wide">
+                Additional Information
+            </h3>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="space-y-6">
+                    <!-- Initial Amount -->
+                    <div>
+                        <label ="initial_amount"
+                            class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                            Initial Amount
+                        </label>
+                        {{ form.initial_amount }}
+                        <div class="text-red-500 text-sm">{{ form.initial_amount.errors }}</div>
+                    </div>
+
+                    <!-- Upload Receipt -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                            Upload Receipt
+                        </label>
+                        {{ form.upload }}
+                        <div class="text-red-500 text-sm">{{ form.upload.errors }}</div>
+                    </div>
+
+                    <!-- Hidden Employee Field -->
+                    <div hidden>
+                        {{ form.employee }}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md focus:ring-2 focus:ring-blue-300">
+                    Submit
+                </button>
+            </form>
+        </div>
     </div>
+
+    <!-- Budget Overview Section -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6">
+        <h3 class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase tracking-wide">
+            Budget Overview
+        </h3>
+        <div class="space-y-4">
+            <!-- Total Expense -->
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Total Expense:</span>
+                <span class="bg-slate-700 text-white px-4 py-1 rounded">
+                    {{ total_expense }}
+                </span>
+            </div>
+            <!-- Remaining Budget -->
+            <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Remaining Budget:</span>
+                <span class="bg-slate-700 text-white px-4 py-1 rounded">
+                    {{ remaining_budget }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Entries Section -->
     <div>
-<!--        insert delete modal maybe? as someone deletes an expense -->
-    </div>
-
-    <div class="mt-6">
-        <h3 class="text-center text-lg font-bold">Total Expense:
-            <span class="bg-gray-800 text-white px-3 py-1 rounded">{{ total_expense }}</span>
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
+            Active Expense Entries
         </h3>
-        <h3 class="text-center text-lg font-bold">Remaining Budget:
-            <span class="bg-gray-800 text-white px-3 py-1 rounded">{{ remaining_budget }}</span>
-        </h3>
-    </div>
-
-    <div class="mt-6">
-        <h4 class="text-lg font-semibold">Active Entries</h4>
-        <ul class="list-none space-y-2">
-            {% for active_entry in active_entry %}
-            <li class="bg-gray-100 px-4 py-2 rounded flex justify-between items-center">
-                <span>{{ active_entry.description }}</span>
-                <span class="bg-gray-800 text-white px-3 py-1 rounded">{{ active_entry.initial_amount }}</span>
+        {% if active_entry %}
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for entry in active_entry %}
+            <li class="bg-gray-50 dark:bg-gray-700 shadow rounded-lg px-6 py-4 flex justify-between items-center">
+                <span class="text-gray-800 dark:text-gray-300">
+                    {{ entry.description }}
+                </span>
+                <span class="bg-slate-700 text-white px-4 py-1 rounded">
+                    {{ entry.initial_amount }}
+                </span>
             </li>
             {% endfor %}
         </ul>
+        {% else %}
+        <p class="text-gray-500 dark:text-gray-400">
+            No active expense entries found.
+        </p>
+        {% endif %}
     </div>
 </div>
 

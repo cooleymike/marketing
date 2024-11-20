@@ -15,35 +15,41 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out">
 <!-- Modal for messages will go here -->
-<!-- Tailwind Modal -->
-<div id="messageModal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50">
-  <div class="relative w-full max-w-md mx-auto mt-20 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-    <div class="flex items-center justify-between px-4 py-2 border-b dark:border-gray-700">
-      <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Messages</h3>
-      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
+<!-- Modal for messages -->
+<div id="messageModal"
+     class="fixed inset-0 z-50 {% if not messages %}hidden{% endif %} bg-gray-900 bg-opacity-50">
+    <div class="relative w-full max-w-md mx-auto mt-20 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+        <div class="flex items-center justify-between px-4 py-2 border-b dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Messages</h3>
+            <button onclick="closeModal()"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="p-3 mb-2 text-white bg-{{ message.tags|default:'blue' }}-500 rounded">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No messages to display.</p>
+            {% endif %}
+        </div>
+        <div class="flex items-center justify-end px-4 py-2 border-t dark:border-gray-700">
+            <button onclick="closeModal()"
+                    class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600">
+                Close
+            </button>
+        </div>
     </div>
-    <div class="p-4">
-      {% if messages %}
-        {% for message in messages %}
-          <div class="p-3 mb-2 text-white bg-{{ message.tags|default:'blue' }}-500 rounded">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No messages to display.</p>
-      {% endif %}
-    </div>
-    <div class="flex items-center justify-end px-4 py-2 border-t dark:border-gray-700">
-      <button onclick="closeModal()" class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600">
-        Close
-      </button>
-    </div>
-  </div>
 </div>
+
 
 
    <!-- Dark mode toggle button -->
@@ -57,7 +63,7 @@
         {% if user.is_authenticated %}
         <!-- Sign Out Button for Authenticated Users -->
         <a href="{% url 'logout' %}"
-           class="absolute top-5 right-5 bg-pink-700 text-white py-2 px-4 rounded-full hover:bg-pink-600">
+           class="absolute top-5 right-5 bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
            Sign Out
         </a>
         {% endif %}
@@ -107,7 +113,7 @@
                    class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
                     <span class="mx-4 font-medium">Team_expense</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
+                <a href="{% url 'settings' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
                     <span class="mx-4 font-medium">Settings</span>
                 </a>
             </nav>
@@ -122,55 +128,109 @@
         </aside>
         {% endblock header %}
 
-        <!-- Main Content -->
-        <main class="flex-1 p-8">
-            {% block content %}
-            <div class="text-center my-5 bg-white dark:bg-gray-800 shadow-md rounded-lg">
-                <h1 class="text-2xl font-semibold text-gray-700 dark:text-gray-400">Team Management Tracking</h1>
-            </div>
+<!-- Main Content -->
+<main class="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
+    {% block content %}
+    <!-- Header Section -->
+    <div
+            class="bg-gradient-to-r from-yellow-50 to-slate-200 text-gray-700 dark:text-slate-500 shadow-md rounded-lg py-8 px-6 mb-8 text-center">
+        <h1 class="text-4xl font-extrabold mb-2">Company name here</h1>
 
-            <!-- Welcome Text -->
-            <div class="w-full">
-                <h1 class="mt-6 text-center text-3xl font-bold text-gray-700 dark:text-gray-300">
-                    Welcome
-                </h1>
-            </div>
-
-            <!-- Sign-in and Register Links for Unauthenticated Users -->
-            {% if not user.is_authenticated %}
-            <div class="flex justify-center mx-4 my-3 space-x-4">
-                <a href="/signin/"
-                   class="bg-pink-700 text-white py-2 px-4 rounded-full hover:bg-pink-600">
-                    Sign-in
-                </a>
-                <a href="/register"
-                   class="bg-pink-700 text-white py-2 px-4 rounded-full hover:bg-pink-600">
-                    Register
-                </a>
-            </div>
-            {% endif %}
-            {% endblock %}
-        </main>
     </div>
+
+    <!-- Welcome Section -->
+<!--    <section class="bg-white dark:bg-gray-800 shadow-md rounded-lg py-6 px-8 mb-8">-->
+<!--        <h2 class="text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">-->
+<!--            Welcome to Your Dashboard-->
+<!--        </h2>-->
+<!--        <p class="text-lg text-gray-600 dark:text-gray-400 text-center">-->
+<!--            Manage your projects, track expenses, and collaborate with your-->
+<!--            team.-->
+<!--        </p>-->
+<!--    </section>-->
+
+    <!-- Call to Action for Unauthenticated Users -->
+    {% if not user.is_authenticated %}
+    <section
+            class="flex flex-col items-center space-y-4 bg-gradient-to-r from-yellow-50 to-slate-200 p-6 rounded-lg shadow-md">
+        <p
+                class="text-xl text-gray-700 dark:text-slate-500 font-medium text-center">
+            Get started by signing in or creating an account.
+        </p>
+        <div class="flex space-x-4">
+            <a href="/signin/"
+               class="px-6 py-3 text-lg font-semibold text-white bg-slate-600 rounded-lg shadow hover:bg-red-900 focus:ring-2 focus:ring-blue-400">
+                Sign In
+            </a>
+            <a href="/register/"
+                class="px-6 py-3 text-lg font-semibold text-white bg-slate-600 rounded-lg shadow hover:bg-red-900 focus:ring-2 focus:ring-blue-400">
+                Register
+            </a>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Authenticated User Section -->
+    {% if user.is_authenticated %}
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Active Projects Card -->
+    <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
+        <span
+                class="absolute inset-0 bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-0"></span>
+        <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">
+            Active Projects
+        </h3>
+        <p class="relative text-gray-600 dark:text-gray-400 z-10">
+            View and manage your ongoing projects.
+        </p>
+        <a href="{% url 'active_project' %}"
+           class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">
+            View Projects
+        </a>
+    </div>
+
+    <!-- Expense Tracking Card -->
+    <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
+        <span
+                class="absolute inset-0 bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-0"></span>
+        <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">
+            Expense Tracking
+        </h3>
+        <p class="relative text-gray-600 dark:text-gray-400 z-10">
+            Keep track of team expenses and budgets in real-time.
+        </p>
+        <a href="{% url 'expenses' %}"
+           class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">
+            Track Expenses
+        </a>
+    </div>
+</section>
+
+
+    </section>
+    {% endif %}
+    {% endblock %}
+</main>
+
 
     <!-- Dark Mode Toggle Script -->
    <script src="{% static 'js/index.js' %}"></script>
     <!--JS trigger modal-->
-<!--<script>-->
-<!--  document.addEventListener('DOMContentLoaded', function () {-->
-<!--    const messageModal = document.getElementById('messageModal');-->
-<!--    const messageContent = messageModal.querySelector('p');-->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const messageModal = document.getElementById('messageModal');
+    const messagesExist = messageModal.querySelector('.p-3'); // Look for a message element
 
-<!--    if (messageContent && messageContent.textContent.trim() !== '') {-->
-<!--      messageModal.classList.remove('hidden');-->
-<!--    }-->
-<!--  });-->
+    if (messagesExist) {
+        messageModal.classList.remove('hidden');
+    }
+});
 
-<!--  function closeModal() {-->
-<!--    const messageModal = document.getElementById('messageModal');-->
-<!--    messageModal.classList.add('hidden');-->
-<!--  }-->
-<!--</script>-->
+function closeModal() {
+    const messageModal = document.getElementById('messageModal');
+    messageModal.classList.add('hidden');
+}
+</script>
 
 
 </body>

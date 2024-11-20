@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from core.models import Expense, ProjectEmployeeAllocatedBudget
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm
@@ -30,7 +30,7 @@ def signin(request):
     return TemplateResponse(request, "signin.html", {"signinform": signinform})
 
 
-
+@login_required
 def expenses_view(request):
     current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
         is_active=True, employee=request.user).first()
@@ -159,4 +159,16 @@ def active_project(request):
     })
 
 
+@login_required
+def settings(request):
+    if request.method == "POST":
+        if "delete_account" in request.POST:  # Check if the delete button was clicked
+            user = request.user
+            user.delete()
+            logout(request)
+            messages.success(request, "Your account has been deleted successfully.")
+            return redirect('homepage')  # Redirect to homepage after deletion
 
+        # Handle other POST actions here, such as updating user details
+
+    return TemplateResponse(request, "settings.html", {"title": "Settings"})
