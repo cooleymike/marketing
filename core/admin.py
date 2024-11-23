@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
+
 from core.models import Expense, Employee, Receipt
 from .models import ProjectEmployeeAllocatedBudget, Expense, Project
 
@@ -20,9 +23,10 @@ class ExpenseAdmin(admin.ModelAdmin):
 admin.site.register(Expense, ExpenseAdmin)
 
 
-class EmployeeAdmin(admin.ModelAdmin):
+class EmployeeAdmin(UserAdmin):
     list_display = ["email", "username", "account_number"]
     search_fields = ['username', 'email', 'first_name', 'last_name']
+    # form = UserChangeForm
 
 admin.site.register(Employee, EmployeeAdmin)
 
