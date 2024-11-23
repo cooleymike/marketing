@@ -19,11 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://6047-45-10-153-83.ngrok-free.app']
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+CSRF_TRUSTED_ORIGINS = ['http://marketing.hopto.org/']
+
 
 
 # Application definition
