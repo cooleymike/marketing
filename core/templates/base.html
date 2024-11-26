@@ -14,10 +14,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out">
-<!-- Modal for messages will go here -->
+
 <!-- Modal for messages -->
 <div id="messageModal"
-     class="fixed inset-0 z-50 {% if not messages %}hidden{% endif %} bg-gray-900 bg-opacity-50">
+     class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50">
     <div class="relative w-full max-w-md mx-auto mt-20 bg-white rounded-lg shadow-lg dark:bg-gray-800">
         <div class="flex items-center justify-between px-4 py-2 border-b dark:border-gray-700">
             <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Messages</h3>
@@ -37,8 +37,6 @@
                         {{ message }}
                     </div>
                 {% endfor %}
-            {% else %}
-                <p>No messages to display.</p>
             {% endif %}
         </div>
         <div class="flex items-center justify-end px-4 py-2 border-t dark:border-gray-700">
@@ -49,8 +47,6 @@
         </div>
     </div>
 </div>
-
-
 
    <!-- Dark mode toggle button -->
     <button class="mr-5" onclick="toggleDarkMode()">
@@ -221,7 +217,7 @@
     const messageModal = document.getElementById('messageModal');
     const messagesExist = messageModal.querySelector('.p-3'); // Look for a message element
 
-    if (messagesExist) {
+    if (messages.length > 0) {
         messageModal.classList.remove('hidden');
     }
 });
@@ -232,6 +228,6 @@ function closeModal() {
 }
 </script>
 
-
+    </div>
 </body>
 </html>

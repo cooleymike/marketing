@@ -6,7 +6,7 @@ AUTH_USER_MODEL = "core.Employee"
 
 LOGIN_URL = "/signin/"
 
-
+SESSION_COOKIE_DOMAIN = '.marketing.hopto.org'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://marketing.hopto.org/']
