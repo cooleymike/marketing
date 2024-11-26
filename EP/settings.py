@@ -4,7 +4,7 @@ from pathlib import Path
 
 AUTH_USER_MODEL = "core.Employee"
 
-LOGIN_URL = "/signin/"
+LOGIN_URL = '/signin/'
 
 SESSION_COOKIE_DOMAIN = '.marketing.hopto.org'
 
