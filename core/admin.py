@@ -24,7 +24,7 @@ admin.site.register(Expense, ExpenseAdmin)
 
 
 class EmployeeAdmin(UserAdmin):
-    list_display = ["email", "username", "account_number"]
+    list_display = ["email", "username", "account_number","avatar"]
     search_fields = ['username', 'email', 'first_name', 'last_name']
     # form = UserChangeForm
 

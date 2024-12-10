@@ -6,7 +6,7 @@ AUTH_USER_MODEL = "core.Employee"
 
 LOGIN_URL = '/signin/'
 
-SESSION_COOKIE_DOMAIN = '.marketing.hopto.org'
+# SESSION_COOKIE_DOMAIN = '.marketing.hopto.org'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

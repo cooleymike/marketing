@@ -36,8 +36,10 @@ def expenses_view(request):
         is_active=True, employee=request.user).first()
     #if current allocated budget is none then redirect to homepage with
     # message you have not been attached to an allocated budget
+    print("expenses_view")
     if current_allocated_budget is None:
-        messages.error(request, "You have not been attached to any budget")
+        print("expense_view")
+        messages.info(request, "You have not been attached to any budget")
         return redirect("homepage")
     project_id = current_allocated_budget.project_id
 
@@ -62,8 +64,44 @@ def register(request):
    return TemplateResponse(request,'register.html',
                             {"form":form})
 
-def team_expense(request):
-    return TemplateResponse(request, "team_expense.html", {"title": "team_expense"})
+
+@login_required
+def team_expense_view(request):
+    # Identify the active project for the logged-in user
+    allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+        employee=request.user, is_active=True
+    ).first()
+
+    if not allocated_budget_record:
+        messages.error(request, "You are not part of any active project.")
+        return redirect('homepage')
+
+    project = allocated_budget_record.project
+
+    # Fetch all users related to this project (e.g., via allocated budgets)
+    project_users = ProjectEmployeeAllocatedBudget.objects.filter(
+        project=project, is_active=True
+    ).values('employee', 'employee__first_name', 'employee__last_name')
+
+    # Calculate individual expenses for users in the project
+    team_expenses = []
+    for user in project_users:
+        total_expenses = Expense.objects.filter(
+            employee_id=user['employee'], project=project
+        ).aggregate(total=Sum('initial_amount'))['total'] or 0
+
+        team_expenses.append({
+            'name': f"{user['employee__first_name']} {user['employee__last_name']}",
+            'total_expenses': total_expenses,
+        })
+
+    # Prepare context for rendering
+    context = {
+        'project': project,
+        'team_expenses': team_expenses,
+    }
+
+    return render(request, 'team_expense.html', context)
 
 
 @login_required
@@ -127,7 +165,7 @@ def expense_form(request):
 def total_allocated_expense(request):
 
     total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
-    return render(request, "expenses.html", {'total_expense':
+    return render(request, "expense.html", {'total_expense':
                                                                 total_expense})
 def project_list(request):
 
