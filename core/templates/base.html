@@ -31,6 +31,7 @@
             </button>
         </div>
         <div class="p-4">
+<!--            {{ message }}-->
             {% if messages %}
                 {% for message in messages %}
                     <div class="p-3 mb-2 text-white bg-{{ message.tags|default:'blue' }}-500 rounded">
@@ -48,14 +49,27 @@
     </div>
 </div>
 
+
    <!-- Dark mode toggle button -->
     <button class="mr-5" onclick="toggleDarkMode()">
         <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-circle-half" fill="currentColor">
             <path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
         </svg>
     </button>
+ <div class="p-4">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div
+a
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
     <div class="flex justify-between items-center px-8 py-4">
+
         {% if user.is_authenticated %}
         <!-- Sign Out Button for Authenticated Users -->
         <a href="{% url 'logout' %}"
@@ -78,17 +92,6 @@
                 alt="company logo">
         </div>
 
-
-            <!-- Search Bar -->
-            <div class="relative mt-6">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </span>
-                <input type="text" class="w-full py-2 pl-10 pr-4 text-gray-700 bg-white border rounded-md dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none" placeholder="Search" />
-            </div>
-
             <!-- Navigation Links -->
             <nav class="mt-6">
                 <a href="{% url 'homepage' %}"
@@ -107,7 +110,7 @@
                 </a>
                 <a href="team_expense"
                    class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
-                    <span class="mx-4 font-medium">Team_expense</span>
+                    <span class="mx-4 font-medium">Team Expense</span>
                 </a>
                 <a href="{% url 'settings' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
                     <span class="mx-4 font-medium">Settings</span>
@@ -115,12 +118,19 @@
             </nav>
 
             <!-- User Info -->
+            {% if user.is_authenticated %}
             <div class="mt-6">
                 <a href="#" class="flex items-center px-4">
-                    <img class="object-cover w-9 h-9 rounded-full" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="avatar">
-                    <span class="mx-2 font-medium text-gray-800 dark:text-gray-200">Jack Jones</span>
+                    {% if user.avatar %}
+                    <img class="object-cover w-9 h-9 rounded-full"
+                         src="{{ user.avatar.url }}"
+                         alt="avatar">
+                    {% endif %}
+                    <span class="mx-2 font-medium text-gray-800
+                        dark:text-gray-200">{{user.username}}</span>
                 </a>
             </div>
+            {% endif %}
         </aside>
         {% endblock header %}
 
@@ -134,16 +144,6 @@
 
     </div>
 
-    <!-- Welcome Section -->
-<!--    <section class="bg-white dark:bg-gray-800 shadow-md rounded-lg py-6 px-8 mb-8">-->
-<!--        <h2 class="text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">-->
-<!--            Welcome to Your Dashboard-->
-<!--        </h2>-->
-<!--        <p class="text-lg text-gray-600 dark:text-gray-400 text-center">-->
-<!--            Manage your projects, track expenses, and collaborate with your-->
-<!--            team.-->
-<!--        </p>-->
-<!--    </section>-->
 
     <!-- Call to Action for Unauthenticated Users -->
     {% if not user.is_authenticated %}
@@ -215,13 +215,13 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const messageModal = document.getElementById('messageModal');
-    const messagesExist = messageModal.querySelector('.p-3'); // Look for a message element
+    const messageElements = messageModal.querySelector('#messageModal .p-3');
+    // Look for a message element
 
-    if (messages.length > 0) {
+    if (messageElements.length > 0) {
         messageModal.classList.remove('hidden');
     }
 });
-
 function closeModal() {
     const messageModal = document.getElementById('messageModal');
     messageModal.classList.add('hidden');

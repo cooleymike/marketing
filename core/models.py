@@ -7,9 +7,8 @@ from django.db.models import Sum
 
 class Employee(AbstractUser):
     account_number = models.CharField(max_length=10, unique=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/',
-                               default="avatars/default.png", blank=True,
-                               null=True)
+    avatar = models.ImageField(upload_to='avatars' ,
+    default='avatars/default.png')
 
 
 class Project (models.Model):
@@ -59,11 +58,29 @@ class Expense(models.Model):
         # is active = true
         # filter will return a list of records
         expenses = Expense.objects.filter(created_date__lte=self.created_date, employee=self.employee)
-        print(expenses)
+        print(expenses.query)
         total_expenses = expenses.aggregate(total=Sum('initial_amount'))['total'] or 0
        # REMAINING_BUDGET = TOTAL_ALLOCATED - (TOTAL OF EXPENSES before current expense date) - current expense
         return total_budget - total_expenses
         # return self.initial_amount - total_spent
+
+    class Team(models.Model):
+        name = models.CharField(max_length=100)
+        project = models.ForeignKey(Project, related_name='teams',
+                                    on_delete=models.CASCADE)
+        members = models.ManyToManyField(Employee, related_name='teams')
+        description = models.TextField(blank=True, null=True)
+
+        def __str__(self):
+            return self.name
+
+        def total_expenses(self):
+            # expenses for all team members for project they are associated
+            return Expense.objects.filter(
+                employee__in=self.members.all(),
+                project=self.project
+            ).aggregate(total=Sum('initial_amount'))['total'] or 0
+
 
 # class ExpenseForm(forms.ModelForm):
 #     class Meta:
