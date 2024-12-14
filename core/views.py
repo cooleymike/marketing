@@ -38,7 +38,7 @@ def expenses_view(request):
     # message you have not been attached to an allocated budget
     print("expenses_view")
     if current_allocated_budget is None:
-        print("expense_view")
+
         messages.info(request, "You have not been attached to any budget")
         return redirect("homepage")
     project_id = current_allocated_budget.project_id
