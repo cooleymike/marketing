@@ -50,7 +50,7 @@ def expenses_view(request):
 
 def register(request):
    if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = RegisterForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.instance.set_password(form.cleaned_data['password1'])
@@ -106,6 +106,9 @@ def team_expense_view(request):
 
 @login_required
 def expense_form(request):
+    print("***")
+    print(request.FILES)
+    print("---")
     # Get the project ID from the request or default to 1
     #project_id = request.GET.get('project_id', 1)
 

@@ -37,7 +37,7 @@ class Expense(models.Model):
     initial_amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    upload = models.ImageField(upload_to ='uploads/',null=True, blank=True)
+    upload = models.ImageField(upload_to ='uploads/',default='uploads/default.png')
     # should i remove null=True - as uploads should be mandatory to prove
     # expense was justified/real?
 
