@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Expenses
+{% endblock %}
+    <!-- Progress Bar -->
+    <div class="relative pt-2">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-green-200 text-green-800">
+                {{ percentage_left }}% Left
+            </span>
+        </div>
+        <div class="overflow-hidden h-4 mb-4 text-xs flex rounded bg-gray-200">
+            <div id="budgetProgressBar" style="width: {{ percentage_left }}%;"
+                 class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+        </div>
+    </div>
+</div>

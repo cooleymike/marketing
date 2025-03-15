@@ -4,8 +4,42 @@ from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from core.models import Expense, ProjectEmployeeAllocatedBudget
+from core.models import Expense, ProjectEmployeeAllocatedBudget, Team
+from django.contrib.auth.decorators import login_required
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm
+from django.utils import timezone
+
+
+@login_required
+def admin_expense_viewer(request):
+   if not request.user.is_staff: # needs to be a manager/staff
+        return redirect('admin:index')  # Redirect to home if not manager
+
+   team = request.user.team # managers team
+   current_year = timezone.now().year
+   expenses = Expense.objects.filter(team=team, created_date__year=current_year)
+
+
+        # Group expenses by quarter
+   admin_expense_viewer = {
+        1: expenses.filter(created_date__quarter=1),
+        2: expenses.filter(created_date__quarter=2),
+        3: expenses.filter(created_date__quarter=3),
+        4: expenses.filter(created_date__quarter=4),
+    }
+
+   return render(request, 'admin_expense_viewer.html', {
+        'admin_expense_viewer': admin_expense_viewer,
+        'current_year': current_year
+    })
+@login_required
+def expense_list_by_quarter(request):
+    # Your logic to filter and order expenses by year/quarter
+    expenses = Expense.objects.filter(user=request.user).order_by('date')
+    # Render the expenses template or return a custom response
+    return render(request, 'admin/admin_expense_viewer.html', {'expenses':
+                                                               expenses})
+
 
 
 def homepage(request):
@@ -29,22 +63,57 @@ def signin(request):
 
     return TemplateResponse(request, "signin.html", {"signinform": signinform})
 
+def expense_entry_view(request):
+    form = ExpenseForm()
+
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            print(form.instance.type)
+            return redirect('expenses')  # Adjust to your actual URL name
+        else:
+            print(form.errors)
+
+    return render(request, 'expenses.html', {'form': form})
 
 @login_required
 def expenses_view(request):
+    user = request.user
+
     current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
         is_active=True, employee=request.user).first()
-    #if current allocated budget is none then redirect to homepage with
-    # message you have not been attached to an allocated budget
-    print("expenses_view")
-    if current_allocated_budget is None:
 
+    if current_allocated_budget is None:
         messages.info(request, "You have not been attached to any budget")
+        print("User: ", request.user)
+        print("Project ID:", current_allocated_budget)
+        print("Expense found:", Expense.objects.filter(user=request.user,
+                                                       project=current_allocated_budget).count())
         return redirect("homepage")
     project_id = current_allocated_budget.project_id
+    budget = current_allocated_budget.budget
+    allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+        employee=request.user, project_id=project_id, is_active=True
+    ).first()
 
-    expenses = Expense.objects.filter(employee=request.user, project_id=project_id)
 
+    total_spent = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
+    remaining_budget = allocated_budget_record.allocated_budget - total_spent
+    percentage_left = (
+        (remaining_budget / allocated_budget_record.allocated_budget) * 100
+        if allocated_budget_record.allocated_budget else 0
+    )
+    # pass these as context data from back to front 
+    context = {
+        "expenses": expenses,
+        "total_spent": total_spent,
+        "remaining_budget": remaining_budget,
+        "allocated_budget": allocated_budget_record.allocated_budget,
+        "percentage_left": round(percentage_left, 2),
+        "active_quarter": allocated_budget_record.quarter,
+        # this to show which quarter is active (i think)
+    }
 
     return render(request,'expenses.html', {"expenses": expenses})
 
@@ -127,11 +196,11 @@ def expense_form(request):
                 messages.error(request,
                                "You do not have an allocated budget for this project.")
                 return redirect('homepage')  # or another appropriate page
-
+            print(form.cleaned_data)
             expense_to_save = form.save(commit=False)
             expense_to_save.employee = request.user
             expense_to_save.project_id = project_id # this sets the project id
-
+            print(expense_to_save.type)
             expense_to_save.save()
             messages.success(request, "Expense recorded successfully.")
             return redirect('homepage')  # Redirect to the same page or
@@ -163,6 +232,8 @@ def expense_form(request):
     }
 
     return render(request, "expense_form.html", context)
+
+
 
 
 def total_allocated_expense(request):
@@ -213,3 +284,5 @@ def settings(request):
         # Handle other POST actions here, such as updating user details
 
     return TemplateResponse(request, "settings.html", {"title": "Settings"})
+
+

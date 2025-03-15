@@ -34,24 +34,30 @@
 
             </div>
 
-        <!-- Other Fields Card -->
-        <div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase tracking-wide">
-                Additional Information
-            </h3>
+                    <!-- Other Fields Card -->
+            <div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase tracking-wide">
+                    Additional Information
+                </h3>
 
                 {% csrf_token %}
                 <div class="space-y-6">
                     <!-- Initial Amount -->
                     <div>
-                        <label for="initial_amount" class="block text-sm
-                        font-medium text-gray-600 dark:text-gray-400 mb-2">
+                        <label for="initial_amount" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                             Initial Amount
                         </label>
                         {{ form.initial_amount }}
+                        <div class="text-red-500 text-sm">{{ form.initial_amount.errors }}</div>
+                    </div>
 
-                        <div class="text-red-500 text-sm">{{ form.initial_amount.errors }}
-                        </div>
+                    <!-- Expense Type -->
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                            Expense Type
+                        </label>
+                        {{ form.type }}
+                        <div class="text-red-500 text-sm">{{ form.type.errors }}</div>
                     </div>
 
                     <!-- Upload Receipt -->

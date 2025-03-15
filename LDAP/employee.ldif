@@ -1,0 +1,13 @@
+dn: uid=lego.smith,ou=Engineering,dc=example,dc=in
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Lego Smith
+sn: Smith
+uid: lego.smith
+mail: lego.smith@example.in
+givenName: Lego
+displayName: Lego Smith
+title: Software Genius
+userPassword: {SSHA}password

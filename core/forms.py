@@ -6,7 +6,8 @@ from django.forms import (
     HiddenInput, ModelChoiceField, TextInput,
     DecimalField, NumberInput, ImageField, FileInput
 )
-from core.models import Employee, Expense, ProjectEmployeeAllocatedBudget
+from core.models import Employee, Expense, ProjectEmployeeAllocatedBudget, \
+    ExpenseType
 from django import forms
 
 
@@ -82,6 +83,14 @@ class ExpenseForm(ModelForm):
         })
     )
 
+    type = forms.ModelChoiceField(
+
+         queryset=ExpenseType.objects.all(),
+        widget=forms.Select(attrs={
+            'class': "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        })
+    )
+
     upload = ImageField(
         label='Upload',
         widget=FileInput(attrs={
@@ -91,7 +100,7 @@ class ExpenseForm(ModelForm):
 
     class Meta:
         model = Expense
-        fields = ['employee', 'description', 'initial_amount', 'upload']
+        fields = ['employee', 'description', 'initial_amount', 'upload', 'type']
 
     def clean_initial_amount(self):
         employee = self.cleaned_data["employee"]

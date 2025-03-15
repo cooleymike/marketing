@@ -19,6 +19,27 @@ Expenses
     {% endfor %}
 </ul>
 {% endif %}
+<div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Budget Overview</h2>
+
+    <p><strong>Total Budget:</strong> ${{ allocated_budget }}</p>
+    <p><strong>Spent:</strong> ${{ total_spent }}</p>
+    <p><strong>Remaining:</strong> ${{ remaining_budget }}</p>
+
+    <!-- Progress Bar -->
+    <div class="relative pt-2">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-green-200 text-green-800">
+                {{ percentage_left }}% Left
+            </span>
+        </div>
+        <div class="overflow-hidden h-4 mb-4 text-xs flex rounded bg-gray-200">
+            <div id="budgetProgressBar" style="width: {{ percentage_left }}%;"
+                 class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+        </div>
+    </div>
+</div>
+
 
 <div class="container mx-auto p-4">
     {% if user.is_authenticated %}
@@ -84,6 +105,29 @@ Expenses
     {% endif %}
 </div>
 {% endblock %}
+
+<script>
+    function updateProgressBar() {
+        let spent = {{ total_spent }};
+        let totalBudget = {{ allocated_budget }};
+        let remaining = totalBudget - spent;
+        let percentage = (remaining / totalBudget) * 100;
+
+        let progressBar = document.getElementById("budgetProgressBar");
+        progressBar.style.width = percentage + "%";
+
+        if (percentage <= 20) {
+            progressBar.classList.remove("bg-green-500");
+            progressBar.classList.add("bg-red-500");
+        } else if (percentage <= 50) {
+            progressBar.classList.remove("bg-green-500");
+            progressBar.classList.add("bg-yellow-500");
+        }
+    }
+
+    updateProgressBar();
+</script>
+
 
 <!--<script>-->
 <!--    function animateAvatar(element) {-->

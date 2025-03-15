@@ -1,0 +1,31 @@
+
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<h1>Expenses for {{ project.name }} - Year: {{ current_year }} - Quarter: {{ current_quarter }}</h1>
+
+<p><strong>Total Expenses:</strong> ${{ total_expense }}</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Initial Amount</th>
+            <th>Created Date</th>
+            <th>Expense Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.description }}</td>
+            <td>${{ expense.initial_amount }}</td>
+            <td>{{ expense.created_date }}</td>
+            <td>{{ expense.type }}</td>
+<!-- is this needed ?     <td>{{ member.total_expenses}}</td>-->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
