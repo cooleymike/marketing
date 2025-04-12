@@ -185,11 +185,17 @@ def expense_form(request):
     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
         employee=request.user, is_active=True).first()
 
+    if allocated_budget_record is None:
+        messages.error(request, "You are not part of any active project.")
+        return redirect('homepage')
+
     project_id = allocated_budget_record.project_id
     if request.method == 'POST':
         print(request.POST)
         form = ExpenseForm(request.POST, request.FILES)
         if form.is_valid():
+
+
 
 
             if not allocated_budget_record:

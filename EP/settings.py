@@ -145,9 +145,29 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
 )
+from django_auth_ldap.config import LDAPSearch, PosixGroupType
+import ldap
+
+AUTH_LDAP_SERVER_URI = 'ldap://localhost'
+AUTH_LDAP_BIND_DN = 'cn=admin,dc=example,dc=org'
+AUTH_LDAP_BIND_PASSWORD = 'adminpassword'
+
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+   "ou=marketing,dc=example,dc=org", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
+)
+AUTH_LDAP_FIND_GROUP_PERMS = True
+AUTH_LDAP_MIRROR_GROUPS = True
+AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr='cn')
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+                             'cn=admin,dc=example,dc=org',
+                             ldap.SCOPE_SUBTREE,
+                             '(objectClass=groupOfNames)'
+)
+
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 #google

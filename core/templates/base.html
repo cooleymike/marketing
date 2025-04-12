@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,220 +13,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+        <a href="#" class="text-2xl font-bold text-purple-600">MarketingApp</a>
+        <ul class="hidden md:flex space-x-6">
+            <li><a href="#features" class="text-gray-700 hover:text-purple-600">Features</a></li>
+            <li><a href="#pricing" class="text-gray-700 hover:text-purple-600">Pricing</a></li>
+            <li><a href="#testimonials" class="text-gray-700 hover:text-purple-600">Testimonials</a></li>
+            <li><a href="#contact" class="text-gray-700 hover:text-purple-600">Contact</a></li>
+        </ul>
+        <div class="flex items-center space-x-4">
+             {% if user.is_authenticated %}
+                <!-- Sign Out Button for Authenticated Users -->
+                <a href="{% url 'logout' %}"
+                   class="absolute top-5 right-5 bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
+                   Sign Out
+                </a>
+                 {% else %}
+                 <a href="{% url 'register' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign Up</a>
+                 <a href="{% url 'signin' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign In</a>
 
-<!-- Modal for messages -->
-<div id="messageModal"
-     class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50">
-    <div class="relative w-full max-w-md mx-auto mt-20 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-        <div class="flex items-center justify-between px-4 py-2 border-b dark:border-gray-700">
-            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Messages</h3>
-            <button onclick="closeModal()"
-                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
-                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <div class="p-4">
-<!--            {{ message }}-->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="p-3 mb-2 text-white bg-{{ message.tags|default:'blue' }}-500 rounded">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div class="flex items-center justify-end px-4 py-2 border-t dark:border-gray-700">
-            <button onclick="closeModal()"
-                    class="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
-
-
-   <!-- Dark mode toggle button -->
-    <button class="mr-5" onclick="toggleDarkMode()">
-        <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-circle-half" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
-        </svg>
-    </button>
- <div class="p-4">
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div>
-
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+             {% endif %}
         </div>
 
-    <div class="flex justify-between items-center px-8 py-4">
+    </nav>
 
-        {% if user.is_authenticated %}
-        <!-- Sign Out Button for Authenticated Users -->
-        <a href="{% url 'logout' %}"
-           class="absolute top-5 right-5 bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
-           Sign Out
-        </a>
-        {% endif %}
-    </div>
-
-    <div class="flex">
-
-        {% block header %}
-        <!-- Sidebar -->
-        <aside class="w-64 h-screen px-4 py-8 bg-white border-r dark:bg-gray-900 dark:border-gray-700">
-            <!-- Sidebar Logo Section -->
-        <div class="flex items-center justify-center">
-            <img
-                class="w-auto h-10 sm:h-11"
-                src="{% static 'images/company_logo.jpg' %}"
-                alt="company logo">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-center py-20 px-4">
+        <h1 class="text-5xl font-bold">Marketing, Simplified. Smarter Spending, Better Growth.</h1>
+        <p class="text-xl mt-4">Control your marketing budget with real-time insights and automated tracking.</p>
+        <div class="mt-6 space-x-4">
+            <a href="{% url 'active_project' %}" class="bg-white text-purple-700 px-6 py-3 rounded-lg font-semibold shadow-lg">View Projects</a>
+            <a href="{% url 'expenses' %}" class="border border-white px-6 py-3 rounded-lg font-semibold">Track Expenses</a>
         </div>
+    </section>
 
-            <!-- Navigation Links -->
-            <nav class="mt-6">
-                <a href="{% url 'homepage' %}"
-                   class="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-200">
-                    <span class="mx-4 font-medium">Home</span>
-                </a>
-                <a href="{% url 'register' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
-                    <span class="mx-4 font-medium">Register</span>
-                </a>
-                <a href="{% url 'expenses' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
-                    <span class="mx-4 font-medium">Expenses</span>
-                </a>
-                <a href="{% url 'active_project' %}"
-                   class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
-                    <span class="mx-4 font-medium">Active Project</span>
-                </a>
-                <a href="team_expense"
-                   class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
-                    <span class="mx-4 font-medium">Team Expense</span>
-                </a>
-                <a href="{% url 'settings' %}" class="flex items-center px-4 py-2 mt-5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-200">
-                    <span class="mx-4 font-medium">Settings</span>
-                </a>
-            </nav>
-
-            <!-- User Info -->
-            {% if user.is_authenticated %}
-            <div class="mt-6">
-                <a href="#" class="flex items-center px-4">
-                    {% if user.avatar %}
-                    <img class="object-cover w-9 h-9 rounded-full"
-                         src="{{ user.avatar.url }}"
-                         alt="avatar">
-                    {% endif %}
-                    <span class="mx-2 font-medium text-gray-800
-                        dark:text-gray-200">{{user.username}}</span>
-                </a>
+    <main class="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
+        {% block content %}
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
+                <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">Active Projects</h3>
+                <p class="relative text-gray-600 dark:text-gray-400 z-10">View and manage your ongoing projects.</p>
+                <a href="{% url 'active_project' %}" class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">View Projects</a>
             </div>
-            {% endif %}
-        </aside>
-        {% endblock header %}
 
-<!-- Main Content -->
-<main class="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
-    {% block content %}
-    <!-- Header Section -->
-    <div
-            class="bg-gradient-to-r from-yellow-50 to-slate-200 text-gray-700 dark:text-slate-500 shadow-md rounded-lg py-8 px-6 mb-8 text-center">
-        <h1 class="text-4xl font-extrabold mb-2">Company name here</h1>
+            <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
+                <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">Expense Tracking</h3>
+                <p class="relative text-gray-600 dark:text-gray-400 z-10">Keep track of team expenses and budgets in real-time.</p>
+                <a href="{% url 'expenses' %}" class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">Track Expenses</a>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
 
-    </div>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
 
+        const setThemeIcon = (dark) => {
+            themeIcon.innerHTML = dark
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-12.34l-.71.71M4.05 19.95l-.71-.71M21 12h-1M4 12H3m16.95 4.95l-.71-.71M4.05 4.05l-.71.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />`;
+        }
 
-    <!-- Call to Action for Unauthenticated Users -->
-    {% if not user.is_authenticated %}
-    <section
-            class="flex flex-col items-center space-y-4 bg-gradient-to-r from-yellow-50 to-slate-200 p-6 rounded-lg shadow-md">
-        <p
-                class="text-xl text-gray-700 dark:text-slate-500 font-medium text-center">
-            Get started by signing in or creating an account.
-        </p>
-        <div class="flex space-x-4">
-            <a id="sign_in" href="/signin/"
-               class="px-6 py-3 text-lg font-semibold text-white bg-slate-600 rounded-lg shadow hover:bg-red-900 focus:ring-2 focus:ring-blue-400">
-                Sign In
-            </a>
-            <a href="/register/"
-                class="px-6 py-3 text-lg font-semibold text-white bg-slate-600 rounded-lg shadow hover:bg-red-900 focus:ring-2 focus:ring-blue-400">
-                Register
-            </a>
-        </div>
-    </section>
-    {% endif %}
+        const applyTheme = () => {
+            const isDark = localStorage.getItem('theme') === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            setThemeIcon(isDark);
+        }
 
-    <!-- Authenticated User Section -->
-    {% if user.is_authenticated %}
-<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Active Projects Card -->
-    <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
-        <span
-                class="absolute inset-0 bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-0"></span>
-        <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">
-            Active Projects
-        </h3>
-        <p class="relative text-gray-600 dark:text-gray-400 z-10">
-            View and manage your ongoing projects.
-        </p>
-        <a href="{% url 'active_project' %}"
-           class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">
-            View Projects
-        </a>
-    </div>
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            setThemeIcon(isDark);
+        });
 
-    <!-- Expense Tracking Card -->
-    <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
-        <span
-                class="absolute inset-0 bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-0"></span>
-        <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">
-            Expense Tracking
-        </h3>
-        <p class="relative text-gray-600 dark:text-gray-400 z-10">
-            Keep track of team expenses and budgets in real-time.
-        </p>
-        <a href="{% url 'expenses' %}"
-           class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">
-            Track Expenses
-        </a>
-    </div>
-</section>
+        applyTheme();
+    </script>
 
-
-    </section>
-    {% endif %}
-    {% endblock %}
-</main>
-
-
-    <!-- Dark Mode Toggle Script -->
-   <script src="{% static 'js/index.js' %}"></script>
-    <!--JS trigger modal-->
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const messageModal = document.getElementById('messageModal');
-    const messageElements = messageModal.querySelector('#messageModal .p-3');
-    // Look for a message element
-
-    if (messageElements.length > 0) {
-        messageModal.classList.remove('hidden');
-    }
-});
-function closeModal() {
-    const messageModal = document.getElementById('messageModal');
-    messageModal.classList.add('hidden');
-}
-</script>
-
-    </div>
+    <script src="{% static 'js/index.js' %}"></script>
 </body>
 </html>

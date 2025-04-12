@@ -84,7 +84,7 @@ admin.site.register(Expense, ExpenseAdmin)
 
 
 class EmployeeAdmin(UserAdmin):
-    list_display = ["email", "username", "account_number","avatar","team"]
+    list_display = ["username", "email",  "account_number","avatar","team"]
     search_fields = ['username', 'email', 'first_name', 'last_name']
     form = UserChangeForm
     fieldsets = (
@@ -92,6 +92,8 @@ class EmployeeAdmin(UserAdmin):
             'fields': ('username', 'password')}),
         ('Personal info', {
             'fields': ('first_name', 'last_name', 'email')}),
+        ('Groups', {
+            'fields': ('groups',)}),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'team',
                        'user_permissions')}),
