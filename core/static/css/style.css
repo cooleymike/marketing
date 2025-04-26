@@ -33,3 +33,20 @@
     border-color: #d97706; /* dark focus-yellow */
 }
 
+@keyframes slide-in {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-scroll {
+  animation: slide-in 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+

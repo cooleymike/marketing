@@ -7,6 +7,7 @@ class CoreConfig(AppConfig):
 
 
     def ready(self):
+        print("ready")
         import core.signals
 
 

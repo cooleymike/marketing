@@ -26,7 +26,7 @@
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="#" method="POST">
+      <form class="space-y-6" action="" method="POST">
            {% csrf_token %}
         <div>
           <label
@@ -61,16 +61,17 @@
             focus-visible:outline-slate-600">Sign in
           </button>
         </div>
-<!--                  &lt;!&ndash;dispaly form errors&ndash;&gt;-->
-<!--              {% if form.errors %}-->
-<!--        <div class="alert alert-danger">-->
-<!--            {% for field, errors in form.errors.items %}-->
-<!--                {% for error in errors %}-->
-<!--                    <p>{{ error }}</p>-->
-<!--                {% endfor %}-->
-<!--            {% endfor %}-->
-<!--        </div>-->
-<!--    {% endif %}-->
+
+{% if form.errors %}
+  <div class="text-red-600 text-sm mt-4">
+    {% for field, errors in form.errors.items %}
+      {% for error in errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    {% endfor %}
+  </div>
+{% endif %}
+
 
       </form>
  {% include 'buttons.html' with side=1 %}

@@ -160,13 +160,14 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
    "ou=marketing,dc=example,dc=org", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
 )
 AUTH_LDAP_FIND_GROUP_PERMS = True
-AUTH_LDAP_MIRROR_GROUPS = True
+# AUTH_LDAP_MIRROR_GROUPS = True
 AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr='cn')
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
                              'cn=admin,dc=example,dc=org',
                              ldap.SCOPE_SUBTREE,
                              '(objectClass=groupOfNames)'
 )
+AUTH_LDAP_DENY_GROUP = "cn=blocked_users,dc=example,dc=org"
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'

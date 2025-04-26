@@ -1,5 +1,6 @@
 {% load static %}
 
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,30 +14,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
-        <a href="#" class="text-2xl font-bold text-purple-600">MarketingApp</a>
-        <ul class="hidden md:flex space-x-6">
-            <li><a href="#features" class="text-gray-700 hover:text-purple-600">Features</a></li>
-            <li><a href="#pricing" class="text-gray-700 hover:text-purple-600">Pricing</a></li>
-            <li><a href="#testimonials" class="text-gray-700 hover:text-purple-600">Testimonials</a></li>
-            <li><a href="#contact" class="text-gray-700 hover:text-purple-600">Contact</a></li>
-        </ul>
-        <div class="flex items-center space-x-4">
-             {% if user.is_authenticated %}
-                <!-- Sign Out Button for Authenticated Users -->
-                <a href="{% url 'logout' %}"
-                   class="absolute top-5 right-5 bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
-                   Sign Out
-                </a>
-                 {% else %}
-                 <a href="{% url 'register' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign Up</a>
-                 <a href="{% url 'signin' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign In</a>
+  <!-- Navigation Bar -->
+ <header class="bg-white shadow-md p-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
 
-             {% endif %}
-        </div>
+    <!-- Logo (top-left) -->
+    <a href="/" class="flex items-center">
+      <img src="{% static 'images/company_logo.jpg' %}" alt="Company Logo" class="h-10 w-auto">
+    </a>
+
+    <!-- Hamburger button (hidden on md and up) -->
+    <button id="menu-toggle" class="md:hidden text-gray-700 focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+
+    <!-- Nav Links (hidden on mobile, shown on md+) -->
+    <nav id="menu" class="hidden md:flex mx-auto">
+      <ul class="flex space-x-8 text-gray-700 font-medium text-lg">
+  {% if user.is_authenticated %}
+    <li><a href="{% url 'expense_form' %}" class="hover:text-purple-600">Add Expense</a></li>
+    <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
+    <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
+  {% else %}
+      <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
+      <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>
+    <li><a href="#pricing" class="hover:text-purple-600">Pricing</a></li>
+    <li><a href="#contact" class="hover:text-purple-600">Contact</a></li>
+    <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
+  {% endif %}
+</ul>
+
 
     </nav>
+
+    <!-- Auth Buttons -->
+    <div class="hidden md:flex items-center space-x-4">
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
+          Sign Out
+        </a>
+      {% else %}
+        <a href="{% url 'register' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign Up</a>
+        <a href="{% url 'signin' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden hidden mt-4">
+   <ul class="flex space-x-8 text-gray-700 font-medium text-lg">
+  {% if user.is_authenticated %}
+    <li><a href="{% url 'expense_form' %}" class="hover:text-purple-600">Add Expense</a></li>
+    <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
+    <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
+  {% else %}
+      <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
+      <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>
+    <li><a href="#contact" class="hover:text-purple-600">Contact</a></li>
+    <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
+  {% endif %}
+</ul>
+
+
+  </div>
+</header>
+
+{% block content %}
 
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-center py-20 px-4">
@@ -48,23 +95,7 @@
         </div>
     </section>
 
-    <main class="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
-        {% block content %}
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
-                <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">Active Projects</h3>
-                <p class="relative text-gray-600 dark:text-gray-400 z-10">View and manage your ongoing projects.</p>
-                <a href="{% url 'active_project' %}" class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">View Projects</a>
-            </div>
-
-            <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 group overflow-hidden">
-                <h3 class="relative text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 z-10">Expense Tracking</h3>
-                <p class="relative text-gray-600 dark:text-gray-400 z-10">Keep track of team expenses and budgets in real-time.</p>
-                <a href="{% url 'expenses' %}" class="relative inline-block mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">Track Expenses</a>
-            </div>
-        </section>
-        {% endblock %}
-    </main>
+{% endblock %}
 
     <script>
         const themeToggle = document.getElementById('theme-toggle');
@@ -92,5 +123,32 @@
     </script>
 
     <script src="{% static 'js/index.js' %}"></script>
+<script>
+    const toggleBtn = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    toggleBtn?.addEventListener('click', () => {
+        mobileMenu?.classList.toggle('hidden');
+    });
+
+    const observer = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-scroll');
+        observer.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.1 }
+);
+
+document.querySelectorAll('.feature-card').forEach(card => {
+  observer.observe(card);
+});
+
+</script>
+
+<script src="{% static 'js/index.js' %}"></script>
 </body>
 </html>

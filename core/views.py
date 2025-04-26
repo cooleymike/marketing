@@ -4,10 +4,18 @@ from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+
+from EP.views import expenses
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team
 from django.contrib.auth.decorators import login_required
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm
 from django.utils import timezone
+
+def features_view(request):
+    return render(request, "features.html")
+
+def testimonials_view(request):
+    return render(request, "testimonials.html")
 
 
 @login_required
@@ -47,21 +55,20 @@ def homepage(request):
 
 def signin(request):
     if request.method == "POST":
-        signinform = SigninForm(request.POST)
-        if signinform.is_valid():
-            username = signinform.cleaned_data["username"]
-            password = signinform.cleaned_data["password"]
+        form = SigninForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 return redirect("homepage")
             else:
                 messages.error(request, "Invalid username or password")
-
     else:
-        signinform = SigninForm()
+        form = SigninForm()
 
-    return TemplateResponse(request, "signin.html", {"signinform": signinform})
+    return TemplateResponse(request, "signin.html", {"form": form})
 
 def expense_entry_view(request):
     form = ExpenseForm()
@@ -290,5 +297,6 @@ def settings(request):
         # Handle other POST actions here, such as updating user details
 
     return TemplateResponse(request, "settings.html", {"title": "Settings"})
+
 
 

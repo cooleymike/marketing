@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Features{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="h-screen flex flex-col justify-center items-center bg-gradient-to-br from-sky-100 via-white to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 dark:text-white text-center mb-4">Smarter Marketing Starts Here</h1>
+  <p class="text-lg text-slate-600 dark:text-gray-300 text-center max-w-xl">Discover the features that drive better decisions, collaboration, and secure marketing performance.</p>
+</section>
+
+<!-- Scrollable Feature Cards -->
+<section class="overflow-x-scroll flex snap-x snap-mandatory space-x-8 px-12 py-20 bg-white dark:bg-gray-900 scrollbar-hide">
+  <div class="feature-card min-w-[90vw] snap-center bg-indigo-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 flex flex-col justify-between transform hover:scale-105 transition-all duration-500">
+    <img src="/static/images/analytics.svg" class="h-28 mb-6 self-center animate-fade-in" alt="Analytics">
+    <h3 class="text-3xl font-bold text-slate-700 dark:text-white">Real-Time Analytics</h3>
+    <p class="text-lg text-slate-600 dark:text-gray-300 mt-2">Instant insights into your campaigns through intuitive, beautiful charts and graphs.</p>
+  </div>
+
+  <div class="feature-card min-w-[90vw] snap-center bg-sky-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 flex flex-col justify-between transform hover:scale-105 transition-all duration-500">
+    <img src="/static/images/collab.svg" class="h-28 mb-6 self-center animate-fade-in" alt="Collaboration">
+    <h3 class="text-3xl font-bold text-slate-700 dark:text-white">Seamless Collaboration</h3>
+    <p class="text-lg text-slate-600 dark:text-gray-300 mt-2">Enable real-time teamwork, shared budgets, and project-specific communication.</p>
+  </div>
+
+  <div class="feature-card min-w-[90vw] snap-center bg-rose-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 flex flex-col justify-between transform hover:scale-105 transition-all duration-500">
+    <img src="/static/images/security.svg" class="h-28 mb-6 self-center animate-fade-in" alt="Security">
+    <h3 class="text-3xl font-bold text-slate-700 dark:text-white">Enterprise-Grade Security</h3>
+    <p class="text-lg text-slate-600 dark:text-gray-300 mt-2">Protect your data with cutting-edge encryption and multi-layer access control.</p>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-br from-indigo-100 to-sky-200 dark:from-gray-800 dark:to-gray-700">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-4xl font-bold text-slate-800 dark:text-white">Ready to take your marketing to the next level?</h2>
+    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Let’s get started with tools that make your work easier, faster, and more impactful.</p>
+    <a href="/signup" class="mt-8 inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition">Get Started</a>
+  </div>
+</section>
+
+{% endblock %}
+
+
+
+<!-- Custom CSS -->
+<style>
+  /* Smooth horizontal scroll effect */
+  .scrollable-cards {
+    display: flex;
+    flex-wrap: nowrap;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .card {
+    min-width: 100vw; /* Makes each card take up the entire width of the screen */
+    flex-shrink: 0; /* Prevents the cards from shrinking */
+    transition: transform 0.5s ease-in-out;
+  }
+
+  /* Adds a parallax-like effect to the cards as they move */
+  .scrollable-cards .card img {
+    transition: transform 0.5s ease-in-out;
+  }
+</style>
+
+<!-- Custom JavaScript -->
+<script>
+  let scrollableCards = document.querySelector('.scrollable-cards');
+
+  // Listen for scroll events
+  window.addEventListener('scroll', function() {
+    // Get the scroll position
+    let scrollPosition = window.scrollY;
+
+    // Adjust the position of the cards
+    scrollableCards.style.transform = 'translateX(' + -scrollPosition / 2 + 'px)'; // Adjust speed of horizontal movement
+
+    // Optional: add a slight zoom effect to images on scroll
+    let cards = document.querySelectorAll('.card img');
+    cards.forEach((img, index) => {
+      img.style.transform = 'scale(' + (1 + scrollPosition / 1000) + ')';
+    });
+  });
+</script>
