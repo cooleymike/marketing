@@ -1,16 +1,22 @@
+import environ
 import os
 from pathlib import Path
 
+
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 AUTH_USER_MODEL = "core.Employee"
 
 LOGIN_URL = '/signin/'
 
 # SESSION_COOKIE_DOMAIN = '.marketing.hopto.org'
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -51,11 +57,14 @@ INSTALLED_APPS = [
 
 ]
 
-# EMAIL_BACKEND = [
-#     'django.core.mail.backends.console.EmailBackend'
-#                  ]
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = 'app-messages' # change this to a proper location
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('SMTP_GMAIL_ADDRESS')  # your Gmail address
+EMAIL_HOST_PASSWORD = env('SMTP_GMAIL_PASSWORD') # not your real password!
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

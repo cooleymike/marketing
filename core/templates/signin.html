@@ -1,84 +1,68 @@
 {% extends "base.html" %}
-{% block title %}
-  Sign-in
-{% endblock %}
+{% load static %}
+{% block title %}Login{% endblock %}
+
 {% block content %}
+<div class="min-h-screen flex justify-center items-center dark:bg-gray-900">
+  <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-[26px] p-1 m-4 shadow-xl">
+    <div class="rounded-[20px] dark:bg-gray-900 bg-white shadow-lg px-6 sm:px-10 py-10">
+      <h1 class="font-bold dark:text-gray-300 text-5xl text-center mb-8">Log in</h1>
 
-{% if messages %}
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
 
-        {% for message in messages %}
-            <div class="alert alert-light" role="alert" style="text-align: center">
-                         {{message}}            </div>
-
-        {% endfor %}
-
-{% endif %}
-
-<section
-        class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-  <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-     {% load static %}
-<img src="{% static 'images/company_logo.jpg' %}" alt="company logo">
-
-      <h2
-              class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-slate-600 dark:text-gray-400">Sign in to your account</h2>
-    </div>
-
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="" method="POST">
-           {% csrf_token %}
         <div>
-          <label
-                  class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-400 ">Username
-          </label>
-          <div class="mt-2">
-             {{ form.username }}
-        </div>
+          <label for="{{ form.username.id_for_label }}" class="mb-2 block dark:text-gray-400 text-lg">Username</label>
+          {{ form.username }}
         </div>
 
         <div>
-          <div class="flex items-center justify-between">
-            <label
-                    class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-400">Password
-            </label>
-            <div class="text-sm">
-              <a href="{% url 'password_reset' %}"
-                 class="font-semibold text-slate-600 dark:text-gray-400  hover:text-red-900">Forgot
-                  password?</a>
+          <label for="{{ form.password.id_for_label }}" class="mb-2 block dark:text-gray-400 text-lg">Password</label>
+          {{ form.password }}
+        </div>
 
-            </div>
+        <div class="flex justify-end text-sm">
+          <a href="{% url 'password_reset' %}" class="text-blue-400 hover:underline">Forgot your password?</a>
+        </div>
+
+        <button type="submit"
+          class="w-full mt-4 p-3 text-white font-semibold bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg hover:scale-105 transition duration-300 ease-in-out">
+          LOG IN
+        </button>
+
+        {% if form.errors %}
+          <div class="text-red-600 text-sm mt-4">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            {% endfor %}
           </div>
-          <div class="mt-2">
-              {{ form.password }}
-           </div>
-        </div>
-
-        <div>
-          <button type="submit"
-            class="flex w-full justify-center rounded-md bg-slate-600 px-3 py-1.5 text-sm font-semibold leading-6
-            text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
-            focus-visible:outline-slate-600">Sign in
-          </button>
-        </div>
-
-{% if form.errors %}
-  <div class="text-red-600 text-sm mt-4">
-    {% for field, errors in form.errors.items %}
-      {% for error in errors %}
-        <p>{{ error }}</p>
-      {% endfor %}
-    {% endfor %}
-  </div>
-{% endif %}
-
-
+        {% endif %}
       </form>
- {% include 'buttons.html' with side=1 %}
 
+      <div class="flex flex-col items-center text-sm mt-6">
+        <p class="dark:text-gray-300">Don't have an account?
+          <a href="{% url 'register' %}" class="text-blue-400 hover:underline">Sign Up</a>
+        </p>
+      </div>
+
+      <!-- 🔵 Social Login Icons -->
+      <div class="flex justify-center flex-wrap gap-3 mt-6">
+        <a href="#"><img class="w-6 hover:scale-110 transition" src="https://ucarecdn.com/8f25a2ba-bdcf-4ff1-b596-088f330416ef/" alt="Google"></a>
+        <a href="#"><img class="w-6 hover:scale-110 transition" src="https://ucarecdn.com/95eebb9c-85cf-4d12-942f-3c40d7044dc6/" alt="LinkedIn"></a>
+        <a href="#"><img class="w-6 hover:scale-110 transition filter dark:invert" src="https://ucarecdn.com/be5b0ffd-85e8-4639-83a6-5162dfa15a16/" alt="GitHub"></a>
+        <a href="#"><img class="w-6 hover:scale-110 transition" src="https://ucarecdn.com/6f56c0f1-c9c0-4d72-b44d-51a79ff38ea9/" alt="Facebook"></a>
+        <a href="#"><img class="w-6 hover:scale-110 transition" src="https://ucarecdn.com/82d7ca0a-c380-44c4-ba24-658723e2ab07/" alt="Twitter"></a>
+        <a href="#"><img class="w-6 hover:scale-110 transition" src="https://ucarecdn.com/3277d952-8e21-4aad-a2b7-d484dad531fb/" alt="Apple"></a>
+      </div>
+
+      <p class="text-center text-gray-500 text-sm mt-4">
+        By signing in, you agree to our
+        <a href="#" class="text-blue-400 hover:underline">Terms</a> and
+        <a href="#" class="text-blue-400 hover:underline">Privacy Policy</a>
+      </p>
     </div>
   </div>
-</section>
-
-
+</div>
 {% endblock %}

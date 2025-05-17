@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Request Funds{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="h-screen flex flex-col justify-center items-center bg-gradient-to-br from-sky-100 via-white to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 dark:text-white text-center mb-4">Request Funds</h1>
+  <p class="text-lg text-slate-600 dark:text-gray-300 text-center max-w-xl">Let us know what you need and we’ll take it from there.</p>
+</section>
+
+<!-- Info Cards Section (optional, like contact page) -->
+<section class="py-20 px-6 md:px-16 bg-white dark:bg-gray-900">
+  <div class="grid md:grid-cols-3 gap-10">
+
+    <div class="feature-card bg-indigo-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 text-center transform hover:-translate-y-2 hover:rotate-1 transition-all duration-500">
+      <img src="/static/images/fund.png" alt="Funding" class="h-20 mb-6 mx-auto">
+      <h3 class="text-2xl font-bold text-slate-700 dark:text-white">Purpose</h3>
+      <p class="text-gray-600 dark:text-gray-300 mt-2">Tell us what project the funds are for and how they’ll help.</p>
+    </div>
+
+    <div class="feature-card bg-sky-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 text-center transform hover:-translate-y-2 hover:-rotate-1 transition-all duration-500">
+      <img src="/static/images/dollar.png" alt="Amount" class="h-20 mb-6 mx-auto">
+      <h3 class="text-2xl font-bold text-slate-700 dark:text-white">Amount</h3>
+      <p class="text-gray-600 dark:text-gray-300 mt-2">Specify the amount you need, and be as clear as possible.</p>
+    </div>
+
+    <div class="feature-card bg-rose-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 text-center transform hover:-translate-y-2 hover:scale-105 transition-all duration-500">
+      <img src="/static/images/review.png" alt="Review" class="h-20 mb-6 mx-auto">
+      <h3 class="text-2xl font-bold text-slate-700 dark:text-white">Review Time</h3>
+      <p class="text-gray-600 dark:text-gray-300 mt-2">Our team reviews requests within 1–2 business days.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Confirmation Message -->
+!-- Confirmation Message -->
+{% if messages %}
+  <div class="max-w-3xl mx-auto px-4 my-8">
+    {% for message in messages %}
+      <div class="bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700 p-4 rounded-lg shadow-md animate-fade-in-down" role="alert">
+        <div class="flex items-center">
+          <svg class="h-6 w-6 text-indigo-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="font-medium">Success!</span>
+          <span class="ml-2">{{ message }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Request Form Section -->
+<section class="py-20 bg-gradient-to-br from-indigo-100 to-sky-200 dark:from-gray-800 dark:to-gray-700">
+  <div class="max-w-3xl mx-auto text-center">
+    <h2 class="text-4xl font-bold text-slate-800 dark:text-white">Submit a Request</h2>
+    <p class="mt-4 text-gray-600 dark:text-gray-300">Please complete the form with accurate information.</p>
+
+    <form method="post" class="mt-10 space-y-6 text-left">
+      {% csrf_token %}
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          {{ form.project_name.label_tag }}
+          {{ form.project_name }}
+          {% if form.project_name.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.project_name.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          {{ form.amount_requested.label_tag }}
+          {{ form.amount_requested }}
+          {% if form.amount_requested.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.amount_requested.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div>
+        {{ form.reason.label_tag }}
+        {{ form.reason }}
+        {% if form.reason.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.reason.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition">
+        Submit Request
+      </button>
+    </form>
+  </div>
+</section>
+
+
+{% endblock %}
+

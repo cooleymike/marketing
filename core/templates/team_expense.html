@@ -1,75 +1,77 @@
 {% extends 'base.html' %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Expenses</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
- <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-  <div class="container mx-auto py-6">
-    <h1 class="text-3xl font-bold mb-4">Team Expenses</h1>
-    <p>Project: {{ project.name }}</p>
-
-    <div class="bg-white shadow rounded-lg p-6 mb-6">
-        <h2 class="text-2xl font-bold">Team Members and Expenses</h2>
-        <table class="table-auto w-full mt-4">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="px-4 py-2">Name</th>
-                    <th class="px-4 py-2">Total Expenses</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for member in team_expenses %}
-                <tr>
-                    <td class="px-4 py-2">{{ member.name }}</td>
-                    <td class="px-4 py-2">${{ member.total_expenses }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block content %}
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-10">
+      <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white">Team Expenses</h1>
+      <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">
+        Project: <span class="font-semibold">{{ project.name }}</span>
+      </p>
     </div>
-</div>
-                    {% endfor %}
-                </div>
-            </div>
+
+    <!-- 🔍 Filter Form -->
+    <form method="get" class="flex flex-wrap gap-4 mb-10">
+      <select name="quarter" class="border p-2 rounded">
+        <option value="">All Quarters</option>
+        {% for q in quarters %}
+          <option value="{{ q }}" {% if q == selected_quarter %}selected{% endif %}>Q{{ q }}</option>
+        {% endfor %}
+      </select>
+      <select name="month" class="border p-2 rounded">
+        <option value="">All Months</option>
+        {% for num, name in months %}
+          <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+    </form>
+
+    <!-- 🎨 Colored Budget Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+      {% for member in team_expenses %}
+        <div class="p-4 rounded-xl shadow-lg border-l-8
+                    {% if member.status_color == 'green' %}border-green-500
+                    {% elif member.status_color == 'yellow' %}border-yellow-500
+                    {% else %}border-red-500{% endif %}">
+          <h2 class="text-lg font-semibold">{{ member.name }}</h2>
+          <p>Spent: ${{ member.total_spent }}</p>
+          <p>Budget: ${{ member.allocated_budget }}</p>
+          <p>Used: {{ member.budget_used_pct }}%</p>
+        </div>
+      {% empty %}
+        <p class="text-gray-500 col-span-full">No team expenses found for the selected filters.</p>
+      {% endfor %}
+    </div>
+
+    <!-- 🧾 Detailed Expenses Table -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Detailed Expenses</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto text-sm text-left text-gray-600 dark:text-gray-300">
+          <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-100 text-xs uppercase">
+            <tr>
+              <th class="px-4 py-3">Date</th>
+              <th class="px-4 py-3">Member</th>
+              <th class="px-4 py-3">Category</th>
+              <th class="px-4 py-3">Amount</th>
+              <th class="px-4 py-3">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for expense in expenses %}
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <td class="px-4 py-2">{{ expense.created_date|date:"Y-m-d" }}</td>
+                <td class="px-4 py-2">{{ expense.employee.get_full_name|default:expense.employee.username }}</td>
+                <td class="px-4 py-2">{{ expense.type.name }}</td>
+                <td class="px-4 py-2 text-green-600 dark:text-green-400 font-semibold">${{ expense.initial_amount }}</td>
+                <td class="px-4 py-2">{{ expense.description }}</td>
+              </tr>
             {% endfor %}
-        </section>
-
-        <!-- Expense Tracking Section -->
-        <section class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <h2 class="text-2xl font-bold mb-4">Expense Tracking</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-600 dark:text-gray-400">
-                    <thead class="text-xs uppercase bg-gray-200 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-2">Date</th>
-                            <th class="px-4 py-2">Member</th>
-                            <th class="px-4 py-2">Category</th>
-                            <th class="px-4 py-2">Amount</th>
-                            <th class="px-4 py-2">Notes</th>
-                            <th class="px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for expense in expenses %}
-                        <tr class="border-b">
-                            <td class="px-4 py-2">{{ expense.date }}</td>
-                            <td class="px-4 py-2">{{ expense.member }}</td>
-                            <td class="px-4 py-2">{{ expense.category }}</td>
-                            <td class="px-4 py-2">${{ expense.amount }}</td>
-                            <td class="px-4 py-2">{{ expense.notes }}</td>
-                            <td class="px-4 py-2">
-                                <button class="text-blue-500 hover:underline">Edit</button>
-                                <button class="text-red-500 hover:underline">Delete</button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+          </tbody>
+        </table>
+      </div>
     </div>
-</body>
-</html>
+  </div>
+</section>
+{% endblock %}

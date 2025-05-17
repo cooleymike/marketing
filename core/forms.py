@@ -9,6 +9,29 @@ from django.forms import (
 from core.models import Employee, Expense, ProjectEmployeeAllocatedBudget, \
     ExpenseType
 from django import forms
+from .models import FundRequest
+
+class FundRequestForm(forms.ModelForm):
+    class Meta:
+        model = FundRequest
+        fields = ['project', 'amount_requested', 'quarter', 'justification']
+        widgets = {
+            'project': forms.Select(attrs={
+                'class': 'w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+            }),
+            'amount_requested': forms.NumberInput(attrs={
+                'placeholder': 'Amount Requested',
+                'class': 'w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+            }),
+            'quarter': forms.Select(attrs={
+                'class': 'w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+            }),
+            'justification': forms.Textarea(attrs={
+                'placeholder': 'Justification',
+                'rows': 4,
+                'class': 'w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+            }),
+        }
 
 
 class RegisterForm(UserCreationForm):
@@ -49,18 +72,14 @@ class CreateUserForm(UserCreationForm):
 
 
 class SigninForm(Form):
-    username = CharField()
-    password = CharField(max_length=32, widget=PasswordInput)
-    widgets = {
-        "title": TextInput(attrs={
-            "class": "border border-solid border-slate-300",
-            "placeholder": "username",
-        }),
-        "content": TextInput(attrs={
-            "class": "border border-solid border-slate-300",
-            "rows": 5,
-        }),
-    }
+    username = CharField(widget=TextInput(attrs={
+        "class": "border p-3 w-full shadow-md rounded-lg dark:bg-indigo-700 dark:text-gray-300 dark:border-gray-700",
+        "placeholder": "Username",
+    }))
+    password = CharField(widget=PasswordInput(attrs={
+        "class": "border p-3 w-full shadow-md rounded-lg dark:bg-indigo-700 dark:text-gray-300 dark:border-gray-700",
+        "placeholder": "Password",
+    }))
 
 
 class ExpenseForm(ModelForm):

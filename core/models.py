@@ -8,8 +8,6 @@ class Employee(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
     team = models.ForeignKey("Team", null=True, on_delete=models.PROTECT, blank=True )
 
-
-
 class Project(models.Model):
     description = models.CharField(max_length=150)
     name = models.CharField(max_length=50)
@@ -50,6 +48,37 @@ class ProjectEmployeeAllocatedBudget(models.Model):
     @property
     def percentage_left(self):
         return (self.remaining_budget / self.allocated_budget) * 100 if self.allocated_budget else 0
+
+class FundRequest(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+
+    requester = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='fund_requests')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    quarter = models.CharField(max_length=2, choices=ProjectEmployeeAllocatedBudget.QUARTERS)
+    amount_requested = models.DecimalField(max_digits=10, decimal_places=2)
+    justification = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    reviewer = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name='fund_reviews')
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.requester.username} - {self.project.name} - {self.amount_requested} ({self.status})"
+
+
+def apply_to_budget(self):
+    if self.status == 'Approved':
+        budget = ProjectEmployeeAllocatedBudget.objects.get(
+            project=self.project,
+            quarter=self.quarter,
+            employee=self.requester,
+        )
+        budget.allocated_budget = self.amount_requested
+        budget.save()
 
 class Meta:
     unique_together = ('employee', 'project', 'quarter')

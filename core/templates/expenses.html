@@ -88,25 +88,32 @@ Expenses
             Please <a href="{% url 'signin' %}" class="text-blue-500 hover:underline">sign in</a> to view your expenses.
         </p>
     {% endif %}
-</div>
-
 <div class="mt-4">
-    {% if user.is_authenticated %}
+
    <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-full p-6 group overflow-hidden flex items-center justify-center">
-    <span
+        <span
         class="absolute inset-0 bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-0 rounded-full"></span>
 
-    <a href="{% url 'expense_form' %}"
+        <a href="{% url 'expense_form' %}"
        class="relative px-6 py-3 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">
         Create Expense
-    </a>
+        </a>
+   </div>
+
 </div>
 
-    {% endif %}
+<div>
+        <a href="/request_funds" class="bg-indigo-600 text-white px-6 py-3 rounded-xl
+        shadow-md hover:bg-indigo-700 transition">Request Funds</a>
 </div>
+
+</div>
+
+
 {% endblock %}
 
 <script>
+
     function updateProgressBar() {
         let spent = {{ total_spent }};
         let totalBudget = {{ allocated_budget }};
@@ -127,18 +134,5 @@ Expenses
 
     updateProgressBar();
 </script>
-
-
-<!--<script>-->
-<!--    function animateAvatar(element) {-->
-<!--        // Add animation class to the avatar-->
-<!--        element.classList.add('transform', 'scale-110', 'transition-transform', 'duration-200');-->
-
-<!--        // Remove the animation class after the animation completes-->
-<!--        setTimeout(() => {-->
-<!--            element.classList.remove('transform', 'scale-110', 'transition-transform', 'duration-200');-->
-<!--        }, 200);-->
-<!--    }-->
-<!--</script>-->
 
 

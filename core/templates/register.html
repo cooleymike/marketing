@@ -1,97 +1,86 @@
 {% extends "base.html" %}
-{% block title %}
-
-  Register
-{% endblock %}
+{% load static %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
 {{ form.errors }}
-
-<section
-        class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+<section class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
   <div class="flex items-center p-4 w-full max-w-5xl">
-    <div
-            class="w-full bg-white dark:bg-gray-900 grid md:grid-cols-2 gap-8 p-8 shadow-lg rounded-lg overflow-hidden">
-      <!-- Left Panel -->
-      <div class="flex flex-col justify-center space-y-6 p-4">
-        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-300">Get Instant Access</h3>
-        <p class="text-gray-600 dark:text-gray-400">
-          Join us for exclusive insights and tools to manage your projects more effectively. It’s easy to set up an account!
-        </p>
-        {% include 'buttons.html' with side=0 %}
-      </div>
-
-      <!-- Right Panel (Form) -->
-      <div class="flex flex-col justify-center space-y-6">
-        <h2
-                class="text-center text-3xl font-bold text-slate-500 dark:text-white-300 uppercase tracking-wide mb-6">
-          Register Account
-        </h2>
-
-        <form method="POST" action="" class="space-y-5" enctype="multipart/form-data">
-          {% csrf_token %}
-
-          <!-- Username -->
-          <div>
-            <label
-                    class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">Username:</label>
-            <div class="relative">
-              {{ form.username }}
-            </div>
-          </div>
-
-          <!-- Email -->
-          <div>
-            <label
-                    class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1 ">Email:</label>
-            <div class="relative">
-              {{ form.email }}
-            </div>
-          </div>
-
-          <!-- Password1 -->
-          <div>
-            <label
-                    class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">Password:</label>
-            <div class="relative">
-              {{ form.password1 }}
-            </div>
-          </div>
-
-          <!-- Password2 -->
-          <div>
-            <label
-                    class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">Re-type Password:</label>
-            <div class="relative">
-              {{ form.password2 }}
-            </div>
-          </div>
-
-          <!-- Avatar Field in Registration Form -->
-          <div>
-
-              <label
-                      class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">Avatar:</label>
+    <!-- Outer Gradient Border Container -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-[26px] p-1 shadow-xl w-full">
+      <!-- Inner Content Container -->
+      <div class="w-full bg-white dark:bg-gray-900 grid md:grid-cols-2 gap-8 p-8 rounded-[20px]">
+        <!-- Left Panel -->
+        <div class="flex flex-col justify-center space-y-6 p-4">
+          <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-300">Get Instant Access</h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            Join us for exclusive insights and tools to manage your projects more effectively. It’s easy to set up an account!
+          </p>
+          {% include 'buttons.html' with side=0 %}
+        </div>
+        <!-- Right Panel (Form) -->
+        <div class="flex flex-col justify-center space-y-6 p-4">
+          <h2 class="text-center text-3xl font-bold text-slate-500 dark:text-gray-300 uppercase tracking-wide mb-6">
+            Register Account
+          </h2>
+          <form method="POST" action="" class="space-y-5" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Username Field -->
+            <div>
+              <label class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">
+                Username:
+              </label>
               <div class="relative">
-                  {{ form.avatar }}
+                {{ form.username }}
               </div>
-
-
-
-          <!-- Submit Button -->
-          <div class="mt-6">
-            <button type="submit"
-                    class="w-full bg-slate-500 text-white py-3 px-4 rounded-full hover:bg-slate-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 dark:focus:ring-yellow-500 transition ease-in-out duration-300">
-              Register Account
-            </button>
-          </div>
-          </div>
-        </form>
+            </div>
+            <!-- Email Field -->
+            <div>
+              <label class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">
+                Email:
+              </label>
+              <div class="relative">
+                {{ form.email }}
+              </div>
+            </div>
+            <!-- Password Field -->
+            <div>
+              <label class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">
+                Password:
+              </label>
+              <div class="relative">
+                {{ form.password1 }}
+              </div>
+            </div>
+            <!-- Re-type Password Field -->
+            <div>
+              <label class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">
+                Re-type Password:
+              </label>
+              <div class="relative">
+                {{ form.password2 }}
+              </div>
+            </div>
+            <!-- Avatar Field -->
+            <div>
+              <label class="block text-sm font-medium text-slate-600 dark:text-gray-200 mb-1">
+                Avatar:
+              </label>
+              <div class="relative">
+                {{ form.avatar }}
+              </div>
+            </div>
+            <!-- Submit Button -->
+            <div class="mt-6">
+              <button type="submit"
+                      class="w-full bg-slate-500 text-white py-3 px-4 rounded-full hover:bg-slate-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 dark:focus:ring-yellow-500 transition ease-in-out duration-300">
+                Register Account
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-
   </div>
-
 </section>
-
 {% endblock %}

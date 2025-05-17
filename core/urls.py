@@ -16,7 +16,11 @@ urlpatterns = [
     path('admin_expense_viewer/', views.admin_expense_viewer, name='admin_expense_viewer'),
     path('features/', views.features_view, name='features'),
     path('testimonials/', views.testimonials_view, name='testimonials'),
+    path('pricing/', views.pricing_view, name='pricing'),
+    path('contact/', views.contact_view, name='contact'),
+    path('request_funds/', views.request_funds_view, name='request_funds'),
 ]
+
 
 
 

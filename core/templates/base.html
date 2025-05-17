@@ -1,10 +1,10 @@
-{% load static %}
-
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
+  {% load static %}
     <meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script>
         tailwind.config = {
@@ -12,10 +12,24 @@
         }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+</html>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out">
+<body>
+  {% if messages %}
+    <div class="space-y-2 my-4">
+      {% for message in messages %}
+        <div class="p-4 rounded bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
   <!-- Navigation Bar -->
  <header class="bg-white shadow-md p-4">
+ <button id="theme-toggle" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+  <svg id="theme-icon" class="w-6 h-6 text-gray-800 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+</button>
+
   <div class="max-w-7xl mx-auto flex items-center justify-between">
 
     <!-- Logo (top-left) -->
@@ -40,10 +54,10 @@
     <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
     <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
   {% else %}
-      <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
-      <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>
-    <li><a href="#pricing" class="hover:text-purple-600">Pricing</a></li>
-    <li><a href="#contact" class="hover:text-purple-600">Contact</a></li>
+    <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
+    <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>
+    <li><a href="{% url 'pricing' %}" class="text-gray-700 hover:text-blue-600">Pricing</a></li>
+    <li><a href="{% url 'contact' %}" class="text-gray-700 hover:text-blue-600">Contact</a></li>
     <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
   {% endif %}
 </ul>
@@ -149,6 +163,5 @@ document.querySelectorAll('.feature-card').forEach(card => {
 
 </script>
 
-<script src="{% static 'js/index.js' %}"></script>
 </body>
 </html>

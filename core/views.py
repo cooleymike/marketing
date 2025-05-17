@@ -8,7 +8,7 @@ from django.contrib import messages
 from EP.views import expenses
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team
 from django.contrib.auth.decorators import login_required
-from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm
+from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
 
 def features_view(request):
@@ -16,6 +16,46 @@ def features_view(request):
 
 def testimonials_view(request):
     return render(request, "testimonials.html")
+
+def pricing_view(request):
+    return render(request, "pricing.html")
+
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+def contact_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+
+        full_message = f"Message from {name} <{email}>:\n\n{message}"
+
+        send_mail(
+            subject='New Contact Message',
+            message=full_message,
+            from_email=email,
+            recipient_list=['cooley.mike1@gmail.com'],  # YOUR email
+        )
+
+        messages.success(request, "Thanks for your message! We'll be in touch.")
+        return redirect('contact')
+
+    return render(request, 'contact.html')
+
+@login_required
+def request_funds_view(request):
+    if request.method == 'POST':
+        form = FundRequestForm(request.POST)
+        if form.is_valid():
+            fund_request = form.save(commit=False)
+            fund_request.requester = request.user
+            fund_request.save()
+            return redirect('fund_request_success')
+    else:
+        form = FundRequestForm()
+    return render(request, 'request_funds.html', {'form': form})
 
 
 @login_required
@@ -141,42 +181,66 @@ def register(request):
                             {"form":form})
 
 
+from calendar import month_name
+
 @login_required
 def team_expense_view(request):
-    # Identify the active project for the logged-in user
+    quarter = int(request.GET.get('quarter', 0))  # Optional quarter filter
+    month = int(request.GET.get('month', 0))      # Optional month filter
+
     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=request.user, is_active=True
-    ).first()
+        employee=request.user, is_active=True).first()
 
     if not allocated_budget_record:
         messages.error(request, "You are not part of any active project.")
         return redirect('homepage')
-
     project = allocated_budget_record.project
-
-    # Fetch all users related to this project (e.g., via allocated budgets)
     project_users = ProjectEmployeeAllocatedBudget.objects.filter(
         project=project, is_active=True
-    ).values('employee', 'employee__first_name', 'employee__last_name')
+    ).select_related('employee')
 
-    # Calculate individual expenses for users in the project
     team_expenses = []
-    for user in project_users:
-        total_expenses = Expense.objects.filter(
-            employee_id=user['employee'], project=project
-        ).aggregate(total=Sum('initial_amount'))['total'] or 0
+    expenses = Expense.objects.filter(project=project)
+
+    if quarter:
+        expenses = expenses.filter(created_date__quarter=quarter)
+    if month:
+        expenses = expenses.filter(created_date__month=month)
+
+    for record in project_users:
+        employee_expenses = expenses.filter(
+            employee=record.employee,
+
+        )
+
+        total_spent = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or 0
+        budget_used_pct = (total_spent / record.allocated_budget * 100) if record.allocated_budget else 0
+
+        # Set color status
+        if budget_used_pct >= 100:
+            color = 'red'
+        elif budget_used_pct >= 75:
+            color = 'yellow'
+        else:
+            color = 'green'
 
         team_expenses.append({
-            'name': f"{user['employee__first_name']} {user['employee__last_name']}",
-            'total_expenses': total_expenses,
+            'name': f"{record.employee.first_name} {record.employee.last_name}",
+            'total_spent': total_spent,
+            'allocated_budget': record.allocated_budget,
+            'budget_used_pct': round(budget_used_pct, 2),
+            'status_color': color,
         })
 
-    # Prepare context for rendering
     context = {
+        'expenses': expenses,
         'project': project,
         'team_expenses': team_expenses,
+        'selected_quarter': quarter,
+        'selected_month': month,
+        'months': list(enumerate(month_name))[1:],  # [(1, 'January'), ...]
+        'quarters': [1, 2, 3, 4],
     }
-
     return render(request, 'team_expense.html', context)
 
 
@@ -297,6 +361,5 @@ def settings(request):
         # Handle other POST actions here, such as updating user details
 
     return TemplateResponse(request, "settings.html", {"title": "Settings"})
-
 
 
