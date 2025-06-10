@@ -1,3 +1,5 @@
+from http.cookiejar import month
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Sum
@@ -24,11 +26,19 @@ class Project(models.Model):
 
 class ProjectEmployeeAllocatedBudget(models.Model):
     QUARTERS = [
-        ('Q1', 'Q1'),
-        ('Q2', 'Q2'),
-        ('Q3', 'Q3'),
-        ('Q4', 'Q4'),
+        ('Q1', 'Q1(Jan-Mar)'),
+        ('Q2', 'Q2 (Apr-Jun'),
+        ('Q3', 'Q3 (Jul-Sep'),
+        ('Q4', 'Q4 (Oct-Dec)'),
     ]
+
+    QUARTER_MONTHS = {
+        'Q1':[1,2,3],
+        'Q2':[4,5,6],
+        'Q3':[7,8,9],
+        'Q4':[10,11,12],
+    }
+
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, related_name='allocated_budgets', on_delete=models.CASCADE)
@@ -109,6 +119,34 @@ class Expense(models.Model):
 
     def __str__(self):
         return f'{self.description} - {self.employee.account_number}'
+
+
+    @property
+    def expense_quarter(self):
+        # look at the created date of the expense
+        # expense_quarter = 31 may is second quarter expense because it's between 4 and 6 month of year
+    #      so for q1 = jan- march, q2 apr - may , q3 will be july - sep, and q4 oct-dec
+    #     extract month from the current created date
+        print(self.created_date.month)
+
+    # if month:
+    #     jan, feb, march
+    #     return q1
+    #
+    # elif:
+    #     april, may, june
+    #
+    #     return q2
+    # elif:
+    #     july, august, september
+    #     return q3
+    # else:
+    #     return q4
+    #
+    # return self.created_date.month
+    #
+    #
+
 
     @property
     def remaining_budget(self):

@@ -5,7 +5,7 @@ from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
-from EP.views import expenses
+# from EP.views import expenses
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team
 from django.contrib.auth.decorators import login_required
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
@@ -110,40 +110,39 @@ def signin(request):
 
     return TemplateResponse(request, "signin.html", {"form": form})
 
-def expense_entry_view(request):
-    form = ExpenseForm()
-
-    if request.method == 'POST':
-        form = ExpenseForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            print(form.instance.type)
-            return redirect('expenses')  # Adjust to your actual URL name
-        else:
-            print(form.errors)
-
-    return render(request, 'expenses.html', {'form': form})
 
 @login_required
 def expenses_view(request):
     user = request.user
 
     current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
-        is_active=True, employee=request.user).first()
+        is_active=True,
+        employee=user
+    ).first()
 
+    print("current_allocated_budget", current_allocated_budget)
+    # if not current_allocated_budget:
     if current_allocated_budget is None:
         messages.info(request, "You have not been attached to any budget")
-        print("User: ", request.user)
+        print("User: ", user)
         print("Project ID:", current_allocated_budget)
-        print("Expense found:", Expense.objects.filter(user=request.user,
+        print("Expense found:", Expense.objects.filter(employee=user,
                                                        project=current_allocated_budget).count())
         return redirect("homepage")
     project_id = current_allocated_budget.project_id
-    budget = current_allocated_budget.budget
+    # budget = current_allocated_budget.allocated_budget
     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=request.user, project_id=project_id, is_active=True
+        employee=user, project_id=project_id, is_active=True
     ).first()
-
+    # current team liked to expenses of team, user is the authenticated employee - what is the team of the
+    # current employee = user so to get the team of the user we need
+    # which properties available for the employee in the team.
+    current_team=user.team
+    # filter expense by team ordered by date
+    expenses= Expense.objects.filter(
+        team=current_team,
+    ).order_by('-created_date')
+    print("expenses", expenses)
 
     total_spent = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
     remaining_budget = allocated_budget_record.allocated_budget - total_spent
@@ -151,7 +150,7 @@ def expenses_view(request):
         (remaining_budget / allocated_budget_record.allocated_budget) * 100
         if allocated_budget_record.allocated_budget else 0
     )
-    # pass these as context data from back to front 
+    # pass these as context data from back to front
     context = {
         "expenses": expenses,
         "total_spent": total_spent,
@@ -161,6 +160,7 @@ def expenses_view(request):
         "active_quarter": allocated_budget_record.quarter,
         # this to show which quarter is active (i think)
     }
+    print("loading view")
 
     return render(request,'expenses.html', {"expenses": expenses})
 
@@ -231,6 +231,7 @@ def team_expense_view(request):
             'budget_used_pct': round(budget_used_pct, 2),
             'status_color': color,
         })
+    # find a way to add q1 q2 etc to list within the context.
 
     context = {
         'expenses': expenses,

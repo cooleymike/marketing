@@ -52,7 +52,7 @@
   {% if user.is_authenticated %}
     <li><a href="{% url 'expense_form' %}" class="hover:text-purple-600">Add Expense</a></li>
     <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
-    <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
+
   {% else %}
     <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
     <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>

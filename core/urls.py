@@ -6,7 +6,7 @@ from core.forms import CustomizeSigninForm
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
-    path('expenses/', views.expense_entry_view, name='expenses'),
+    path('expenses/', views.expenses_view, name='expenses'),
     path('register/', views.register, name='register'),
     path('signin/', views.signin, name='signin'),  # keep only this one
     path('team_expense/', views.team_expense_view, name='team_expense'),
