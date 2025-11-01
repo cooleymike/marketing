@@ -64,6 +64,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env('SMTP_GMAIL_ADDRESS')  # your Gmail address
 EMAIL_HOST_PASSWORD = env('SMTP_GMAIL_PASSWORD') # not your real password!
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+RECIPIENT_EMAIL = 'dishmike2@protonmail.com'
 
 
 MIDDLEWARE = [
