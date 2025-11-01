@@ -36,7 +36,7 @@ def contact_view(request):
             subject='New Contact Message',
             message=full_message,
             from_email=email,
-            recipient_list=['cooley.mike1@gmail.com'],  # YOUR email
+            recipient_list=['dishmike2@protonmail.com'],  # YOUR email
         )
 
         messages.success(request, "Thanks for your message! We'll be in touch.")
