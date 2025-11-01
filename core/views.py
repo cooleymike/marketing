@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from EP.settings import RECIPIENT_EMAIL
+
 
 # from EP.views import expenses
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team
@@ -36,7 +38,7 @@ def contact_view(request):
             subject='New Contact Message',
             message=full_message,
             from_email=email,
-            recipient_list=['cooley.mike1@gmail.com'],  # YOUR email
+            recipient_list=[RECIPIENT_EMAIL],  # YOUR email
         )
 
         messages.success(request, "Thanks for your message! We'll be in touch.")
