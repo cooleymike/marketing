@@ -1,5 +1,3 @@
-from http.cookiejar import month
-
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Sum
@@ -144,7 +142,7 @@ class Expense(models.Model):
     #     return q4
     #
     # return self.created_date.month
-    #
+#
     #
 
 
