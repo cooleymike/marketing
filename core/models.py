@@ -1,5 +1,3 @@
-from http.cookiejar import month
-
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Sum
@@ -129,6 +127,7 @@ class Expense(models.Model):
     #     extract month from the current created date
         print(self.created_date.month)
 
+    # TODO: To complete by the weekend
     # if month:
     #     jan, feb, march
     #     return q1
@@ -144,9 +143,6 @@ class Expense(models.Model):
     #     return q4
     #
     # return self.created_date.month
-    #
-    #
-
 
     @property
     def remaining_budget(self):
