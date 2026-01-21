@@ -59,11 +59,14 @@
                         {{ form.type }}
                         <div class="text-red-500 text-sm">{{ form.type.errors }}</div>
                     </div>
-
+                    <!-- Hidden Team Field -->
+                     <div hidden>
+                        {{ form.team }}
+                    </div>
                     <!-- Upload Receipt -->
                     <div>
                         <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                            Upload Receipt
+                            Upload Receipt (required)
                         </label>
                         {{ form.upload }}
                         <div class="text-red-500 text-sm">{{ form.upload.errors }}</div>

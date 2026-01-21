@@ -289,8 +289,9 @@ def expense_form(request):
             print(form.errors)
     else:
         form = ExpenseForm(initial={
-            "employee": request.user
 
+            "employee": request.user,
+            "team": request.user.team
         })
 
     # For GET request
