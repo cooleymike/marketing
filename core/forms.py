@@ -6,8 +6,10 @@ from django.forms import (
     HiddenInput, ModelChoiceField, TextInput,
     DecimalField, NumberInput, ImageField, FileInput
 )
-from core.models import Employee, Expense, ProjectEmployeeAllocatedBudget, \
-    ExpenseType
+from core.models import (
+    Employee, Expense, ExpenseType,
+    ProjectEmployeeAllocatedBudget, Team
+)
 from django import forms
 from .models import FundRequest
 
@@ -87,6 +89,10 @@ class ExpenseForm(ModelForm):
         queryset=Employee.objects.all(),
         widget=HiddenInput()
     )
+    team = ModelChoiceField(
+        queryset=Team.objects.all(),
+        widget=HiddenInput()
+    )
     description = CharField(
         label='Description',
         max_length=100,
@@ -103,8 +109,7 @@ class ExpenseForm(ModelForm):
     )
 
     type = forms.ModelChoiceField(
-
-         queryset=ExpenseType.objects.all(),
+        queryset=ExpenseType.objects.all(),
         widget=forms.Select(attrs={
             'class': "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         })
@@ -119,7 +124,7 @@ class ExpenseForm(ModelForm):
 
     class Meta:
         model = Expense
-        fields = ['employee', 'description', 'initial_amount', 'upload', 'type']
+        fields = ['employee', 'description', 'initial_amount', 'upload', 'type', 'team']
 
     def clean_initial_amount(self):
         employee = self.cleaned_data["employee"]
