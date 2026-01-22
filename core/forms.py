@@ -6,8 +6,10 @@ from django.forms import (
     HiddenInput, ModelChoiceField, TextInput,
     DecimalField, NumberInput, ImageField, FileInput
 )
-from core.models import Employee, Expense, ProjectEmployeeAllocatedBudget, \
-    ExpenseType, Team
+from core.models import (
+    Employee, Expense, ExpenseType,
+    ProjectEmployeeAllocatedBudget, Team
+)
 from django import forms
 from .models import FundRequest
 
