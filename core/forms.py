@@ -107,10 +107,11 @@ class ExpenseForm(ModelForm):
     )
 
     type = forms.ModelChoiceField(
-
-         queryset=ExpenseType.objects.all(),
+        queryset=ExpenseType.objects.all(),
         widget=forms.Select(attrs={
-            'class': "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outl
+            'class': "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        })
+    )
 
     upload = ImageField(
         label='Upload',
