@@ -4,7 +4,8 @@ from django.db.models import Sum
 from django.forms import (
     ModelForm, CharField, PasswordInput, Form,
     HiddenInput, ModelChoiceField, TextInput,
-    DecimalField, NumberInput, ImageField, FileInput
+    DecimalField, NumberInput, ImageField,
+    FileField,FileInput
 )
 from core.models import (
     Employee, Expense, ExpenseType,
@@ -115,7 +116,7 @@ class ExpenseForm(ModelForm):
         })
     )
 
-    upload = ImageField(
+    upload = FileField(
         label='Upload',
         widget=FileInput(attrs={
             'class': "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
