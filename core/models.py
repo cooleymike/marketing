@@ -115,7 +115,7 @@ class Expense(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.PROTECT)
     upload = models.FileField(
         upload_to='uploads/', default='uploads/default.png',
-        validators=[FileExtensionValidator(['png', 'pdf', 'jpg', 'jpeg', 'txt'])]
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'pdf', 'txt'])]
     )
 
     type = models.ForeignKey(ExpenseType, on_delete=models.PROTECT, null=True)
@@ -126,14 +126,7 @@ class Expense(models.Model):
 
     @property
     def expense_quarter(self):
-        # look at the created date of the expense
-        # expense_quarter = 31 may is second quarter expense because it's between 4 and 6 month of year
-    #      so for q1 = jan- march, q2 apr - may , q3 will be july - sep, and q4 oct-dec
-    #     extract month from the current created date
-        print(self.created_date.month)
-
         month = self.created_date.month
-        # TODO: To complete by the next meeting
         if month in [1, 2, 3]:  # Jan, Feb, Mar
             return "Q1"
         elif month in [4, 5, 6]:  # Apr, May, Jun
