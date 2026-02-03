@@ -58,13 +58,13 @@ class ProjectEmployeeAllocatedBudget(models.Model):
     def percentage_left(self):
         return (self.remaining_budget / self.allocated_budget) * 100 if self.allocated_budget else 0
 
+
 class FundRequest(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected'),
     ]
-
     requester = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='fund_requests')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     quarter = models.CharField(max_length=2, choices=ProjectEmployeeAllocatedBudget.QUARTERS)
