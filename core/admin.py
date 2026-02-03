@@ -6,7 +6,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import path
 from django.utils.timezone import now
-from core.models import Employee, Receipt, ExpenseType, Sum, Team
+from core.models import Employee, Receipt, ExpenseType, Sum, Team, FundRequest
 from .models import ProjectEmployeeAllocatedBudget, Expense, Project
 
 
@@ -81,6 +81,7 @@ class ExpenseAdmin(admin.ModelAdmin):
                     "employee"]
 
 admin.site.register(Expense, ExpenseAdmin)
+admin.site.register(FundRequest)
 
 
 class EmployeeAdmin(UserAdmin):
