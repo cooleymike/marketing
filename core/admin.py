@@ -6,11 +6,11 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import path
 from django.utils.timezone import now
-from core.models import Employee, Receipt, ExpenseType, Sum, Team
-from .models import ProjectEmployeeAllocatedBudget, Expense, Project
+from core.models import Employee, ExpenseType, FundRequest, Receipt, Sum, Team
+from .models import Expense, Project, ProjectEmployeeAllocatedBudget
 
 
-
+# ensure expenses are listed by quarter
 @login_required
 def expense_list_by_quarter(request):
     # Ensure the user is a manager
@@ -81,6 +81,7 @@ class ExpenseAdmin(admin.ModelAdmin):
                     "employee"]
 
 admin.site.register(Expense, ExpenseAdmin)
+admin.site.register(FundRequest)
 
 
 class EmployeeAdmin(UserAdmin):
