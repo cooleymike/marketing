@@ -1,29 +1,36 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Features{% endblock %}
 {% block content %}
 
 <!-- Hero Section -->
-<section class="h-screen flex flex-col justify-center items-center bg-gradient-to-br from-sky-100 via-white to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-  <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 dark:text-white text-center mb-4">Smarter Marketing Starts Here</h1>
-  <p class="text-lg text-slate-600 dark:text-gray-300 text-center max-w-xl">Discover the features that drive better decisions, collaboration, and secure marketing performance.</p>
+<section <section class="py-12 flex flex-col justify-center items-center
+                bg-gradient-to-br from-sky-100 via-white to-indigo-100
+                dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 dark:text-white text-center mb-4">
+    Smarter Marketing Starts Here
+  </h1>
+  <p class="text-lg text-slate-600 dark:text-gray-300 text-center max-w-xl">
+    Discover the features that drive better decisions, collaboration, and secure marketing performance.
+  </p>
 </section>
 
 <!-- Vertical Feature Cards with Parallax Scroll -->
-<section class="flex flex-col gap-12 px-6 py-20 bg-white dark:bg-gray-900">
+<section class="flex flex-col gap-12 px-6 py-5 bg-white dark:bg-gray-900">
   <div class="feature-card parallax-card" data-direction="right">
-    <img src="/static/images/analytics.svg" class="h-28 mb-6 self-center animate-fade-in" alt="Analytics">
+    <img src="{% static 'images/analytics.png' %}" class="h-28 mb-6 m-auto animate-fade-in" alt="Analytics">
     <h3 class="text-3xl font-bold text-slate-700 dark:text-white text-center">Real-Time Analytics</h3>
     <p class="text-lg text-slate-600 dark:text-gray-300 mt-2 text-center">Instant insights into your campaigns through intuitive, beautiful charts and graphs.</p>
   </div>
 
   <div class="feature-card parallax-card" data-direction="left">
-    <img src="/static/images/collab.svg" class="h-28 mb-6 self-center animate-fade-in" alt="Collaboration">
+    <img src= "{% static 'images/collab.png' %}" class="h-28 mb-6 m-auto animate-fade-in" alt="Collaboration">
     <h3 class="text-3xl font-bold text-slate-700 dark:text-white text-center">Seamless Collaboration</h3>
     <p class="text-lg text-slate-600 dark:text-gray-300 mt-2 text-center">Enable real-time teamwork, shared budgets, and project-specific communication.</p>
   </div>
 
   <div class="feature-card parallax-card" data-direction="right">
-    <img src="/static/images/security.svg" class="h-28 mb-6 self-center animate-fade-in" alt="Security">
+    <img src="{% static 'images/security.png' %}" class="h-28 mb-6 m-auto animate-fade-in" alt="Security">
     <h3 class="text-3xl font-bold text-slate-700 dark:text-white text-center">Enterprise-Grade Security</h3>
     <p class="text-lg text-slate-600 dark:text-gray-300 mt-2 text-center">Protect your data with cutting-edge encryption and multi-layer access control.</p>
   </div>
