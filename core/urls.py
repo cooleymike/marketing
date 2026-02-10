@@ -10,6 +10,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('signin/', views.signin, name='signin'),  # keep only this one
     path('team_expense/', views.team_expense_view, name='team_expense'),
+    path('employees/csv/', views.employee_csv, name='employee_csv'),
     path('expense_form/', views.expense_form, name='expense_form'),
     path('active_project/', views.active_project, name='active_project'),
     path('settings/', views.settings, name='settings'),

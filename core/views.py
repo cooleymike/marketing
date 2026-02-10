@@ -1,14 +1,17 @@
+import csv
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from EP.settings import RECIPIENT_EMAIL
-
+from EP.views import expenses
 
 # from EP.views import expenses
-from core.models import Expense, ProjectEmployeeAllocatedBudget, Team
+from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee
 from django.contrib.auth.decorators import login_required
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
@@ -214,14 +217,13 @@ def team_expense_view(request):
             employee=record.employee,
 
         )
-
         total_spent = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or 0
         budget_used_pct = (total_spent / record.allocated_budget * 100) if record.allocated_budget else 0
 
         # Set color status
-        if budget_used_pct >= 100:
+        if budget_used_pct >= 90:
             color = 'red'
-        elif budget_used_pct >= 75:
+        elif budget_used_pct >= 70:
             color = 'yellow'
         else:
             color = 'green'
@@ -245,6 +247,37 @@ def team_expense_view(request):
         'quarters': [1, 2, 3, 4],
     }
     return render(request, 'team_expense.html', context)
+
+
+# Build CSV response
+# Returns a CSV with employee F/L names
+# URL: /employees/csv
+@login_required
+def employee_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
+# a csv writer that writes directly into response
+    writer = csv.writer(response)
+# header row / column names
+    writer.writerow(['Member', 'Amount', 'Project'])
+#loop over all employees + write row for each
+    # all employees part of the same team as lego and they all have access
+    # to the button
+    for employee in Employee.objects.filter(team=request.user.team):
+        # employee amount spent on the project budget
+        # amount spent = sum of all expenses amount by employee
+        # project = what is assigned to employee's team ProjectEmployeeAllocatedBudget
+        # what is the current employee allocated budget line?
+        # total amount spent per user on the team - next week
+        last_project_employee_allocated_budget = employee.projectemployeeallocatedbudget_set.last()
+        project_name = last_project_employee_allocated_budget.project.name
+        # total spent based on the sum of expenses on project
+        writer.writerow([employee.username, last_project_employee_allocated_budget.allocated_budget, project_name])
+
+
+
+#return response filled in
+    return response
 
 
 @login_required
