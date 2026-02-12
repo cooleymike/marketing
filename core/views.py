@@ -1,4 +1,5 @@
 import csv
+from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -93,8 +94,6 @@ def expense_list_by_quarter(request):
     return render(request, 'admin/admin_expense_viewer.html', {'expenses':
                                                                expenses})
 
-
-
 def homepage(request):
    return TemplateResponse(request, "home.html", {"title": "homepage"})
 
@@ -143,22 +142,20 @@ def expenses_view(request):
     # current employee = user so to get the team of the user we need
     # which properties available for the employee in the team.
     current_team=user.team
-    # filter expense by team ordered by date
     expenses= Expense.objects.filter(
         team=current_team,
     ).order_by('-created_date')
     print("expenses", expenses)
 
-    total_spent = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
-    remaining_budget = allocated_budget_record.allocated_budget - total_spent
+    emp_total = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
+    remaining_budget = allocated_budget_record.allocated_budget - emp_total
     percentage_left = (
         (remaining_budget / allocated_budget_record.allocated_budget) * 100
         if allocated_budget_record.allocated_budget else 0
     )
-    # pass these as context data from back to front
     context = {
         "expenses": expenses,
-        "total_spent": total_spent,
+        "emp_total": emp_total,
         "remaining_budget": remaining_budget,
         "allocated_budget": allocated_budget_record.allocated_budget,
         "percentage_left": round(percentage_left, 2),
@@ -206,6 +203,7 @@ def team_expense_view(request):
 
     team_expenses = []
     expenses = Expense.objects.filter(project=project)
+    grand_total_spent = expenses.aggregate(total=Sum("initial_amount"))["total"] or Decimal ('0.00')
 
     if quarter:
         expenses = expenses.filter(created_date__quarter=quarter)
@@ -215,10 +213,9 @@ def team_expense_view(request):
     for record in project_users:
         employee_expenses = expenses.filter(
             employee=record.employee,
-
         )
-        total_spent = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or 0
-        budget_used_pct = (total_spent / record.allocated_budget * 100) if record.allocated_budget else 0
+        emp_total = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or Decimal('0.00')
+        budget_used_pct = (emp_total / record.allocated_budget * 100) if record.allocated_budget else Decimal('0.00')
 
         # Set color status
         if budget_used_pct >= 90:
@@ -230,12 +227,10 @@ def team_expense_view(request):
 
         team_expenses.append({
             'name': f"{record.employee.first_name} {record.employee.last_name}",
-            'total_spent': total_spent,
-            'allocated_budget': record.allocated_budget,
+            'allocated_budget': emp_total,
             'budget_used_pct': round(budget_used_pct, 2),
             'status_color': color,
         })
-    # find a way to add q1 q2 etc to list within the context.
 
     context = {
         'expenses': expenses,
@@ -244,35 +239,32 @@ def team_expense_view(request):
         'selected_quarter': quarter,
         'selected_month': month,
         'months': list(enumerate(month_name))[1:],  # [(1, 'January'), ...]
-        'quarters': [1, 2, 3, 4],
+        'quarters': [1, 2, 3, 4]
+
     }
     return render(request, 'team_expense.html', context)
 
-
-# Build CSV response
-# Returns a CSV with employee F/L names
-# URL: /employees/csv
 @login_required
 def employee_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
-# a csv writer that writes directly into response
     writer = csv.writer(response)
-# header row / column names
-    writer.writerow(['Member', 'Amount', 'Project'])
-#loop over all employees + write row for each
-    # all employees part of the same team as lego and they all have access
-    # to the button
     for employee in Employee.objects.filter(team=request.user.team):
-        # employee amount spent on the project budget
-        # amount spent = sum of all expenses amount by employee
-        # project = what is assigned to employee's team ProjectEmployeeAllocatedBudget
-        # what is the current employee allocated budget line?
-        # total amount spent per user on the team - next week
+
+        emp_total = Expense.objects.filter(
+            employee=employee,
+            project = employee.projectemployeeallocatedbudget_set.last().project
+        ).aggregate(total=Sum('initial_amount'))['total'] or 0
+
         last_project_employee_allocated_budget = employee.projectemployeeallocatedbudget_set.last()
         project_name = last_project_employee_allocated_budget.project.name
         # total spent based on the sum of expenses on project
-        writer.writerow([employee.username, last_project_employee_allocated_budget.allocated_budget, project_name])
+        writer.writerow([
+            employee.username,
+            last_project_employee_allocated_budget.allocated_budget,
+            project_name,
+            emp_total
+        ])
 
 
 
@@ -331,17 +323,17 @@ def expense_form(request):
 
     active_entry = Expense.objects.filter(employee=request.user,
                                           project_id=project_id)
-    total_spent = active_entry.aggregate(total=Sum('initial_amount'))[
+    emp_total = active_entry.aggregate(total=Sum('initial_amount'))[
                       'total'] or 0
 
     total_budget = allocated_budget_record.allocated_budget if (
         allocated_budget_record) else 0
-    remaining_budget = total_budget - total_spent
+    remaining_budget = total_budget - emp_total
 
     context = {
         'form': form,
         'active_entry': active_entry,
-        'total_expense': total_spent,
+        'total_expense': emp_total,
         'remaining_budget': remaining_budget
     }
 
