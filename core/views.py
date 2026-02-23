@@ -2,7 +2,7 @@ import csv
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, OuterRef, Subquery, F
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
@@ -10,8 +10,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from EP.settings import RECIPIENT_EMAIL
 from EP.views import expenses
-
-# from EP.views import expenses
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee
 from django.contrib.auth.decorators import login_required
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
@@ -249,6 +247,13 @@ def employee_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
     writer = csv.writer(response)
+    #WIP
+    team_employees = (
+        Employee.objects.filter(team=request.user.team).annotate(
+        total_spent=Sum("expense__initial_amount"),
+        project_name=F("projectemployeeallocatedbudget__project__name"),
+
+    ))
     for employee in Employee.objects.filter(team=request.user.team):
 
         emp_total = Expense.objects.filter(
@@ -265,9 +270,6 @@ def employee_csv(request):
             project_name,
             emp_total
         ])
-
-
-
 #return response filled in
     return response
 
