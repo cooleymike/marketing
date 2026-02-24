@@ -2,7 +2,7 @@ import csv
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, OuterRef, Subquery, F
+from django.db.models import Sum, OuterRef, Subquery, F, Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
@@ -248,29 +248,32 @@ def employee_csv(request):
     response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
     writer = csv.writer(response)
     #WIP
-    team_employees = (
-        Employee.objects.filter(team=request.user.team).annotate(
-        total_spent=Sum("expense__initial_amount"),
-        project_name=F("projectemployeeallocatedbudget__project__name"),
+    team_employee = (
+        Employee.objects
+            .filter(team=request.user.team)
+            .filter(projectemployeeallocatedbudget__is_active=True)
+            .annotate(
+                total_spent=Sum("expense__initial_amount"),
+                allocated_budget=F("projectemployeeallocatedbudget__allocated_budget"),
+                project_name=F("projectemployeeallocatedbudget__project__name"),
+        )
+            .annotate(
+                remaining_budget=F("allocated_budget") - F("total_spent")
 
-    ))
-    for employee in Employee.objects.filter(team=request.user.team):
+        )
+            .annotate(
+                percentage_left=((F("remaining_budget") / F("allocated_budget")) * 100)
+        )
 
-        emp_total = Expense.objects.filter(
-            employee=employee,
-            project = employee.projectemployeeallocatedbudget_set.last().project
-        ).aggregate(total=Sum('initial_amount'))['total'] or 0
+    )
+    fieldnames = ['username', 'project_name', 'total_spent', 'percentage_left', "allocated_budget", "remaining_budget"]
+    selected_values=team_employee.values(*fieldnames)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employees.csv"'
+    writer = csv.DictWriter(response, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(selected_values)
 
-        last_project_employee_allocated_budget = employee.projectemployeeallocatedbudget_set.last()
-        project_name = last_project_employee_allocated_budget.project.name
-        # total spent based on the sum of expenses on project
-        writer.writerow([
-            employee.username,
-            last_project_employee_allocated_budget.allocated_budget,
-            project_name,
-            emp_total
-        ])
-#return response filled in
     return response
 
 
