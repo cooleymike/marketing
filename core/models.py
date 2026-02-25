@@ -38,7 +38,6 @@ class ProjectEmployeeAllocatedBudget(models.Model):
         'Q4':[10,11,12],
     }
 
-
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, related_name='allocated_budgets', on_delete=models.CASCADE)
     quarter = models.CharField(max_length=2, choices=QUARTERS, null=True)
