@@ -1,17 +1,14 @@
 import csv
 from decimal import Decimal
-
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, OuterRef, Subquery, F, Q
+from django.db.models import Sum, F
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from EP.settings import RECIPIENT_EMAIL
-from EP.views import expenses
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee
-from django.contrib.auth.decorators import login_required
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
 
@@ -246,26 +243,21 @@ def team_expense_view(request):
 def employee_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
-    writer = csv.writer(response)
-    #WIP
-    team_employee = (
-        Employee.objects
-            .filter(team=request.user.team)
-            .filter(projectemployeeallocatedbudget__is_active=True)
-            .annotate(
-                total_spent=Sum("expense__initial_amount"),
-                allocated_budget=F("projectemployeeallocatedbudget__allocated_budget"),
-                project_name=F("projectemployeeallocatedbudget__project__name"),
-        )
-            .annotate(
-                remaining_budget=F("allocated_budget") - F("total_spent")
 
-        )
-            .annotate(
-                percentage_left=((F("remaining_budget") / F("allocated_budget")) * 100)
-        )
-
+    team_employee = Employee.objects.filter(
+        team=request.user.team
+    ).filter(
+        projectemployeeallocatedbudget__is_active=True
+    ).annotate(
+        total_spent=Sum("expense__initial_amount"),
+        allocated_budget=F("projectemployeeallocatedbudget__allocated_budget"),
+        project_name=F("projectemployeeallocatedbudget__project__name"),
+    ).annotate(
+        remaining_budget=F("allocated_budget") - F("total_spent")
+    ).annotate(
+        percentage_left=((F("remaining_budget") / F("allocated_budget")) * 100)
     )
+
     fieldnames = ['username', 'project_name', 'total_spent', 'percentage_left', "allocated_budget", "remaining_budget"]
     selected_values=team_employee.values(*fieldnames)
     response = HttpResponse(content_type='text/csv')
@@ -275,7 +267,6 @@ def employee_csv(request):
     writer.writerows(selected_values)
 
     return response
-
 
 @login_required
 def expense_form(request):
@@ -299,9 +290,6 @@ def expense_form(request):
         form = ExpenseForm(request.POST, request.FILES)
         if form.is_valid():
 
-
-
-
             if not allocated_budget_record:
                 messages.error(request,
                                "You do not have an allocated budget for this project.")
@@ -323,9 +311,7 @@ def expense_form(request):
             "employee": request.user,
             "team": request.user.team
         })
-
     # For GET request
-
     active_entry = Expense.objects.filter(employee=request.user,
                                           project_id=project_id)
     emp_total = active_entry.aggregate(total=Sum('initial_amount'))[
@@ -341,19 +327,13 @@ def expense_form(request):
         'total_expense': emp_total,
         'remaining_budget': remaining_budget
     }
-
     return render(request, "expense_form.html", context)
 
-
-
-
 def total_allocated_expense(request):
-
     total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
     return render(request, "expense.html", {'total_expense':
                                                                 total_expense})
 def project_list(request):
-
     return render(request, 'projects.html')
 #make migrations, migrate
 
@@ -362,25 +342,20 @@ def active_project(request):
     #here we find the active budget record
     active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
         employee=request.user, is_active=True).first()
-
     #check if active budget exists - this would be nice to have
     if not active_budget_record:
         messages.error(request, "You do not have an active budget")
         return redirect('homepage')
-
     #pull project from active budget record
     active_project = active_budget_record.project
-
     #fetch related expenses for current project
     expenses = Expense.objects.filter(employee=request.user, project=active_project)
-
     # here we render as always, passing the project and expenses
     return render(request,
       'active_project.html', {
                     'active_project': active_project,
                     'expenses': expenses
     })
-
 
 @login_required
 def settings(request):
@@ -393,7 +368,6 @@ def settings(request):
             return redirect('homepage')  # Redirect to homepage after deletion
 
         # Handle other POST actions here, such as updating user details
-
     return TemplateResponse(request, "settings.html", {"title": "Settings"})
 
 
