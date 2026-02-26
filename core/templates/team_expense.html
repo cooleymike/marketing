@@ -1,77 +1,172 @@
-{% extends 'base.html' %}
-{% block content %}
-<section class="py-12 bg-gray-50 dark:bg-gray-900">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Page Header -->
-    <div class="mb-10">
-      <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white">Team Expenses</h1>
-      <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">
-        Project: <span class="font-semibold">{{ project.name }}</span>
-      </p>
-    </div>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Team Expenses – My Marketing App{% endblock %}
+{% block hero %}
+<section class="bg-gradient-to-r from-indigo-600 to-purple-600
+                text-white text-center py-8">
+    <h1 class="text-3xl md:text-4xl font-bold">
+        Team Expenses
+    </h1>
+    <p class="mt-2 text-lg">
+        Overview of each teammate’s budget usage.
+    </p>
+</section>
+{% endblock %}
 
-    <!-- 🔍 Filter Form -->
-    <form method="get" class="flex flex-wrap gap-4 mb-10">
-      <select name="quarter" class="border p-2 rounded">
-        <option value="">All Quarters</option>
-        {% for q in quarters %}
-          <option value="{{ q }}" {% if q == selected_quarter %}selected{% endif %}>Q{{ q }}</option>
-        {% endfor %}
-      </select>
-      <select name="month" class="border p-2 rounded">
-        <option value="">All Months</option>
-        {% for num, name in months %}
-          <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ name }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+{% block content %}
+<form class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    {# ---------- Sticky filter bar ---------- #}
+    <form method="get" class="sticky top-4 z-10 bg-white dark:bg-gray-800
+                rounded-lg shadow-md p-4 flex flex-wrap gap-4 items-center mb-8">
+        <select name="quarter"
+                class="border border-gray-300 dark:border-gray-600 rounded p-2
+                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200">
+            <option value="">All Quarters</option>
+            {% for q in quarters %}
+                <option value="{{ q }}" {% if q == selected_quarter %}selected{% endif %}>
+                    Q{{ q }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="month"
+                class="border border-gray-300 dark:border-gray-600 rounded p-2
+                       bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200">
+            <option value="">All Months</option>
+            {% for num, name in months %}
+                <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>
+                    {{ name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white
+                       px-4 py-2 rounded transition">
+            Filter
+        </button>
+
+        {# Optional CSV download link (wire a view later if you want) #}
+   <a href="{% url 'employees_csv' %}"
+      class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
+        Download Employee List (CSV)
+   </a>
     </form>
 
-    <!-- 🎨 Colored Budget Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-      {% for member in team_expenses %}
-        <div class="p-4 rounded-xl shadow-lg border-l-8
-                    {% if member.status_color == 'green' %}border-green-500
-                    {% elif member.status_color == 'yellow' %}border-yellow-500
-                    {% else %}border-red-500{% endif %}">
-          <h2 class="text-lg font-semibold">{{ member.name }}</h2>
-          <p>Spent: ${{ member.total_spent }}</p>
-          <p>Budget: ${{ member.allocated_budget }}</p>
-          <p>Used: {{ member.budget_used_pct }}%</p>
+    {# ---------- Summary stats (big numbers) ---------- #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Spent</h3>
+            <p class="mt-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                $ {{ total_spent_all|floatformat:2 }}
+            </p>
         </div>
-      {% empty %}
-        <p class="text-gray-500 col-span-full">No team expenses found for the selected filters.</p>
-      {% endfor %}
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Budget</h3>
+            <p class="mt-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                $ {{ total_budget_all|floatformat:2 }}
+            </p>
+        </div>
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Remaining</h3>
+            <p class="mt-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                $ {{ remaining_all|floatformat:2 }} ({{ remaining_pct }}%)
+            </p>
+        </div>
     </div>
 
-    <!-- 🧾 Detailed Expenses Table -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
-      <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Detailed Expenses</h2>
-      <div class="overflow-x-auto">
-        <table class="w-full table-auto text-sm text-left text-gray-600 dark:text-gray-300">
-          <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-100 text-xs uppercase">
-            <tr>
-              <th class="px-4 py-3">Date</th>
-              <th class="px-4 py-3">Member</th>
-              <th class="px-4 py-3">Category</th>
-              <th class="px-4 py-3">Amount</th>
-              <th class="px-4 py-3">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for expense in expenses %}
-              <tr class="border-b border-gray-200 dark:border-gray-700">
-                <td class="px-4 py-2">{{ expense.created_date|date:"Y-m-d" }}</td>
-                <td class="px-4 py-2">{{ expense.employee.get_full_name|default:expense.employee.username }}</td>
-                <td class="px-4 py-2">{{ expense.type.name }}</td>
-                <td class="px-4 py-2 text-green-600 dark:text-green-400 font-semibold">${{ expense.initial_amount }}</td>
-                <td class="px-4 py-2">{{ expense.description }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    {# ---------- Budget cards with progress bar ---------- #}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {% for member in team_expenses %}
+            <div class="p-6 rounded-xl shadow-lg border-l-8
+                        {% if member.status_color == 'green' %}border-green-500
+                        {% elif member.status_color == 'yellow' %}border-yellow-500
+                        {% else %}border-red-500{% endif %}
+                        bg-white dark:bg-gray-800 transition transform hover:-translate-y-1 hover:shadow-xl">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                    {{ member.name }}
+                </h2>
+                <p class="mt-2 text-gray-600 dark:text-gray-300">
+                    Spent <span class="font-medium">$ {{ member.total_spent|floatformat:2 }}</span>
+                    of <span class="font-medium">$ {{ member.allocated_budget|floatformat:2 }}</span>
+                    Total Spent <span class="font-medium">$ {{ member.budget_used_pct }}</span>
+                </p>
+
+                {# Progress bar visualising used % #}
+                <div class="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                    <div class="h-full rounded-full
+                                {% if member.status_color == 'green' %}bg-green-500
+                                {% elif member.status_color == 'yellow' %}bg-yellow-500
+                                {% else %}bg-red-500{% endif %}"
+                         style="width: {{ member.budget_used_pct }}%">
+                    </div>
+                </div>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {{ member.budget_used_pct }}% used
+                </p>
+            </div>
+        {% empty %}
+            <p class="col-span-full text-gray-500 dark:text-gray-400">
+                No team expenses found for the selected filters.
+            </p>
+        {% endfor %}
     </div>
-  </div>
-</section>
+
+    {# ---------- Detailed expenses table ---------- #}
+    <div class="bg-white dark:bg-gray-800 shadow rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+                Detailed Expenses
+            </h2>
+        <a href="{% url 'employees_csv' %}"
+           class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
+        Download Employee List (CSV)
+        </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto text-sm text-left">
+                <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                    <tr>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Member</th>
+                        <th class="px-4 py-2">Category</th>
+                        <th class="px-4 py-2">Amount</th>
+                        <th class="px-4 py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for expense in expenses %}
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                {{ expense.created_date|date:"Y-m-d" }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                {{ expense.employee.get_full_name|default:expense.employee.username }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                {{ expense.type.name }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-green-600 dark:text-green-400 font-medium">
+                                ${{ expense.initial_amount|floatformat:2 }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                {{ expense.description }}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5"
+                                class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+                                No expenses recorded for this period.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</form>
 {% endblock %}

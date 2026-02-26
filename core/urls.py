@@ -10,7 +10,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('signin/', views.signin, name='signin'),  # keep only this one
     path('team_expense/', views.team_expense_view, name='team_expense'),
-    path('employees/csv/', views.employee_csv, name='employee_csv'),
+    path('employees_csv/', views.employee_csv, name='employees_csv'),
     path('expense_form/', views.expense_form, name='expense_form'),
     path('active_project/', views.active_project, name='active_project'),
     path('settings/', views.settings, name='settings'),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('pricing/', views.pricing_view, name='pricing'),
     path('contact/', views.contact_view, name='contact'),
     path('request_funds/', views.request_funds_view, name='request_funds'),
+
 ]
 
 
