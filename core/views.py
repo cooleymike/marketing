@@ -63,29 +63,6 @@ def request_funds_view(request):
 def is_manager(user):
     return getattr(user, "is_manager", False)
 
-def manager_signin(request):
-    if request.method == "POST":
-        form = SigninForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            user = authenticate(request, username=username, password=password)
-
-            if user is not None:
-                if not user.is_manager():
-                    messages.error(request, "You don't have manager permission.")
-                    return redirect("manager_signin")
-
-                login(request, user)
-                return redirect(request.GET.get("next") or "manager_dashboard")
-            else:
-                # Wrong credentials – show a generic error message.
-                messages.error(request, "Invalid username or password")
-    else:
-        form = SigninForm()
-
-    return render(request, "manager_signin.html", {"form": form})
-
 @user_passes_test(is_manager, login_url='manager_singin')
 def manager_dashboard(request):
     managed_teams = Team.objects.filter(manager=request.user)
@@ -122,14 +99,13 @@ def approve_funds_requests(request, pk, decision):
     messages.success(request, f"Request {decision}d.")
     return redirect("manager_dashboard")  # Change this too
 
-
 @login_required
 def expense_list_by_quarter(request):
     # Your logic to filter and order expenses by year/quarter
     expenses = Expense.objects.filter(user=request.user).order_by('date')
     # Render the expenses template or return a custom response
     return render(request, 'admin/admin_expense_viewer.html', {'expenses':
-                                                               expenses})
+                                                              expenses})
 
 def homepage(request):
    return TemplateResponse(request, "home.html", {"title": "homepage"})

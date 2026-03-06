@@ -20,7 +20,6 @@ urlpatterns = [
     path('contact/', views.contact_view, name='contact'),
     path('request_funds/', views.request_funds_view, name='request_funds'),
     path('manager_dashboard/', views.manager_dashboard, name='manager_dashboard'),
-    path('manager_signin/', views.manager_signin, name='manager_signin'),
 path(
     'manager/fund-request/<int:pk>/<str:decision>/',
     views.approve_funds_requests,

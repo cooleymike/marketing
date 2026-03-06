@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4">
+    <h1 class="text-4xl font-bold mb-8">
+    Manager Dashboard
+    </h1>
+
+    <!-- Fund Requests Section -->
+    <div class="mb-12">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
+            Pending Fund Requests
+        </h2>
+
+        <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
+            <table class="w-full table-auto text-sm text-left text-gray-700 dark:text-gray-300">
+                <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-3">Employee</th>
+                        <th class="px-4 py-3">Project</th>
+                        <th class="px-4 py-3">Amount</th>
+                        <th class="px-4 py-3">Justification</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for req in pending_requests %}
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td class="px-4 py-3">{{ req.requester.get_full_name|default:req.requester.username }}</td>
+                            <td class="px-4 py-3">{{ req.project.name }}</td>
+                            <td class="px-4 py-3">${{ req.amount_requested|floatformat:2 }}</td>
+                            <td class="px-4 py-3 truncate max-w-md">{{ req.justification}}</td>
+                            <td class="px-4 py-3 space-x-2">
+                                <form method="post" action="{% url 'approve_funds_request' req.pk 'approve' %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-green-500 text-white font-bold py-1 px-3 rounded hover:bg-green-600 transition">
+                                        Approve
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'approve_funds_request' req.pk 'reject' %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600 transition">
+                                        Reject
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">
+                                No pending requests.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
