@@ -5,10 +5,15 @@ from django.db import models
 
 
 
+
 class Employee(AbstractUser):
     account_number = models.CharField(max_length=10, unique=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
     team = models.ForeignKey("Team", null=True, on_delete=models.PROTECT, blank=True )
+
+    def is_manager(self):
+        return Team.objects.filter(manager=self).exists()
+
 class Project(models.Model):
     description = models.CharField(max_length=150)
     name = models.CharField(max_length=50)

@@ -1,7 +1,7 @@
-from django.contrib.auth.views import LoginView
-from django.urls import path, include
+
+from django.urls import path
 from .import views
-from core.forms import CustomizeSigninForm
+
 
 
 urlpatterns = [
@@ -14,25 +14,15 @@ urlpatterns = [
     path('expense_form/', views.expense_form, name='expense_form'),
     path('active_project/', views.active_project, name='active_project'),
     path('settings/', views.settings, name='settings'),
-    path('admin_expense_viewer/', views.admin_expense_viewer, name='admin_expense_viewer'),
     path('features/', views.features_view, name='features'),
     path('testimonials/', views.testimonials_view, name='testimonials'),
     path('pricing/', views.pricing_view, name='pricing'),
     path('contact/', views.contact_view, name='contact'),
     path('request_funds/', views.request_funds_view, name='request_funds'),
-
+    path('manager_dashboard/', views.manager_dashboard, name='manager_dashboard'),
+path(
+    'manager/fund-request/<int:pk>/<str:decision>/',
+    views.approve_funds_requests,
+    name='approve_funds_request'
+),
 ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-

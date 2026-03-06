@@ -1,14 +1,15 @@
 import csv
 from decimal import Decimal
-from django.contrib.auth.decorators import login_required
+
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Sum, F
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from EP.settings import RECIPIENT_EMAIL
-from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee
+from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
 
@@ -53,41 +54,58 @@ def request_funds_view(request):
             fund_request = form.save(commit=False)
             fund_request.requester = request.user
             fund_request.save()
-            return redirect('fund_request_success')
+            messages.success(request, "Thanks for submitting your request!")
+            return redirect('request_funds')
     else:
         form = FundRequestForm()
     return render(request, 'request_funds.html', {'form': form})
 
+def is_manager(user):
+    return getattr(user, "is_manager", False)
 
-@login_required
-def admin_expense_viewer(request):
-   if not request.user.is_staff: # needs to be a manager/staff
-        return redirect('admin:index')  # Redirect to home if not manager
+@user_passes_test(is_manager, login_url='manager_singin')
+def manager_dashboard(request):
+    managed_teams = Team.objects.filter(manager=request.user)
+    managed_projects = Project.objects.filter(teams__in=managed_teams)
+    pending_requests = FundRequest.objects.filter(
+        status="Pending",
+        project__in=managed_projects,
+    )
 
-   team = request.user.team # managers team
-   current_year = timezone.now().year
-   expenses = Expense.objects.filter(team=team, created_date__year=current_year)
-
-
-        # Group expenses by quarter
-   admin_expense_viewer = {
-        1: expenses.filter(created_date__quarter=1),
-        2: expenses.filter(created_date__quarter=2),
-        3: expenses.filter(created_date__quarter=3),
-        4: expenses.filter(created_date__quarter=4),
+    context = {
+        'pending_requests': pending_requests,
     }
+    return render(request, "manager_dashboard.html", context)
 
-   return render(request, 'admin_expense_viewer.html', {
-        'admin_expense_viewer': admin_expense_viewer,
-        'current_year': current_year
-    })
+@user_passes_test(is_manager, login_url='manager_signin')
+def approve_funds_requests(request, pk, decision):
+    if request.method != 'POST':
+        return redirect('manager_dashboard')  # Change this
+
+    fund_request = get_object_or_404(FundRequest, pk=pk, status="Pending")
+
+    if decision == "approve":
+        fund_request.status = "Approved"
+        fund_request.save()
+    elif decision == "reject":
+        fund_request.status = "Rejected"
+    else:
+        messages.error(request, "Not a valid decision.")
+        return redirect('manager_dashboard')
+
+    fund_request.reviewer = request.user
+    fund_request.reviewed_at = timezone.now()
+    fund_request.save()
+    messages.success(request, f"Request {decision}d.")
+    return redirect("manager_dashboard")  # Change this too
+
 @login_required
 def expense_list_by_quarter(request):
     # Your logic to filter and order expenses by year/quarter
     expenses = Expense.objects.filter(user=request.user).order_by('date')
     # Render the expenses template or return a custom response
     return render(request, 'admin/admin_expense_viewer.html', {'expenses':
-                                                               expenses})
+                                                              expenses})
 
 def homepage(request):
    return TemplateResponse(request, "home.html", {"title": "homepage"})
@@ -108,7 +126,6 @@ def signin(request):
         form = SigninForm()
 
     return TemplateResponse(request, "signin.html", {"form": form})
-
 
 @login_required
 def expenses_view(request):

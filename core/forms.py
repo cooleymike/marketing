@@ -17,7 +17,7 @@ from .models import FundRequest
 class FundRequestForm(forms.ModelForm):
     class Meta:
         model = FundRequest
-        fields = ['project', 'amount_requested', 'quarter', 'justification']
+        fields = ['project', 'amount_requested', 'justification']
         widgets = {
             'project': forms.Select(attrs={
                 'class': 'w-full p-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'

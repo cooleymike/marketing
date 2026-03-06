@@ -1,167 +1,204 @@
+{% load static %}   {# keep the original import only #}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  {% load static %}
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-</html>
+    <title>{% block title %}Marketing App{% endblock %}</title>
+
+    <!-- Tailwind CDN (forms + typography plugins) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
+
+    <!-- Custom stylesheet (slide‑in helpers, card styles, etc.) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
-  {% if messages %}
-    <div class="space-y-2 my-4">
-      {% for message in messages %}
-        <div class="p-4 rounded bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-          {{ message }}
-        </div>
-      {% endfor %}
+
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+{% if messages %}
+    <div class="max-w-7xl mx-auto my-4 space-y-2">
+        {% for message in messages %}
+            <div class="p-4 rounded bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                {{ message }}
+            </div>
+        {% endfor %}
     </div>
-  {% endif %}
-  <!-- Navigation Bar -->
- <header class="bg-white shadow-md p-4">
- <button id="theme-toggle" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-  <svg id="theme-icon" class="w-6 h-6 text-gray-800 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
-</button>
+{% endif %}
 
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
+<header id="site-header"
+        class="bg-white dark:bg-gray-800 shadow-md fixed inset-x-0 top-0 z-30 transition-all contents">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-3">
 
-    <!-- Logo (top-left) -->
-    <a href="/" class="flex items-center">
-      <img src="{% static 'images/company_logo.jpg' %}" alt="Company Logo" class="h-10 w-auto">
-    </a>
-
-    <!-- Hamburger button (hidden on md and up) -->
-    <button id="menu-toggle" class="md:hidden text-gray-700 focus:outline-none">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>
-    </button>
-
-    <!-- Nav Links (hidden on mobile, shown on md+) -->
-    <nav id="menu" class="hidden md:flex mx-auto">
-      <ul class="flex space-x-8 text-gray-700 font-medium text-lg">
-  {% if user.is_authenticated %}
-    <li><a href="{% url 'expense_form' %}" class="hover:text-purple-600">Add Expense</a></li>
-    <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
-
-  {% else %}
-    <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
-    <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>
-    <li><a href="{% url 'pricing' %}" class="text-gray-700 hover:text-blue-600">Pricing</a></li>
-    <li><a href="{% url 'contact' %}" class="text-gray-700 hover:text-blue-600">Contact</a></li>
-    <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
-  {% endif %}
-</ul>
-
-
-    </nav>
-
-    <!-- Auth Buttons -->
-    <div class="hidden md:flex items-center space-x-4">
-      {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}" class="bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
-          Sign Out
+        <!-- Logo -->
+        <a href="/" class="flex items-center">
+            <img src="{% static 'images/company_logo.jpg' %}"
+                 alt="Company Logo"
+                 class="h-10 w-auto">
         </a>
-      {% else %}
-        <a href="{% url 'register' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign Up</a>
-        <a href="{% url 'signin' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md">Sign In</a>
-      {% endif %}
+
+        <!-- Dark‑mode toggle -->
+        <button id="theme-toggle"
+                class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 focus:outline-none">
+            <svg id="theme-icon"
+                 class="w-6 h-6 text-gray-800 dark:text-gray-100"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24"></svg>
+        </button>
+
+        <!-- Hamburger (mobile) -->
+        <button id="menu-toggle"
+                class="md:hidden text-gray-700 dark:text-gray-200 focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+
+        <!-- Desktop navigation -->
+        <nav id="desktop-nav"
+             class="hidden md:flex space-x-8 text-lg font-medium text-gray-700 dark:text-gray-200">
+            {% if user.is_authenticated %}
+                <a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a>
+                <a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a>
+
+                {# Manager‑only link (optional – keep if you want it in the header) #}
+                {% if request.user.is_manager %}
+                    <a href="{% url 'manager_dashboard' %}"
+                       class="text-indigo-600 hover:underline">Manager Dashboard</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'features' %}" class="hover:text-blue-600">Features</a>
+                <a href="{% url 'testimonials' %}" class="hover:text-blue-600">Testimonials</a>
+                <a href="{% url 'pricing' %}" class="hover:text-blue-600">Pricing</a>
+                <a href="{% url 'contact' %}" class="hover:text-blue-600">Contact</a>
+                <a href="{% url 'register' %}" class="hover:text-purple-600">Register</a>
+            {% endif %}
+        </nav>
+
+        <!-- Auth buttons (desktop) -->
+        <div class="hidden md:flex items-center space-x-4">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}"
+                   class="bg-slate-500 text-white py-2 px-4 rounded-full hover:bg-stone-600">
+                    Sign Out
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}"
+                   class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:bg-purple-700">
+                    Sign Up
+                </a>
+                <a href="{% url 'signin' %}"
+                   class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:bg-purple-700">
+                    Sign In
+                </a>
+            {% endif %}
+        </div>
     </div>
-  </div>
 
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="md:hidden hidden mt-4">
-   <ul class="flex space-x-8 text-gray-700 font-medium text-lg">
-  {% if user.is_authenticated %}
-    <li><a href="{% url 'expense_form' %}" class="hover:text-purple-600">Add Expense</a></li>
-    <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
-    <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
-  {% else %}
-      <li><a href="{% url 'features' %}" class="text-gray-700 hover:text-blue-600">Features</a></li>
-      <li><a href="{% url 'testimonials' %}" class="text-gray-700 hover:text-blue-600">Testimonials</a></li>
-    <li><a href="#contact" class="hover:text-purple-600">Contact</a></li>
-    <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
-  {% endif %}
-</ul>
+    <!-- Mobile navigation panel -->
+    <div id="mobile-nav"
+         class="md:hidden hidden bg-white dark:bg-gray-800 py-4">
+        <ul class="flex flex-col space-y-3 px-6 text-lg font-medium text-gray-700 dark:text-gray-200">
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
+                <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
 
-
-  </div>
+                {% if request.user.is_manager %}
+                    <li><a href="{% url 'manager_dashboard' %}"
+                           class="block px-4 py-2 text-indigo-600 hover:underline">Manager Dashboard</a></li>
+                {% endif %}
+            {% else %}
+                <li><a href="{% url 'features' %}" class="hover:text-blue-600">Features</a></li>
+                <li><a href="{% url 'testimonials' %}" class="hover:text-blue-600">Testimonials</a></li>
+                <li><a href="{% url 'pricing' %}" class="hover:text-blue-600">Pricing</a></li>
+                <li><a href="{% url 'contact' %}" class="hover:text-purple-600">Contact</a></li>
+                <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
 </header>
 
-{% block content %}
+{# Optional hero placeholder – child templates may override #}
+{% block hero %}{% endblock %}
 
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-center py-20 px-4">
-        <h1 class="text-5xl font-bold">Marketing, Simplified. Smarter Spending, Better Growth.</h1>
-        <p class="text-xl mt-4">Control your marketing budget with real-time insights and automated tracking.</p>
-        <div class="mt-6 space-x-4">
-            <a href="{% url 'active_project' %}" class="bg-white text-purple-700 px-6 py-3 rounded-lg font-semibold shadow-lg">View Projects</a>
-            <a href="{% url 'expenses' %}" class="border border-white px-6 py-3 rounded-lg font-semibold">Track Expenses</a>
-        </div>
-    </section>
-
-{% endblock %}
-
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-
-        const setThemeIcon = (dark) => {
-            themeIcon.innerHTML = dark
-                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-12.34l-.71.71M4.05 19.95l-.71-.71M21 12h-1M4 12H3m16.95 4.95l-.71-.71M4.05 4.05l-.71.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`
-                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />`;
-        }
-
-        const applyTheme = () => {
-            const isDark = localStorage.getItem('theme') === 'dark';
-            document.documentElement.classList.toggle('dark', isDark);
-            setThemeIcon(isDark);
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            setThemeIcon(isDark);
-        });
-
-        applyTheme();
-    </script>
-
-    <script src="{% static 'js/index.js' %}"></script>
+<main class="pt-20">
+    {% block content %}{% endblock %}
+</main>
 <script>
-    const toggleBtn = document.getElementById('menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
+/* -------------------------------------------------
+   Theme toggle – one‑liner, no extra listeners needed
+   ------------------------------------------------- */
+(() => {
+    const toggleBtn = document.getElementById('theme-toggle');
+    const iconEl   = document.getElementById('theme-icon');
 
-    toggleBtn?.addEventListener('click', () => {
-        mobileMenu?.classList.toggle('hidden');
+    const moonSVG = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`;
+    const sunSVG  = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M12 3v1m0 16v1m8.66-12.34l-.71.71M4.05 19.95l-.71-.71M21 12h-1M4 12H3
+                        m16.95 4.95l-.71-.71M4.05 4.05l-.71.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>`;
+
+    const applyTheme = () => {
+        const isDark = localStorage.getItem('theme') === 'dark';
+        document.documentElement.classList.toggle('dark', isDark);
+        iconEl.innerHTML = isDark ? sunSVG : moonSVG;
+    };
+
+    toggleBtn.addEventListener('click', () => {
+        const nowDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', nowDark ? 'dark' : 'light');
+        iconEl.innerHTML = nowDark ? sunSVG : moonSVG;
     });
 
-    const observer = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-scroll');
-        observer.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.1 }
-);
-
-document.querySelectorAll('.feature-card').forEach(card => {
-  observer.observe(card);
-});
-
+    applyTheme();
+})();
 </script>
 
-</body>
+<script>
+/* -------------------------------------------------
+   Mobile menu toggle
+   ------------------------------------------------- */
+const menuBtn   = document.getElementById('menu-toggle');
+const mobileNav = document.getElementById('mobile-nav');
+
+menuBtn?.addEventListener('click', () => {
+    mobileNav?.classList.toggle('hidden');
+});
+
+const revealObserver = new IntersectionObserver(
+    entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    },
+    { threshold: 0.1 }
+);
+
+document.querySelectorAll('.slide-in-left,.slide-in-right,.slide-in-up,.feature-card')
+        .forEach(el => revealObserver.observe(el));
+
+
+const heroSection = document.querySelector('section.hero');
+const stickyCTA    = document.getElementById('sticky-cta');
+
+if (heroSection && stickyCTA) {
+    const heroObs = new IntersectionObserver(
+        ([e]) => stickyCTA.classList.toggle('hidden', e.isIntersecting),
+        { rootMargin: '-80px 0px 0px 0px' }
+    );
+    heroObs.observe(heroSection);
+}
+</script>
+
+{% block extra_js %}{% endblock %}
+
+
 </html>

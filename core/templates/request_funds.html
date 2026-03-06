@@ -10,6 +10,58 @@
               hover:scale-[1.01] hover:shadow-3xl">
 
     <div class="px-10 py-12 md:px-16">
+    {% if manager_view %}
+        <h3 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
+          Pending Fund Requests
+        </h3>
+
+        <table class="w-full table-auto text-sm text-left text-gray-700 dark:text-gray-300 mb-8">
+          <thead class="bg-gray-100 dark:bg-gray-700">
+            <tr>
+              <th class="px-4 py-2">Employee</th>
+              <th class="px-4 py-2">Project</th>
+              <th class="px-4 py-2">Quarter</th>
+              <th class="px-4 py-2">Amount</th>
+              <th class="px-4 py-2">Justification</th>
+              <th class="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% for req in pending_requests %}
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <td class="px-4 py-2">{{ req.requester.get_full_name|default:req.requester.username }}</td>
+                <td class="px-4 py-2">{{ req.project.name }}</td>
+                <td class="px-4 py-2">{{ req.quarter }}</td>
+                <td class="px-4 py-2">${{ req.amount_requested|floatformat:2 }}</td>
+                <td class="px-4 py-2 truncate max-w-xs">{{ req.justification|truncatechars:30 }}</td>
+                <td class="px-4 py-2 space-x-2">
+                  <form method="post" action="{% url 'approve_fund_request' req.pk 'approve' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-1 px-3 rounded-full hover:opacity-90 transition">
+                      Approve
+                    </button>
+                  </form>
+                  <form method="post" action="{% url 'approve_fund_request' req.pk 'reject' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="bg-gradient-to-r from-red-500 to-pink-600 text-white font-bold py-1 px-3 rounded-full hover:opacity-90 transition">
+                      Reject
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center py-4 text-gray-500 dark:text-gray-400">
+                  No pending requests.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
       <div class="text-center mb-12">
         <h2 class="text-4xl font-extrabold text-transparent bg-clip-text
                    bg-gradient-to-r from-indigo-600 to-sky-500
@@ -26,18 +78,7 @@
 
         <div class="grid md:grid-cols-2 gap-6">
           <div class="relative">
-            <input
-              type="text"
-              name="{{ form.project.name }}"
-              id="{{ form.project.id_for_label }}"
-              required
-              class="peer h-12 w-full border-b-2 border-gray-300
-                     text-gray-900 dark:text-white dark:border-gray-600
-                     dark:bg-gray-800 bg-transparent
-                     focus:outline-none focus:border-indigo-500
-                     transition-colors duration-300 px-2"
-              placeholder=" "
-            />
+            {{ form.project }}
             <label
               for="{{ form.project.id_for_label }}"
               class="absolute left-2 -top-4 text-sm text-gray-500
