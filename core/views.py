@@ -1,13 +1,17 @@
 import csv
+from calendar import month
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum, F
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views.generic import ListView
+
 from EP.settings import RECIPIENT_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
@@ -102,7 +106,7 @@ def approve_funds_requests(request, pk, decision):
 @login_required
 def expense_list_by_quarter(request):
     # Your logic to filter and order expenses by year/quarter
-    expenses = Expense.objects.filter(user=request.user).order_by('date')
+    expenses = Expense.objects.filter(employee=request.user).order_by('-created_date')
     # Render the expenses template or return a custom response
     return render(request, 'admin/admin_expense_viewer.html', {'expenses':
                                                               expenses})
@@ -127,56 +131,59 @@ def signin(request):
 
     return TemplateResponse(request, "signin.html", {"form": form})
 
-@login_required
-def expenses_view(request):
-    user = request.user
+# Class based views
+# CreateView, UpdateView, DeleteView, DetailView, ListView
 
-    current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
-        is_active=True,
-        employee=user
-    ).first()
+class ExpenseListView(LoginRequiredMixin, ListView):
+    model = Expense
+    template_name = "expenses.html"
+    ordering = ['-created_date']
 
-    print("current_allocated_budget", current_allocated_budget)
-    # if not current_allocated_budget:
-    if current_allocated_budget is None:
-        messages.info(request, "You have not been attached to any budget")
-        print("User: ", user)
-        print("Project ID:", current_allocated_budget)
-        print("Expense found:", Expense.objects.filter(employee=user,
-                                                       project=current_allocated_budget).count())
-        return redirect("homepage")
-    project_id = current_allocated_budget.project_id
-    # budget = current_allocated_budget.allocated_budget
-    allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=user, project_id=project_id, is_active=True
-    ).first()
-    # current team liked to expenses of team, user is the authenticated employee - what is the team of the
-    # current employee = user so to get the team of the user we need
-    # which properties available for the employee in the team.
-    current_team=user.team
-    expenses= Expense.objects.filter(
-        team=current_team,
-    ).order_by('-created_date')
-    print("expenses", expenses)
+    def get_queryset(self):
+        user = self.request.user
+        current_team=user.team
+        expenses= Expense.objects.filter(
+            team=current_team,
+        ).order_by('-created_date')
 
-    emp_total = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
-    remaining_budget = allocated_budget_record.allocated_budget - emp_total
-    percentage_left = (
-        (remaining_budget / allocated_budget_record.allocated_budget) * 100
-        if allocated_budget_record.allocated_budget else 0
-    )
-    context = {
-        "expenses": expenses,
-        "emp_total": emp_total,
-        "remaining_budget": remaining_budget,
-        "allocated_budget": allocated_budget_record.allocated_budget,
-        "percentage_left": round(percentage_left, 2),
-        "active_quarter": allocated_budget_record.quarter,
-        # this to show which quarter is active (i think)
-    }
-    print("loading view")
+        return expenses
 
-    return render(request,'expenses.html', {"expenses": expenses})
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+
+        # Get current allocated budget
+        current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
+            is_active=True, employee=user
+        ).first()
+
+        if not current_allocated_budget:
+            # Handle case where no active budget exists
+            context_data = super().get_context_data(**kwargs)
+            return context_data
+
+        # Get expenses for this employee
+        expenses = Expense.objects.filter(employee=user)
+        emp_total = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
+
+        # Calculate remaining budget and percentage
+        remaining_budget = current_allocated_budget.allocated_budget - emp_total
+        percentage_left = (
+            (remaining_budget / current_allocated_budget.allocated_budget) * 100
+            if current_allocated_budget.allocated_budget else 0
+        )
+
+        # Build context
+        context_data = super().get_context_data(**kwargs)
+        context_data.update({
+            "emp_total": emp_total,
+            "remaining_budget": remaining_budget,
+            "allocated_budget": current_allocated_budget.allocated_budget,
+            "percentage_left": round(percentage_left, 2),
+            "active_quarter": current_allocated_budget.quarter,
+        })
+
+        return context_data
+
 
 def register(request):
    if request.method == 'POST':
@@ -197,10 +204,11 @@ def register(request):
 
 from calendar import month_name
 
+
 @login_required
 def team_expense_view(request):
-    quarter = int(request.GET.get('quarter', 0))  # Optional quarter filter
-    month = int(request.GET.get('month', 0))      # Optional month filter
+    quarter = int(request.GET.get('quarter', 0))
+    month = int(request.GET.get('month', 0))
 
     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
         employee=request.user, is_active=True).first()
@@ -208,24 +216,30 @@ def team_expense_view(request):
     if not allocated_budget_record:
         messages.error(request, "You are not part of any active project.")
         return redirect('homepage')
+
     project = allocated_budget_record.project
     project_users = ProjectEmployeeAllocatedBudget.objects.filter(
         project=project, is_active=True
     ).select_related('employee')
 
-    team_expenses = []
+    # Get all expenses for the project
     expenses = Expense.objects.filter(project=project)
-    grand_total_spent = expenses.aggregate(total=Sum("initial_amount"))["total"] or Decimal ('0.00')
 
+    # Apply filters if selected
     if quarter:
         expenses = expenses.filter(created_date__quarter=quarter)
     if month:
         expenses = expenses.filter(created_date__month=month)
 
+    # Calculate totals
+    total_spent_all = expenses.aggregate(total=Sum("initial_amount"))["total"] or Decimal('0.00')
+    total_budget_all = project_users.aggregate(total=Sum('allocated_budget'))["total"] or Decimal('0.00')
+    remaining_all = total_budget_all - total_spent_all
+    remaining_pct = round((remaining_all / total_budget_all * 100), 2) if total_budget_all else 0
+
+    team_expenses = []
     for record in project_users:
-        employee_expenses = expenses.filter(
-            employee=record.employee,
-        )
+        employee_expenses = expenses.filter(employee=record.employee)
         emp_total = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or Decimal('0.00')
         budget_used_pct = (emp_total / record.allocated_budget * 100) if record.allocated_budget else Decimal('0.00')
 
@@ -250,11 +264,15 @@ def team_expense_view(request):
         'team_expenses': team_expenses,
         'selected_quarter': quarter,
         'selected_month': month,
-        'months': list(enumerate(month_name))[1:],  # [(1, 'January'), ...]
-        'quarters': [1, 2, 3, 4]
-
+        'months': list(enumerate(month_name))[1:],
+        'quarters': [1, 2, 3, 4],
+        'total_spent_all': total_spent_all,
+        'total_budget_all': total_budget_all,
+        'remaining_all': remaining_all,
+        'remaining_pct': remaining_pct,
     }
     return render(request, 'team_expense.html', context)
+
 
 @login_required
 def employee_csv(request):

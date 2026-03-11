@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 {% block title %}Team Expenses – My Marketing App{% endblock %}
 {% block hero %}
@@ -59,70 +60,28 @@
         <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Spent</h3>
             <p class="mt-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                $ {{ total_spent_all|floatformat:2 }}
+                $ {{ total_spent_all|floatformat:2|intcomma }}
             </p>
         </div>
         <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Budget</h3>
             <p class="mt-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                $ {{ total_budget_all|floatformat:2 }}
+                $ {{ total_budget_all|floatformat:2|intcomma }}
             </p>
         </div>
         <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Remaining</h3>
             <p class="mt-2 text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                $ {{ remaining_all|floatformat:2 }} ({{ remaining_pct }}%)
+                $ {{ remaining_all|floatformat:2|intcomma }} ({{ remaining_pct }}%)
             </p>
         </div>
     </div>
-
-    {# ---------- Budget cards with progress bar ---------- #}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {% for member in team_expenses %}
-            <div class="p-6 rounded-xl shadow-lg border-l-8
-                        {% if member.status_color == 'green' %}border-green-500
-                        {% elif member.status_color == 'yellow' %}border-yellow-500
-                        {% else %}border-red-500{% endif %}
-                        bg-white dark:bg-gray-800 transition transform hover:-translate-y-1 hover:shadow-xl">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                    {{ member.name }}
-                </h2>
-                <p class="mt-2 text-gray-600 dark:text-gray-300">
-                    Spent <span class="font-medium">$ {{ member.total_spent|floatformat:2 }}</span>
-                    of <span class="font-medium">$ {{ member.allocated_budget|floatformat:2 }}</span>
-                    Total Spent <span class="font-medium">$ {{ member.budget_used_pct }}</span>
-                </p>
-
-                {# Progress bar visualising used % #}
-                <div class="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                    <div class="h-full rounded-full
-                                {% if member.status_color == 'green' %}bg-green-500
-                                {% elif member.status_color == 'yellow' %}bg-yellow-500
-                                {% else %}bg-red-500{% endif %}"
-                         style="width: {{ member.budget_used_pct }}%">
-                    </div>
-                </div>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    {{ member.budget_used_pct }}% used
-                </p>
-            </div>
-        {% empty %}
-            <p class="col-span-full text-gray-500 dark:text-gray-400">
-                No team expenses found for the selected filters.
-            </p>
-        {% endfor %}
-    </div>
-
     {# ---------- Detailed expenses table ---------- #}
     <div class="bg-white dark:bg-gray-800 shadow rounded-xl overflow-hidden">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
                 Detailed Expenses
             </h2>
-        <a href="{% url 'employees_csv' %}"
-           class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
-        Download Employee List (CSV)
-        </a>
         </div>
 
         <div class="overflow-x-auto">

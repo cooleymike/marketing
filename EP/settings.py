@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'django.contrib.sites',
+    'django.contrib.humanize',
 
 ]
 

@@ -104,9 +104,6 @@ class ExpenseType(models.Model):
         return self.name
 
 
-
-
-
 class Expense(models.Model):
 
     team = models.ForeignKey("Team", on_delete=models.PROTECT)# this won't
