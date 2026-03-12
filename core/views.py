@@ -152,13 +152,13 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         context_data = super().get_context_data(**kwargs)
         user = self.request.user
 
-        # Get current allocated budget
         current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
             is_active=True, employee=user
         ).first()
+        if current_allocated_budget is None:
+            messages.error(self.request, "You don't have any allocated budget.")
+            return context_data
 
-
-        # Get expenses for this employee
         expenses = Expense.objects.filter(employee=user)
         emp_total = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
 
@@ -180,7 +180,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
         return context_data
 
-
 def register(request):
    if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
@@ -197,9 +196,7 @@ def register(request):
    return TemplateResponse(request,'register.html',
                             {"form":form})
 
-
 from calendar import month_name
-
 
 @login_required
 def team_expense_view(request):

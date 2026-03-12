@@ -3,9 +3,6 @@ from django.core.validators import FileExtensionValidator
 from django.db.models import Sum
 from django.db import models
 
-
-
-
 class Employee(AbstractUser):
     account_number = models.CharField(max_length=10, unique=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
@@ -13,6 +10,12 @@ class Employee(AbstractUser):
 
     def is_manager(self):
         return Team.objects.filter(manager=self).exists()
+
+    def has_active_allocated_budget(self):
+        active_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=self, is_active=True
+        ).exists()
+        return active_allocated_budget
 
 class Project(models.Model):
     description = models.CharField(max_length=150)
@@ -26,7 +29,6 @@ class Project(models.Model):
     def total_allocated_budget(self):
         """ Sum of all employee budget allocations for this project """
         return self.allocated_budgets.aggregate(total=Sum('allocated_budget'))['total'] or 0
-
 
 class ProjectEmployeeAllocatedBudget(models.Model):
     QUARTERS = [
@@ -42,7 +44,6 @@ class ProjectEmployeeAllocatedBudget(models.Model):
         'Q3':[7,8,9],
         'Q4':[10,11,12],
     }
-
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, related_name='allocated_budgets', on_delete=models.CASCADE)
     quarter = models.CharField(max_length=2, choices=QUARTERS, null=True)
@@ -82,7 +83,6 @@ class FundRequest(models.Model):
     def __str__(self):
         return f"{self.requester.username} - {self.project.name} - {self.amount_requested} ({self.status})"
 
-
 def apply_to_budget(self):
     if self.status == 'Approved':
         budget = ProjectEmployeeAllocatedBudget.objects.get(
@@ -103,7 +103,6 @@ class ExpenseType(models.Model):
     def __str__(self):
         return self.name
 
-
 class Expense(models.Model):
     ordering = ['-created_date']
     team = models.ForeignKey("Team", on_delete=models.PROTECT)# this won't
@@ -118,12 +117,10 @@ class Expense(models.Model):
         upload_to='uploads/', default='uploads/default.png',
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'pdf', 'txt'])]
     )
-
     type = models.ForeignKey(ExpenseType, on_delete=models.PROTECT, null=True)
-
+            # change null=False
     def __str__(self):
         return f'{self.description} - {self.employee.account_number}'
-
 
     @property
     def expense_quarter(self):
@@ -156,25 +153,22 @@ class Expense(models.Model):
 
         return 0  # No allocated budget found
 
-
 class Team(models.Model):
     name = models.CharField(max_length=100)
     project = models.ForeignKey(Project, related_name='teams', on_delete=models.CASCADE)
     # members = models.ManyToManyField(Employee, related_name='teams')
     description = models.TextField(blank=True, null=True)
     # don't allow employee to be deleted if employee is manager of team
-    # if you delete employee you must also delete team employee was a part of
+    # if you delete employee you must also delete team employee
     manager = models.ForeignKey(
         Employee,
         on_delete=models.PROTECT,
         related_name="managed_team",
         blank = True,null=True,
-
     )
 
     def __str__(self):
         return f'{self.name} - {self.project} - {self.description}'
-
 
 class Receipt(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)

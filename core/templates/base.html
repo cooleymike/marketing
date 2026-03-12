@@ -21,6 +21,7 @@
 {% if messages %}
     <div class="max-w-7xl mx-auto my-4 space-y-2">
         {% for message in messages %}
+
             <div class="p-4 rounded bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                 {{ message }}
             </div>
@@ -63,8 +64,12 @@
         <nav id="desktop-nav"
              class="hidden md:flex space-x-8 text-lg font-medium text-gray-700 dark:text-gray-200">
             {% if user.is_authenticated %}
-                <a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a>
-                <a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a>
+                {% if user.has_active_allocated_budget %}
+                    <a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a>
+                    <a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a>
+                {% else %}
+                    No active allocated budget
+                {% endif %}
 
                 {# Manager‑only link (optional – keep if you want it in the header) #}
                 {% if request.user.is_manager %}
