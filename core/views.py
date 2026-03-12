@@ -149,6 +149,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         return expenses
 
     def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
         user = self.request.user
 
         # Get current allocated budget
@@ -156,10 +157,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
             is_active=True, employee=user
         ).first()
 
-        if not current_allocated_budget:
-            # Handle case where no active budget exists
-            context_data = super().get_context_data(**kwargs)
-            return context_data
 
         # Get expenses for this employee
         expenses = Expense.objects.filter(employee=user)
@@ -173,7 +170,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         )
 
         # Build context
-        context_data = super().get_context_data(**kwargs)
         context_data.update({
             "emp_total": emp_total,
             "remaining_budget": remaining_budget,
@@ -230,6 +226,8 @@ def team_expense_view(request):
         expenses = expenses.filter(created_date__quarter=quarter)
     if month:
         expenses = expenses.filter(created_date__month=month)
+
+    expenses = expenses.order_by('-created_date')
 
     # Calculate totals
     total_spent_all = expenses.aggregate(total=Sum("initial_amount"))["total"] or Decimal('0.00')

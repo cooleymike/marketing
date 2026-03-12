@@ -105,7 +105,7 @@ class ExpenseType(models.Model):
 
 
 class Expense(models.Model):
-
+    ordering = ['-created_date']
     team = models.ForeignKey("Team", on_delete=models.PROTECT)# this won't
     # allow team to be deleted bc expenses exist (this won't happen as
     # existingt expenses are part of the team)
