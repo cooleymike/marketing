@@ -77,8 +77,10 @@ admin.site.register(ExpenseType)
 
 
 class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ["description", "initial_amount", "created_date",
+    list_display = ["description", "type", "initial_amount", "created_date",
                     "employee"]
+    search_fields = ['description', 'employee__username', 'project__name']
+    list_filter = ['type', 'created_date', 'employee']
 
 admin.site.register(Expense, ExpenseAdmin)
 admin.site.register(FundRequest)
