@@ -3,33 +3,79 @@
 
 {% block title %}Home – My Marketing App{% endblock %}
 
+{% block hero %}
+<section class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-32 px-4 min-h-[70vh] flex flex-col justify-center">
+    <h1 class="text-4xl md:text-5xl font-bold">
+        Marketing, Simplified. Smarter Spending, Better Growth.
+    </h1>
+    <p class="text-lg md:text-xl mt-4 text-indigo-100">
+        Control your marketing budget with real‑time insights and automated tracking.
+    </p>
+</section>
+{% endblock %}
+
 {% block content %}
+{% if not user.is_authenticated %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    {# ----- HERO SECTION (visible on the page) ----- #}
-    <section class="bg-gradient-to-r from-purple-500 to-blue-500
-                    text-white text-center py-20 px-4">
-        <h1 class="text-5xl font-bold">
-            Marketing, Simplified. Smarter Spending, Better Growth.
-        </h1>
-        <p class="text-xl mt-4">
-            Control your marketing budget with real‑time insights and automated tracking.
-        </p>
-        <div class="mt-6 space-x-4">
-            <a href="{% url 'active_project' %}"
-               class="bg-white text-purple-700 px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-gray-100">
-                View Projects
+    {# Key Features Section #}
+    <div class="mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+            Why Choose Us?
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {# Feature 1 #}
+            <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-white dark:bg-gray-800 hover:shadow-lg transition duration-200">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900 dark:to-indigo-800 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Real‑Time Tracking</h3>
+                <p class="text-gray-600 dark:text-gray-300">Monitor your marketing spend in real time with live dashboards and instant insights.</p>
+            </div>
+
+            {# Feature 2 #}
+            <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-white dark:bg-gray-800 hover:shadow-lg transition duration-200">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Budget Control</h3>
+                <p class="text-gray-600 dark:text-gray-300">Set, manage, and allocate budgets across teams with granular control and approval workflows.</p>
+            </div>
+
+            {# Feature 3 #}
+            <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-white dark:bg-gray-800 hover:shadow-lg transition duration-200">
+                <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Smart Analytics</h3>
+                <p class="text-gray-600 dark:text-gray-300">Get detailed reports and actionable insights to optimize your marketing ROI.</p>
+            </div>
+        </div>
+    </div>
+
+    {# CTA Section #}
+    <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-8 md:p-12 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Ready to Take Control of Your Budget?
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+                Join thousands of marketing teams using our platform to streamline expenses and boost ROI.
+            </p>
+            <a href="{% url 'register' %}"
+               class="inline-block bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-6 py-2 rounded font-semibold transition duration-150">
+                Get Started Free
             </a>
-            <a href="{% url 'expenses' %}"
-               class="border border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-700">
-                Track Expenses
-            </a>
         </div>
-    </section>
-        <div class="container mx-auto px-4">
-        <div class="flex flex-wrap items-center justify-center">
+    </div>
 
-        </div>
-        </div>
-
-
+</div>
+{% endif %}
 {% endblock %}
