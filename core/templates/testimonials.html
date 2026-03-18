@@ -1,44 +1,155 @@
 {% extends "base.html" %}
-{% block title %}Testimonials{% endblock %}
+{% block title %}Testimonials – My Marketing App{% endblock %}
+
+{% block hero %}
+<section class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-32 px-4 min-h-[70vh] flex flex-col justify-center">
+    <h1 class="text-4xl md:text-5xl font-bold">
+        What Our Customers Say
+    </h1>
+    <p class="text-lg md:text-xl mt-4 text-indigo-100">
+        Hear from business teams who streamlined their workflows using our platform.
+    </p>
+</section>
+{% endblock %}
+
 {% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
-<section class="h-screen flex flex-col justify-center items-center bg-gradient-to-br from-sky-100 via-white to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-   <h1 class="text-5xl md:text-6xl font-extrabold text-slate-800 dark:text-white text-center mb-4">What our customers say</h1>
-   <p class="text-lg text-slate-600 dark:text-gray-300 text-center max-w-xl">Hear from business teams who streamlined their workflows using our platform.</p>
-</section>
-<section>
-   <div class="feature-card bg-indigo-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 transform hover:-translate-y-2 hover:rotate-1 transition-all duration-500 text-center">
-       <p class="text-gray-600 dark:text-gray-300">"This platform changed how we manage budgets. It’s intuitive, fast, and very efficient."</p>
-        <div class="mt-4 flex items-center space-x-4">
-          <img src="/static/images/amanda.png" class="h-24 w-24 rounded-full" alt="User">
-          <div>
-            <h4 class="text-sm font-semibold text-slate-700 dark:text-white">Amanda Ray</h4>
-            <span class="text-xs text-gray-500 dark:text-gray-400">Managing Director, NeonWave</span>
-          </div>
+    {# Testimonials Grid #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+
+        {# Testimonial 1 #}
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-8 bg-white dark:bg-gray-800 hover:shadow-lg transition duration-200">
+            {# Star Rating #}
+            <div class="flex items-center mb-4">
+                <div class="flex space-x-1">
+                    {% for i in "12345" %}
+                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Quote Text #}
+            <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
+                "This platform changed how we manage budgets. It's intuitive, fast, and very efficient."
+            </p>
+
+            {# Author Info #}
+            <div class="flex items-center space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <img src="/static/images/amanda.png" alt="Amanda Ray" class="w-12 h-12 rounded-full object-cover">
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">Amanda Ray</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Managing Director, NeonWave</p>
+                </div>
+            </div>
         </div>
-      </div>
-       <div class="feature-card bg-indigo-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 transform hover:-translate-y-2 hover:rotate-1 transition-all duration-500 text-center">
-        <p class="text-gray-600 dark:text-gray-300">"Real-time tracking helped our team stay on budget and on track like never before."</p>
-        <div class="mt-4 flex items-center space-x-4">
-          <img src="/static/images/liam.png" class="h-24 w-24 rounded-full" alt="User">
-          <div>
-            <h4 class="text-sm font-semibold text-slate-700 dark:text-white">Liam Lockridge</h4>
-            <span class="text-xs text-gray-500 dark:text-gray-400">CMO, DigitalPioneers</span>
-          </div>
+
+        {# Testimonial 2 #}
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-8 bg-white dark:bg-gray-800 hover:shadow-lg transition duration-200">
+            {# Star Rating #}
+            <div class="flex items-center mb-4">
+                <div class="flex space-x-1">
+                    {% for i in "12345" %}
+                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Quote Text #}
+            <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
+                "Real-time tracking helped our team stay on budget and on track like never before."
+            </p>
+
+            {# Author Info #}
+            <div class="flex items-center space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <img src="/static/images/liam.png" alt="Liam Lockridge" class="w-12 h-12 rounded-full object-cover">
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">Liam Lockridge</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">CMO, DigitalPioneers</p>
+                </div>
+            </div>
         </div>
-      </div>
-       <div class="feature-card bg-indigo-50 dark:bg-gray-800 rounded-2xl shadow-xl p-10 transform hover:-translate-y-2 hover:rotate-1 transition-all duration-500 text-center">
-        <p class="text-gray-600 dark:text-gray-300">"Easy setup and integration with our existing tools has made this a no-brainer."</p>
-        <div class="mt-4 flex items-center space-x-4">
-          <img src="/static/images/sophie.png" class="h-24 w-24 rounded-full" alt="User">
-          <div>
-            <h4 class="text-sm font-semibold text-slate-700 dark:text-white">Sophie Elman</h4>
-            <span class="text-xs text-gray-500 dark:text-gray-400">Brand Strategist, Visionary Co.</span>
-          </div>
+
+        {# Testimonial 3 #}
+        <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-8 bg-white dark:bg-gray-800 hover:shadow-lg transition duration-200">
+            {# Star Rating #}
+            <div class="flex items-center mb-4">
+                <div class="flex space-x-1">
+                    {% for i in "12345" %}
+                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Quote Text #}
+            <p class="text-gray-600 dark:text-gray-300 mb-6 italic">
+                "Easy setup and integration with our existing tools has made this a no-brainer."
+            </p>
+
+            {# Author Info #}
+            <div class="flex items-center space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <img src="/static/images/sophie.png" alt="Sophie Elman" class="w-12 h-12 rounded-full object-cover">
+                <div>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">Sophie Elman</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Brand Strategist, Visionary Co.</p>
+                </div>
+            </div>
         </div>
-      </div>
+
     </div>
-  </div>
-</section>
 
+    {# Trust Badges Section #}
+    <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-8 md:p-12 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900 mb-16">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Trusted by Leading Teams
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300">
+                Join thousands of companies optimizing their marketing spend.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div>
+                <p class="text-3xl md:text-4xl font-bold text-indigo-600 dark:text-indigo-300">500+</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Active Teams</p>
+            </div>
+            <div>
+                <p class="text-3xl md:text-4xl font-bold text-indigo-600 dark:text-indigo-300">$2.5B</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Budgets Managed</p>
+            </div>
+            <div>
+                <p class="text-3xl md:text-4xl font-bold text-indigo-600 dark:text-indigo-300">98%</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Satisfaction Rate</p>
+            </div>
+            <div>
+                <p class="text-3xl md:text-4xl font-bold text-indigo-600 dark:text-indigo-300">24/7</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Support Available</p>
+            </div>
+        </div>
+    </div>
+
+    {# CTA Section #}
+    <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-8 md:p-12 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Ready to Join Them?
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+                Start your free trial today and experience the difference.
+            </p>
+            <a href="{% url 'register' %}"
+               class="inline-block bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-6 py-2 rounded font-semibold transition duration-150">
+                Get Started Free
+            </a>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
