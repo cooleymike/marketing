@@ -17,9 +17,6 @@ from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee,
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
 
-def features_view(request):
-    return render(request, "features.html")
-
 def testimonials_view(request):
     return render(request, "testimonials.html")
 

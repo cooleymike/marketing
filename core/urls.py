@@ -14,7 +14,6 @@ urlpatterns = [
     path('expense_form/', views.expense_form, name='expense_form'),
     path('active_project/', views.active_project, name='active_project'),
     path('settings/', views.settings, name='settings'),
-    path('features/', views.features_view, name='features'),
     path('testimonials/', views.testimonials_view, name='testimonials'),
     path('pricing/', views.pricing_view, name='pricing'),
     path('contact/', views.contact_view, name='contact'),
