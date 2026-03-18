@@ -25,7 +25,7 @@ LOGIN_URL = '/signin/'
 SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://marketing.hopto.org/']
