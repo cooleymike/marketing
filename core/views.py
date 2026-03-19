@@ -55,7 +55,7 @@ def request_funds_view(request):
             fund_request = form.save(commit=False)
             fund_request.requester = request.user
             fund_request.save()
-            messages.success(request, "Thanks for submitting your request!")
+            messages.info(request, "Thanks for submitting your request!")
             return redirect('request_funds')
     else:
         form = FundRequestForm()
