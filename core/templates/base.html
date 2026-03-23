@@ -112,27 +112,27 @@
     </div>
 
     <!-- Mobile navigation panel -->
-    <div id="mobile-nav"
-         class="md:hidden hidden bg-white dark:bg-gray-800 py-4">
+        <div id="mobile-nav"
+         class="md:hidden hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4">
         <ul class="flex flex-col space-y-3 px-6 text-lg font-medium text-gray-700 dark:text-gray-200">
             {% if user.is_authenticated %}
-                <li><a href="{% url 'expenses' %}" class="hover:text-indigo-600">My Expenses</a></li>
-                <li><a href="{% url 'team_expense' %}" class="hover:text-indigo-600">Team Expenses</a></li>
-                <li><a href="{% url 'active_project' %}" class="hover:text-indigo-600">Current Project</a> </li>
-
+                <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
+                <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
+                <li><a href="{% url 'active_project' %}" class="hover:text-purple-600">Current Project</a></li>
                 {% if request.user.is_manager %}
                     <li><a href="{% url 'manager_dashboard' %}"
-                           class="block px-4 py-2 text-indigo-600 hover:underline">Manager Dashboard</a></li>
+                           class="text-indigo-600 hover:underline">Manager Dashboard</a></li>
                 {% endif %}
             {% else %}
-                <li><a href="{% url 'testimonials' %}" class="hover:text-indigo-600">Testimonials</a></li>
-                <li><a href="{% url 'pricing' %}" class="hover:text-indigo-600">Pricing</a></li>
-                <li><a href="{% url 'contact' %}" class="hover:text-indigo-600">Contact</a></li>
-                <li><a href="{% url 'register' %}" class="hover:text-indigo-600">Register</a></li>
+                <li><a href="{% url 'testimonials' %}" class="hover:text-blue-600">Testimonials</a></li>
+                <li><a href="{% url 'pricing' %}" class="hover:text-blue-600">Pricing</a></li>
+                <li><a href="{% url 'contact' %}" class="hover:text-blue-600">Contact</a></li>
+                <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
             {% endif %}
         </ul>
     </div>
 </header>
+
 
 {# Optional hero placeholder – child templates may override #}
 {% block hero %}{% endblock %}
