@@ -28,7 +28,8 @@ SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://marketing.hopto.org/']
+CSRF_TRUSTED_ORIGINS = ['http://expensely.net', "https://6a17-201-93-183-173.ngrok-free.app"]
+
 
 
 

@@ -185,7 +185,7 @@ def register(request):
             form.instance.set_password(form.cleaned_data['password1'])
             form.save()
             messages.success(request, "Registration successful")
-            return redirect('signin_view') # redirect to signin or maybe home
+            return redirect('homepage') # redirect to signin or maybe home
 
    else:
         form = RegisterForm()
