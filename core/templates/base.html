@@ -52,8 +52,7 @@
         <!-- Dark‑mode toggle -->
         <div class="flex items-center space-x-4">
         <button id="theme-toggle"
-           class="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 focus:outline-none hover:bg=gray-300
-            dark:hover:bg-gray-600 transition">
+           class="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 focus:outline-none">
         <svg id="theme-icon"
            class="h-4 w-4 text-gray-800 dark:text-gray-100"
            fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
@@ -112,25 +111,26 @@
     </div>
 
     <!-- Mobile navigation panel -->
-        <div id="mobile-nav"
-         class="md:hidden hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4">
-        <ul class="flex flex-col space-y-3 px-6 text-lg font-medium text-gray-700 dark:text-gray-200">
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
-                <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
-                <li><a href="{% url 'active_project' %}" class="hover:text-purple-600">Current Project</a></li>
-                {% if request.user.is_manager %}
-                    <li><a href="{% url 'manager_dashboard' %}"
-                           class="text-indigo-600 hover:underline">Manager Dashboard</a></li>
-                {% endif %}
-            {% else %}
-                <li><a href="{% url 'testimonials' %}" class="hover:text-blue-600">Testimonials</a></li>
-                <li><a href="{% url 'pricing' %}" class="hover:text-blue-600">Pricing</a></li>
-                <li><a href="{% url 'contact' %}" class="hover:text-blue-600">Contact</a></li>
-                <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
+   <!-- Mobile navigation panel -->
+<div id="mobile-nav"
+     class="md:hidden hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4">
+    <ul class="flex flex-col space-y-3 px-6 text-lg font-medium text-gray-700 dark:text-gray-200">
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
+            <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
+            <li><a href="{% url 'active_project' %}" class="hover:text-purple-600">Current Project</a></li>
+            {% if request.user.is_manager %}
+                <li><a href="{% url 'manager_dashboard' %}" class="text-indigo-600 hover:underline">Manager Dashboard</a></li>
             {% endif %}
-        </ul>
-    </div>
+        {% else %}
+            <li><a href="{% url 'testimonials' %}" class="hover:text-blue-600">Testimonials</a></li>
+            <li><a href="{% url 'pricing' %}" class="hover:text-blue-600">Pricing</a></li>
+            <li><a href="{% url 'contact' %}" class="hover:text-blue-600">Contact</a></li>
+            <li><a href="{% url 'signin' %}" class="hover:text-purple-600 font-semibold">Sign In</a></li>  {# ← Add this #}
+            <li><a href="{% url 'register' %}" class="hover:text-purple-600">Register</a></li>
+        {% endif %}
+    </ul>
+</div>
 </header>
 
 
