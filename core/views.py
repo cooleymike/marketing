@@ -395,6 +395,11 @@ def settings(request):
         # Handle other POST actions here, such as updating user details
     return TemplateResponse(request, "settings.html", {"title": "Settings"})
 
+def privacy_policy(request):
+    return render(request, "privacy_policy.html")
+
+def terms_of_service(request):
+    return render(request, "terms_of_service.html")
 
 def custom_404(request, _exception):
     return render(request, '404.html', status=404)
