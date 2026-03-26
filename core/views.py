@@ -1,5 +1,4 @@
 import csv
-from calendar import month
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -9,7 +8,6 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
 from django.views.generic import ListView
 
 from EP.settings import RECIPIENT_EMAIL
@@ -398,3 +396,5 @@ def settings(request):
     return TemplateResponse(request, "settings.html", {"title": "Settings"})
 
 
+def custom_404(request, _exception):
+    return render(request, '404.html', status=404)
