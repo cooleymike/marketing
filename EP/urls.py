@@ -16,4 +16,3 @@ urlpatterns = [
 
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)
 
-handler404 = 'core.views.custom_404'
