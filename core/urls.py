@@ -1,8 +1,7 @@
 
 from django.urls import path
+from django.shortcuts import render
 from .import views
-
-
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
@@ -17,11 +16,13 @@ urlpatterns = [
     path('testimonials/', views.testimonials_view, name='testimonials'),
     path('pricing/', views.pricing_view, name='pricing'),
     path('contact/', views.contact_view, name='contact'),
+    path('privacy_policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms_of_service/', views.terms_of_service, name='terms_of_service'),
     path('request_funds/', views.request_funds_view, name='request_funds'),
     path('manager_dashboard/', views.manager_dashboard, name='manager_dashboard'),
 path(
     'manager/fund-request/<int:pk>/<str:decision>/',
     views.approve_funds_requests,
     name='approve_funds_request'
-),
+)
 ]
