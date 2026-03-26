@@ -27,18 +27,15 @@ SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
 CSRF_TRUSTED_ORIGINS = ['http://expensely.net', "https://6a17-201-93-183-173.ngrok-free.app"]
-
-
-
 
 # Application definition
 
 INSTALLED_APPS = [
     #my apps
 
-    
+
     #django appps (checks these in sequence, make sure all apps are listed
     # here in order of importance
     'django.contrib.admin',
@@ -100,7 +97,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'EP.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -110,8 +106,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite32',
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -130,7 +124,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -141,7 +134,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -228,5 +220,4 @@ SOCIALACCOUNT_PROVIDERS = {
         }
 
 }
-
-
+handler404 ='core.views.custom_404'

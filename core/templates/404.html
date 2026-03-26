@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Page Not Found – Oops!{% endblock %}
+
+{% block hero %}
+<!-- Custom 404 Hero Section -->
+<section class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-24 px-4 min-h-[60vh] flex flex-col justify-center">
+    <h1 class="text-6xl md:text-8xl font-extrabold mb-4">404</h1>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Whoops! We can't find that page.</h2>
+    <p class="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto">
+        It looks like the page you're looking for has wandered off into the digital void. 
+        Don't worry, even the best marketing campaigns have a few lost leads!
+    </p>
+    
+    <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/" class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-gray-100 transition duration-150">
+            🏠 Go Home
+        </a>
+        <a href="{% url 'contact' %}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition duration-150">
+            📞 Contact Support
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<!-- Optional: Add a fun illustration or extra context below the fold -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md border border-gray-200 dark:border-gray-700">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Where could you go instead?</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <a href="{% url 'pricing' %}" class="block p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-lg transition">
+                <span class="text-3xl mb-2 block">💰</span>
+                <h4 class="font-semibold text-gray-800 dark:text-gray-200">Check Pricing</h4>
+            </a>
+            <a href="{% url 'testimonials' %}" class="block p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-lg transition">
+                <span class="text-3xl mb-2 block">⭐</span>
+                <h4 class="font-semibold text-gray-800 dark:text-gray-200">Read Reviews</h4>
+            </a>
+            <a href="{% url 'contact' %}" class="block p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-lg transition">
+                <span class="text-3xl mb-2 block">📩</span>
+                <h4 class="font-semibold text-gray-800 dark:text-gray-200">Get in Touch</h4>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
