@@ -1,5 +1,6 @@
 
 from django.urls import path
+from core.views import SigninView
 from django.shortcuts import render
 from .import views
 
@@ -7,7 +8,7 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('expenses/', views.ExpenseListView.as_view(), name='expenses'),
     path('register/', views.register, name='register'),
-    path('signin/', views.signin, name='signin'),  # keep only this one
+    path('signin/', views.SigninView.as_view(), name='signin'),  # keep only this one
     path('team_expense/', views.team_expense_view, name='team_expense'),
     path('employees_csv/', views.employee_csv, name='employees_csv'),
     path('expense_form/', views.expense_form, name='expense_form'),

@@ -6,6 +6,8 @@ Expenses
 {% endblock %}
 
 {% block content %}
+
+<!-- Messages Alert -->
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
@@ -20,29 +22,34 @@ Expenses
     {% endfor %}
 </ul>
 {% endif %}
-<div class="bg-white shadow-lg rounded-lg p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-4">Budget Overview</h2>
 
-    <p><strong>Total Budget:</strong> ${{ allocated_budget }}</p>
-    <p><strong>Spent:</strong> ${{ total_spent }}</p>
-    <p><strong>Remaining:</strong> ${{ remaining_budget }}</p>
+<!-- Budget Overview Card - Original Style -->
+<div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Overview</h2>
 
-    <!-- Progress Bar -->
-    <div class="relative pt-2">
-        <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-green-200 text-green-800">
-                {{ percentage_left }}% Left
-            </span>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div>
+            <p class="text-gray-600 dark:text-gray-400">Total Budget</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">${{ allocated_budget }}</p>
         </div>
-        <div class="overflow-hidden h-4 mb-4 text-xs flex rounded bg-gray-200">
-            <div id="budgetProgressBar" style="width: {{ percentage_left }}%;"
-                 class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+        <div>
+            <p class="text-gray-600 dark:text-gray-400">Spent</p>
+            <p class="text-2xl font-bold text-red-800">${{ emp_total }}</p>
+        </div>
+        <div>
+            <p class="text-gray-600 dark:text-gray-400">Remaining</p>
+            <p class="text-2xl font-bold text-emerald-800 dark:text-emerald-800">${{ remaining_budget }}</p>
         </div>
     </div>
 </div>
 
+<!-- Floating Chart - Invisible Background -->
+<div class="mb-8 flex justify-center">
+    <div id="chartContainer" style="width: 100%; max-width: 500px; height: 350px;"></div>
+</div>
+
 <!-- Filter Controls -->
-<div class="flex gap-4 mb-6 items-center">
+<div class="flex gap-4 mb-6 items-center flex-wrap">
     <div>
         <label for="quarterFilter" class="block mb-1 text-gray-700 dark:text-gray-200">Filter by Quarter:</label>
         <select id="quarterFilter" class="border rounded p-2 dark:bg-gray-700 dark:text-white">
@@ -76,6 +83,8 @@ Expenses
     </button>
 </div>
 
+
+<!-- Expenses Table -->
 <div class="container mx-auto p-4">
     {% if user.is_authenticated %}
         {% if expenses %}
@@ -91,28 +100,22 @@ Expenses
             </thead>
             <tbody>
                 {% for expense in expenses %}
-                <tr class="border-b dark:border-gray-700">
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td class="px-4 py-2 text-gray-800 dark:text-gray-300">
-                        <div class="relative flex w-96 flex-col rounded-lg border border-slate-200 bg-white shadow-sm">
-                            <nav class="flex min-w-[240px] flex-col gap-1 p-1.5">
-                                <div role="button" class="text-slate-800 flex w-full items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100">
-                                    <div class="mr-4 grid place-items-center">
-                                        <img alt="avatar"
-                                             src="{{ expense.upload.url }}"
-                                             class="relative inline-block h-12 w-12 !rounded-full object-cover object-center" />
-                                    </div>
-                                    <div>
-                                        <h6 class="text-slate-800 font-medium">{{ expense.description }}</h6>
-                                        <p class="text-slate-500 text-sm">Posted on: {{ expense.created_date }}</p>
-                                    </div>
-                                </div>
-                            </nav>
+                        <div class="flex items-center gap-3">
+                            <img alt="avatar"
+                                 src="{{ expense.upload.url }}"
+                                 class="h-10 w-10 rounded-full object-cover" />
+                            <div>
+                                <h6 class="font-medium">{{ expense.description }}</h6>
+                                <p class="text-sm text-gray-500">{{ expense.created_date }}</p>
+                            </div>
                         </div>
                     </td>
-                    <td class="px-4 py-2 text-gray-800 dark:text-gray-300">{{ expense.initial_amount }}</td>
-                    <td class="px-4 py-2 text-gray-800 dark:text-gray-300">{{ expense.created_date }}</td>
+                    <td class="px-4 py-2 text-gray-800 dark:text-gray-300">${{ expense.initial_amount }}</td>
+                    <td class="px-4 py-2 text-gray-800 dark:text-gray-300">{{ expense.created_date|date:"M d, Y" }}</td>
                     <td class="px-4 py-2 text-gray-800 dark:text-gray-300">{{ expense.expense_quarter }}</td>
-                    <td class="px-4 py-2 text-gray-800 dark:text-gray-300">{{ expense.remaining_budget }}</td>
+                    <td class="px-4 py-2 text-gray-800 dark:text-gray-300">${{ expense.remaining_budget }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -125,17 +128,56 @@ Expenses
             Please <a href="{% url 'signin' %}" class="text-blue-500 hover:underline">sign in</a> to view your expenses.
         </p>
     {% endif %}
-    <div class="mt-4">
-        <div class="relative bg-white dark:bg-gray-800 shadow-lg rounded-full p-6 group overflow-hidden flex items-center justify-center">
-            <span class="absolute inset-0 bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-0 rounded-full"></span>
-            <a href="{% url 'expense_form' %}" class="relative px-6 py-3 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 z-10">Create Expense</a>
-        </div>
-    </div>
 
-    <div class="mt-4">
-        <a href="/request_funds" class="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition">Request Funds</a>
+    <!-- Action Buttons -->
+    <div class="mt-6 flex gap-4">
+        <a href="{% url 'expense_form' %}" class="px-6 py-3 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600">
+            Create Expense
+        </a>
+        <a href="/request_funds" class="px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-700">
+            Request Funds
+        </a>
     </div>
 </div>
+
+<!-- CanvasJS Library -->
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<!-- Chart Initialization Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var datapointsRaw = {{ datapoints | safe }};
+
+        if (!datapointsRaw || datapointsRaw.length === 0) {
+            console.warn('No chart data available');
+            document.getElementById('chartContainer').innerHTML = '<p class="text-center text-gray-500 text-sm">No budget data to display</p>';
+            return;
+        }
+
+        var chart = new CanvasJS.Chart("chartContainer", {
+            theme: "light2",
+            animationEnabled: true,
+            backgroundColor: "transparent",  // Invisible background
+            title: {
+                text: "Budget Allocation",
+                fontSize: 16,
+                fontFamily: "sans-serif"
+            },
+            data: [{
+                type: "pie",
+                startAngle: -90,
+                yValueFormatString: "$#,###.##",
+                dataPoints: datapointsRaw
+            }],
+            legend: {
+                verticalAlign: "bottom",
+                horizontalAlign: "center"
+            }
+        });
+
+        chart.render();
+    });
+</script>
 
 <script src="{% static 'js/quarter_summary.js' %}"></script>
 

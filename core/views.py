@@ -1,5 +1,6 @@
 import csv
 from decimal import Decimal
+from urllib import request
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,7 +9,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
-from django.views.generic import ListView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, TemplateView
 
 from EP.settings import RECIPIENT_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
@@ -103,28 +105,32 @@ def expense_list_by_quarter(request):
     # Your logic to filter and order expenses by year/quarter
     expenses = Expense.objects.filter(employee=request.user).order_by('-created_date')
     # Render the expenses template or return a custom response
-    return render(request, 'admin/admin_expense_viewer.html', {'expenses':
-                                                              expenses})
+    return render(request, 'admin/admin_expense_viewer.html', {'expenses':expenses})
 
 def homepage(request):
    return TemplateResponse(request, "home.html", {"title": "homepage"})
 
-def signin(request):
-    if request.method == "POST":
-        form = SigninForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect("homepage")
-            else:
-                messages.error(request, "Invalid username or password")
-    else:
-        form = SigninForm()
+class SigninView(TemplateView):
+    template_name = "signin.html"
+    form_class = SigninForm
+    success_url = reverse_lazy("homepage")
 
-    return TemplateResponse(request, "signin.html", {"form": form})
+    def form_valid(self, form):
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(self.request, user)
+            return self.form_valid(form)
+        else:
+            messages.error(request, "Invalid username or password")
+            return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = SigninForm()
+        return context
 
 # Class based views
 # CreateView, UpdateView, DeleteView, DetailView, ListView
@@ -150,6 +156,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         current_allocated_budget = ProjectEmployeeAllocatedBudget.objects.filter(
             is_active=True, employee=user
         ).first()
+
         if current_allocated_budget is None:
             messages.error(self.request, "You don't have any allocated budget.")
             return context_data
@@ -164,6 +171,20 @@ class ExpenseListView(LoginRequiredMixin, ListView):
             if current_allocated_budget.allocated_budget else 0
         )
 
+        # Build pie chart data
+        datapoints = [
+            {
+                "y": round(float(emp_total), 2),
+                "label": "Spent",
+                "color": "#9b0808"
+            },
+            {
+                "y": round(float(remaining_budget), 2),
+                "label": "Remaining",
+                "color": "#075c49"
+            }
+        ]
+
         # Build context
         context_data.update({
             "emp_total": emp_total,
@@ -171,6 +192,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
             "allocated_budget": current_allocated_budget.allocated_budget,
             "percentage_left": round(percentage_left, 2),
             "active_quarter": current_allocated_budget.quarter,
+            "datapoints": datapoints,  # Pass to template
         })
 
         return context_data
