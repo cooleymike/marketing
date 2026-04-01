@@ -1,14 +1,17 @@
-
+from django.contrib.auth.views import LoginView
 from django.urls import path
-from core.views import SigninView
-from django.shortcuts import render
+from core.views import ExpenseListView
 from .import views
+from .forms import CustomAuthenticationForm
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
-    path('expenses/', views.ExpenseListView.as_view(), name='expenses'),
+    path('expenses/',ExpenseListView.as_view(), name='expenses'),
     path('register/', views.register, name='register'),
-    path('signin/', views.SigninView.as_view(), name='signin'),  # keep only this one
+    path('signin/',LoginView.as_view(
+        form_class=CustomAuthenticationForm,
+        template_name='signin.html'
+    ), name='signin'),
     path('team_expense/', views.team_expense_view, name='team_expense'),
     path('employees_csv/', views.employee_csv, name='employees_csv'),
     path('expense_form/', views.expense_form, name='expense_form'),

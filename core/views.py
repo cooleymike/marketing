@@ -2,6 +2,7 @@ import csv
 from decimal import Decimal
 from urllib import request
 
+from allauth.account.views import LoginView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum, F
@@ -11,6 +12,8 @@ from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView
+
+
 
 from EP.settings import RECIPIENT_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
@@ -114,18 +117,6 @@ class SigninView(TemplateView):
     template_name = "signin.html"
     form_class = SigninForm
     success_url = reverse_lazy("homepage")
-
-    def form_valid(self, form):
-        username = form.cleaned_data["username"]
-        password = form.cleaned_data["password"]
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(self.request, user)
-            return self.form_valid(form)
-        else:
-            messages.error(request, "Invalid username or password")
-            return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
