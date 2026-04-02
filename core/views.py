@@ -110,9 +110,6 @@ def expense_list_by_quarter(request):
     # Render the expenses template or return a custom response
     return render(request, 'admin/admin_expense_viewer.html', {'expenses':expenses})
 
-def homepage(request):
-   return TemplateResponse(request, "home.html", {"title": "homepage"})
-
 class SigninView(TemplateView):
     template_name = "signin.html"
     form_class = SigninForm

@@ -1,11 +1,14 @@
 from django.contrib.auth.views import LoginView
 from django.urls import path
+from django.views.generic import TemplateView
+
 from core.views import ExpenseListView
 from .import views
-from .forms import CustomAuthenticationForm
+from core.forms import CustomAuthenticationForm
 
 urlpatterns = [
-    path('', views.homepage, name='homepage'),
+    # path('', views.homepage, name='homepage'),
+    path('', TemplateView.as_view(template_name="home.html"), name='homepage'),
     path('expenses/',ExpenseListView.as_view(), name='expenses'),
     path('register/', views.register, name='register'),
     path('signin/',LoginView.as_view(
