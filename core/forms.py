@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from django.db.models import Sum
 from django.forms import (
     ModelForm, CharField, PasswordInput, Form,
@@ -77,7 +78,7 @@ class CreateUserForm(UserCreationForm):
 class SigninForm(Form):
     username = CharField(widget=TextInput(attrs={
         "class": "border p-3 w-full shadow-md rounded-lg dark:bg-indigo-700 dark:text-gray-300 dark:border-gray-700",
-        "placeholder": "Username",
+        "placeholder": "login",
     }))
     password = CharField(widget=PasswordInput(attrs={
         "class": "border p-3 w-full shadow-md rounded-lg dark:bg-indigo-700 dark:text-gray-300 dark:border-gray-700",
@@ -160,6 +161,24 @@ class CustomizeSigninForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
     }),
     )
-
-
+User = get_user_model()
+class CustomAuthenticationForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+        error_messages = {
+            NON_FIELD_ERRORS:{
+                "unique": "This account is already registered.",
+            }
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({
+            'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'Enter your login',
+        })
+        self.fields['password'].widget.attrs.update({
+            'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'Enter your password',
+        })
 
