@@ -16,8 +16,6 @@ AUTH_USER_MODEL = "core.Employee"
 
 LOGIN_URL = '/signin/'
 
-# SESSION_COOKIE_DOMAIN = '.marketing.hopto.org'
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -27,10 +25,13 @@ SECRET_KEY = 'django-insecure-fct@82ed^em^in4_n0egg@lx6&qun1g1b4rsc53y((g77atntd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
-CSRF_TRUSTED_ORIGINS = ['http://expensely.net', "https://6a17-201-93-183-173.ngrok-free.app"]
+ALLOWED_HOSTS = ['expensely.net', 'www.expensely.net', '127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://expensely.net',
+                        'https://www.expensely.net',
+                        ]
 
-# Application definition
+CSRF_COOKIE_DOMAIN = '.expensely.net'
+SESSION_COOKIE_DOMAIN = '.expensely.net'
 
 INSTALLED_APPS = [
     #my apps

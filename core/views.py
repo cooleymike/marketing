@@ -41,8 +41,9 @@ def contact_view(request):
         send_mail(
             subject='New Contact Message',
             message=full_message,
-            from_email=email,
-            recipient_list=[RECIPIENT_EMAIL],  # YOUR email
+            from_email=settings.DEFAULT_FROM_EMAIL,  # Use configured sender
+            recipient_list=[settings.RECIPIENT_EMAIL],
+            reply_to=[email],  # Visitor's email goes here instead
         )
 
         messages.success(request, "Thanks for your message! We'll be in touch.")
@@ -119,9 +120,6 @@ class SigninView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["form"] = SigninForm()
         return context
-
-# Class based views
-# CreateView, UpdateView, DeleteView, DetailView, ListView
 
 class ExpenseListView(LoginRequiredMixin, ListView):
     model = Expense
