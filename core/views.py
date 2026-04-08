@@ -39,7 +39,6 @@ def contact_view(request):
             message=full_message,
             from_email=email,  # Use configured sender
             recipient_list=[RECIPIENT_EMAIL],
-            reply_to=[email],  # Visitor's email goes here instead
         )
 
         messages.success(request, "Thanks for your message! We'll be in touch.")
