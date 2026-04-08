@@ -12,7 +12,7 @@ from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView
-
+from django.conf import settings
 
 
 from EP.settings import RECIPIENT_EMAIL
