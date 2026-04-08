@@ -1,8 +1,6 @@
 import csv
 from decimal import Decimal
-from urllib import request
 
-from allauth.account.views import LoginView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum, F
@@ -12,8 +10,8 @@ from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView
-from django.conf import settings
 
+from EP.settings import RECIPIENT_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
@@ -40,7 +38,7 @@ def contact_view(request):
             subject='New Contact Message',
             message=full_message,
             from_email=email,  # Use configured sender
-            recipient_list=[settings.RECIPIENT_EMAIL],
+            recipient_list=[RECIPIENT_EMAIL],
             reply_to=[email],  # Visitor's email goes here instead
         )
 
