@@ -39,7 +39,7 @@ def contact_view(request):
         send_mail(
             subject='New Contact Message',
             message=full_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,  # Use configured sender
+            from_email=email,  # Use configured sender
             recipient_list=[settings.RECIPIENT_EMAIL],
             reply_to=[email],  # Visitor's email goes here instead
         )
