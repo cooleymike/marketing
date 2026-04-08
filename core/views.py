@@ -14,8 +14,6 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView
 from django.conf import settings
 
-
-from EP.settings import RECIPIENT_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
 from django.utils import timezone
