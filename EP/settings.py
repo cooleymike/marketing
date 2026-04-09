@@ -29,9 +29,9 @@ ALLOWED_HOSTS = ['expensely.net', 'www.expensely.net', '127.0.0.1', 'localhost']
 CSRF_TRUSTED_ORIGINS = ['https://expensely.net',
                         'https://www.expensely.net',
                         ]
-
-CSRF_COOKIE_DOMAIN = '.expensely.net'
-SESSION_COOKIE_DOMAIN = '.expensely.net'
+if not DEBUG:
+    CSRF_COOKIE_DOMAIN = '.expensely.net'
+    SESSION_COOKIE_DOMAIN = '.expensely.net'
 
 INSTALLED_APPS = [
     #my apps

@@ -182,3 +182,13 @@ class CustomAuthenticationForm(AuthenticationForm):
             'placeholder': 'Enter your password',
         })
 
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+
+    def clean_message(self):
+        message = self.cleaned_data['message']
+        if len(message) < 10:
+            raise ValidationError("Message must be at least 10 characters long")
+        return message

@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import path
 from django.views.generic import TemplateView
 
-from core.views import ExpenseListView
+from core.views import ExpenseListView, ContactView
 from .import views
 from core.forms import CustomAuthenticationForm
 
@@ -22,7 +22,7 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('testimonials/', views.testimonials_view, name='testimonials'),
     path('pricing/', views.pricing_view, name='pricing'),
-    path('contact/', views.contact_view, name='contact'),
+    path('contact/', ContactView.as_view(), name='contact'),
     path('privacy_policy/', views.privacy_policy, name='privacy_policy'),
     path('terms_of_service/', views.terms_of_service, name='terms_of_service'),
     path('request_funds/', views.request_funds_view, name='request_funds'),
