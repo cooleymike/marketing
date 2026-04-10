@@ -9,11 +9,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, FormView
 
-from EP.settings import RECIPIENT_EMAIL
+
+from EP.settings import RECIPIENT_EMAIL, DEFAULT_FROM_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
-from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm
+from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm, ContactForm
 from django.utils import timezone
 
 def testimonials_view(request):
@@ -26,25 +27,26 @@ from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-def contact_view(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        message = request.POST.get('message')
+class ContactView(FormView):
+    template_name = 'contact.html'
+    form_class = ContactForm
+    success_url = reverse_lazy('contact')
 
+    def form_valid(self, form):
+        name = form.cleaned_data['name']
+        email = form.cleaned_data['email']
+        message = form.cleaned_data['message']
+        #format the message
         full_message = f"Message from {name} <{email}>:\n\n{message}"
-
+    #send mail remains the same!
         send_mail(
             subject='New Contact Message',
             message=full_message,
-            from_email=email,  # Use configured sender
+            from_email=DEFAULT_FROM_EMAIL,  # Use configured sender
             recipient_list=[RECIPIENT_EMAIL],
-        )
-
-        messages.success(request, "Thanks for your message! We'll be in touch.")
-        return redirect('contact')
-
-    return render(request, 'contact.html')
+                 )
+        messages.success(self.request, "Thanks for your message! We'll be in touch.")
+        return super().form_valid(form)
 
 @login_required
 def request_funds_view(request):
