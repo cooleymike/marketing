@@ -2,19 +2,20 @@ import csv
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Sum, F
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
-from django.views.generic import ListView, TemplateView, FormView
+from django.views.generic import ListView, TemplateView, FormView, CreateView, UpdateView, DeleteView
 
-from EP.settings import RECIPIENT_EMAIL
 from core.tasks import send_contact_email
-from core.models import Expense, ProjectEmployeeAllocatedBudget, Employee, FundRequest, Project
-from .forms import ExpenseForm, RegisterForm, FundRequestForm, ContactForm, SigninForm
+
+from EP.settings import RECIPIENT_EMAIL, DEFAULT_FROM_EMAIL
+from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
+from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm, ContactForm
 from django.utils import timezone
 
 def testimonials_view(request):
@@ -53,74 +54,110 @@ class ContactView(FormView):
         messages.success(self.request, "Thanks for your message! We'll be in touch.")
         return super().form_valid(form)
 
-@login_required
-def request_funds_view(request):
-    if request.method == 'POST':
-        form = FundRequestForm(request.POST)
-        if form.is_valid():
-            fund_request = form.save(commit=False)
-            fund_request.requester = request.user
-            fund_request.save()
-            messages.info(request, "Thanks for submitting your request!")
-            return redirect('request_funds')
-    else:
-        form = FundRequestForm()
-    return render(request, 'request_funds.html', {'form': form})
+class RequestFundsView(LoginRequiredMixin, CreateView):
+    model = FundRequest
+    form_class = FundRequestForm
+    template_name = 'request_funds.html'
+    success_url = reverse_lazy('request_funds')
+
+    def form_valid(self, form):
+        form.instance.employee = self.request.user
+        messages.success(self.request, "Thanks for your request!")
+        return super().form_valid(form)
+
 
 def is_manager(user):
     return getattr(user, "is_manager", False)
 
-@user_passes_test(is_manager, login_url='manager_singin')
-def manager_dashboard(request):
-    managed_teams = Team.objects.filter(manager=request.user)
-    managed_projects = Project.objects.filter(teams__in=managed_teams)
-    pending_requests = FundRequest.objects.filter(
-        status="Pending",
-        project__in=managed_projects,
-    )
+class ManagerDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'manager_dashboard.html'
+    login_url = reverse_lazy('manager_signin')
+    success_url = reverse_lazy('manager_dashboard')
 
-    context = {
-        'pending_requests': pending_requests,
-    }
-    return render(request, "manager_dashboard.html", context)
-
-@user_passes_test(is_manager, login_url='manager_signin')
-def approve_funds_requests(request, pk, decision):
-    if request.method != 'POST':
-        return redirect('manager_dashboard')  # Change this
-
-    fund_request = get_object_or_404(FundRequest, pk=pk, status="Pending")
-
-    if decision == "approve":
-        fund_request.status = "Approved"
-        fund_request.save()
-    elif decision == "reject":
-        fund_request.status = "Rejected"
-    else:
-        messages.error(request, "Not a valid decision.")
-        return redirect('manager_dashboard')
-
-    fund_request.reviewer = request.user
-    fund_request.reviewed_at = timezone.now()
-    fund_request.save()
-    messages.success(request, f"Request {decision}d.")
-    return redirect("manager_dashboard")  # Change this too
-
-@login_required
-def expense_list_by_quarter(request):
-    # Your logic to filter and order expenses by year/quarter
-    expenses = Expense.objects.filter(employee=request.user).order_by('-created_date')
-    # Render the expenses template or return a custom response
-    return render(request, 'admin/admin_expense_viewer.html', {'expenses':expenses})
-
-class SigninView(TemplateView):
-    template_name = "signin.html"
-    form_class = SigninForm
-    success_url = reverse_lazy("homepage")
+    def test_func(self):
+        return is_manager(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = SigninForm()
+        managed_projects = Project.objects.filter(manager=self.request.user)
+        context['pending_requests'] = FundRequest.objects.filter(
+            status='pending',
+            projects__in=managed_projects,
+        )
+        return context
+#
+# @user_passes_test(is_manager, login_url='manager_singin')
+# def manager_dashboard(request):
+#     managed_teams = Team.objects.filter(manager=request.user)
+#     managed_projects = Project.objects.filter(teams__in=managed_teams)
+#     pending_requests = FundRequest.objects.filter(
+#         status="Pending",
+#         project__in=managed_projects,
+#     )
+#
+#     context = {
+#         'pending_requests': pending_requests,
+#     }
+#     return render(request, "manager_dashboard.html", context)
+class ApproveFundsView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
+    model = FundRequest
+    fields = []
+    success_url = reverse_lazy('request_funds')
+
+    def test_func(self):
+        return is_manager(self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        decision = self.kwargs.get('decision')
+
+        if decision == 'approve':
+            self.object.status = 'Approved'
+        elif decision == 'deny':
+            self.object.status = 'rejected'
+        else:
+            messages.error(self.request, "Invalid decision.")
+            return redirect('manager_dashboard')
+
+        self.object.reviewer = self.request.user
+        self.object.reviewed_at = timezone.now()
+        self.object.save()
+        messages.success(self.request, f"Request {decision}d.")
+        return redirect('manager_dashboard')
+
+    def get_object(self):
+        return get_object_or_404(FundRequest, pk=self.kwargs['pk'])
+
+# @user_passes_test(is_manager, login_url='manager_signin')
+# def approve_funds_requests(request, pk, decision):
+#     if request.method != 'POST':
+#         return redirect('manager_dashboard')  # Change this
+#
+#     fund_request = get_object_or_404(FundRequest, pk=pk, status="Pending")
+#
+#     if decision == "approve":
+#         fund_request.status = "Approved"
+#         fund_request.save()
+#     elif decision == "reject":
+#         fund_request.status = "Rejected"
+#     else:
+#         messages.error(request, "Not a valid decision.")
+#         return redirect('manager_dashboard')
+#
+#     fund_request.reviewer = request.user
+#     fund_request.reviewed_at = timezone.now()
+#     fund_request.save()
+#     messages.success(request, f"Request {decision}d.")
+#     return redirect("manager_dashboard")  # Change this too
+
+class ExpanseListByQuarterView(LoginRequiredMixin, ListView):
+    template_name = 'admin_expense_viewer.html'
+    login_url = reverse_lazy('signin')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['expenses'] = Expense.objects.filter(
+            employee=self.request.user).order_by('-created_date')
         return context
 
 class ExpenseListView(LoginRequiredMixin, ListView):
@@ -185,21 +222,34 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
         return context_data
 
-def register(request):
-   if request.method == 'POST':
-        form = RegisterForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            form.instance.set_password(form.cleaned_data['password1'])
-            form.save()
-            messages.success(request, "Registration successful")
-            return redirect('homepage') # redirect to signin or maybe home
+class RegisterView(CreateView):
+    model = Employee
+    form_class = RegisterForm
+    template_name = 'register.html'
+    success_url = reverse_lazy('homepage')
 
-   else:
-        form = RegisterForm()
+    def form_valid(self, form):
+        form.instance.set_password(form.cleaned_data['password1'])
+        messages.success(self.request, "Registration successful")
+        return super().form_valid(form)
 
-   return TemplateResponse(request,'register.html',
-                            {"form":form})
+
+# def register(request):
+#    if request.method == 'POST':
+#         form = RegisterForm(request.POST, request.FILES)
+#
+#         if form.is_valid():
+#             form.instance.set_password(form.cleaned_data['password1'])
+#             form.save()
+#             messages.success(request, "Registration successful")
+#             return redirect('homepage') # redirect to signin or maybe home
+#
+#    else:
+#         form = RegisterForm()
+#
+#    return TemplateResponse(request,'register.html',
+#                             {"form":form})
 
 from calendar import month_name
 
@@ -303,66 +353,133 @@ def employee_csv(request):
 
     return response
 
-@login_required
-def expense_form(request):
-    print("***")
-    print(request.FILES)
-    print("---")
-    # Get the project ID from the request or default to 1
-    #project_id = request.GET.get('project_id', 1)
 
-    # Fetch allocated budget for the project
-    allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=request.user, is_active=True).first()
+class ExpenseFormView(LoginRequiredMixin, CreateView):
+    model = Expense
+    form_class = ExpenseForm
+    template_name = 'expense_form.html'
+    success_url = reverse_lazy('homepage')
 
-    if allocated_budget_record is None:
-        messages.error(request, "You are not part of any active project.")
-        return redirect('homepage')
+    def get(self, request, *args, **kwargs):
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=request.user, is_active=True).first()
 
-    project_id = allocated_budget_record.project_id
-    if request.method == 'POST':
-        print(request.POST)
-        form = ExpenseForm(request.POST, request.FILES)
-        if form.is_valid():
+        if allocated_budget_record is None:
+            messages.error(request, "You are not part of any active project.")
+            return redirect('homepage')
 
-            if not allocated_budget_record:
-                messages.error(request,
-                               "You do not have an allocated budget for this project.")
-                return redirect('homepage')  # or another appropriate page
-            print(form.cleaned_data)
-            expense_to_save = form.save(commit=False)
-            expense_to_save.employee = request.user
-            expense_to_save.project_id = project_id # this sets the project id
-            print(expense_to_save.type)
-            expense_to_save.save()
-            messages.success(request, "Expense recorded successfully.")
-            return redirect('homepage')  # Redirect to the same page or
-            # another page
-        else:
-            print(form.errors)
-    else:
-        form = ExpenseForm(initial={
+        return super().get(request, *args, **kwargs)
 
-            "employee": request.user,
-            "team": request.user.team
-        })
-    # For GET request
-    active_entry = Expense.objects.filter(employee=request.user,
-                                          project_id=project_id)
-    emp_total = active_entry.aggregate(total=Sum('initial_amount'))[
-                      'total'] or 0
+    def post(self, request, *args, **kwargs):
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=request.user, is_active=True).first()
 
-    total_budget = allocated_budget_record.allocated_budget if (
-        allocated_budget_record) else 0
-    remaining_budget = total_budget - emp_total
+        if allocated_budget_record is None:
+            messages.error(request, "You are not part of any active project.")
+            return redirect('homepage')
 
-    context = {
-        'form': form,
-        'active_entry': active_entry,
-        'total_expense': emp_total,
-        'remaining_budget': remaining_budget
-    }
-    return render(request, "expense_form.html", context)
+        return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=self.request.user, is_active=True).first()
+
+        project_id = allocated_budget_record.project_id
+        active_entry = Expense.objects.filter(employee=self.request.user, project_id=project_id)
+        emp_total = active_entry.aggregate(total=Sum('initial_amount'))['total'] or 0
+        total_budget = allocated_budget_record.allocated_budget if allocated_budget_record else 0
+        remaining_budget = total_budget - emp_total
+
+        context['active_entry'] = active_entry
+        context['total_expense'] = emp_total
+        context['remaining_budget'] = remaining_budget
+
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['employee'] = self.request.user
+        initial['team'] = self.request.user.team
+        return initial
+
+    def form_valid(self, form):
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=self.request.user, is_active=True).first()
+
+        if not allocated_budget_record:
+            messages.error(self.request, "You do not have an allocated budget for this project.")
+            return redirect('homepage')
+
+        expense_to_save = form.save(commit=False)
+        expense_to_save.employee = self.request.user
+        expense_to_save.project_id = allocated_budget_record.project_id
+        expense_to_save.save()
+
+        messages.success(self.request, "Expense recorded successfully.")
+        return super().form_valid(form)
+
+
+# @login_required
+# def expense_form(request):
+#     print("***")
+#     print(request.FILES)
+#     print("---")
+#     # Get the project ID from the request or default to 1
+#     #project_id = request.GET.get('project_id', 1)
+#
+#     # Fetch allocated budget for the project
+#     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+#         employee=request.user, is_active=True).first()
+#
+#     if allocated_budget_record is None:
+#         messages.error(request, "You are not part of any active project.")
+#         return redirect('homepage')
+#
+#     project_id = allocated_budget_record.project_id
+#     if request.method == 'POST':
+#         print(request.POST)
+#         form = ExpenseForm(request.POST, request.FILES)
+#         if form.is_valid():
+#
+#             if not allocated_budget_record:
+#                 messages.error(request,
+#                                "You do not have an allocated budget for this project.")
+#                 return redirect('homepage')  # or another appropriate page
+#             print(form.cleaned_data)
+#             expense_to_save = form.save(commit=False)
+#             expense_to_save.employee = request.user
+#             expense_to_save.project_id = project_id # this sets the project id
+#             print(expense_to_save.type)
+#             expense_to_save.save()
+#             messages.success(request, "Expense recorded successfully.")
+#             return redirect('homepage')  # Redirect to the same page or
+#             # another page
+#         else:
+#             print(form.errors)
+#     else:
+#         form = ExpenseForm(initial={
+#
+#             "employee": request.user,
+#             "team": request.user.team
+#         })
+#     # For GET request
+#     active_entry = Expense.objects.filter(employee=request.user,
+#                                           project_id=project_id)
+#     emp_total = active_entry.aggregate(total=Sum('initial_amount'))[
+#                       'total'] or 0
+#
+#     total_budget = allocated_budget_record.allocated_budget if (
+#         allocated_budget_record) else 0
+#     remaining_budget = total_budget - emp_total
+#
+#     context = {
+#         'form': form,
+#         'active_entry': active_entry,
+#         'total_expense': emp_total,
+#         'remaining_budget': remaining_budget
+#     }
+#     return render(request, "expense_form.html", context)
 
 def total_allocated_expense(request):
     total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
@@ -372,38 +489,80 @@ def project_list(request):
     return render(request, 'projects.html')
 #make migrations, migrate
 
-@login_required
-def active_project(request):
-    #here we find the active budget record
-    active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=request.user, is_active=True).first()
-    #check if active budget exists - this would be nice to have
-    if not active_budget_record:
-        messages.error(request, "You do not have an active budget")
-        return redirect('homepage')
-    #pull project from active budget record
-    active_project = active_budget_record.project
-    #fetch related expenses for current project
-    expenses = Expense.objects.filter(employee=request.user, project=active_project)
-    # here we render as always, passing the project and expenses
-    return render(request,
-      'active_project.html', {
-                    'active_project': active_project,
-                    'expenses': expenses
-    })
+class ActiveProjectView(LoginRequiredMixin, TemplateView):
+    template_name = 'active_project.html'
 
-@login_required
-def settings(request):
-    if request.method == "POST":
-        if "delete_account" in request.POST:  # Check if the delete button was clicked
+    def get(self, request, *args, **kwargs):
+        active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=request.user, is_active=True).first()
+
+        if not active_budget_record:
+            messages.error(request, "You do not have an active budget")
+            return redirect('homepage')
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=self.request.user, is_active=True).first()
+        active_project = active_budget_record.project
+        expenses = Expense.objects.filter(employee=self.request.user, project=active_project)
+
+        context['active_project'] = active_project
+        context['expenses'] = expenses
+
+        return context
+
+
+# @login_required
+# def active_project(request):
+#     #here we find the active budget record
+#     active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+#         employee=request.user, is_active=True).first()
+#     #check if active budget exists - this would be nice to have
+#     if not active_budget_record:
+#         messages.error(request, "You do not have an active budget")
+#         return redirect('homepage')
+#     #pull project from active budget record
+#     active_project = active_budget_record.project
+#     #fetch related expenses for current project
+#     expenses = Expense.objects.filter(employee=request.user, project=active_project)
+#     # here we render as always, passing the project and expenses
+#     return render(request,
+#       'active_project.html', {
+#                     'active_project': active_project,
+#                     'expenses': expenses
+#     })
+
+class SettingsView(LoginRequiredMixin, TemplateView):
+    template_name = 'settings.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Settings'
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if "delete account" in request.POST:
             user = request.user
             user.delete()
             logout(request)
             messages.success(request, "Your account has been deleted successfully.")
-            return redirect('homepage')  # Redirect to homepage after deletion
-
-        # Handle other POST actions here, such as updating user details
-    return TemplateResponse(request, "settings.html", {"title": "Settings"})
+            return redirect('homepage')
+        return super().get(request, *args, **kwargs)
+# @login_required
+# def settings(request):
+#     if request.method == "POST":
+#         if "delete_account" in request.POST:  # Check if the delete button was clicked
+#             user = request.user
+#             user.delete()
+#             logout(request)
+#             messages.success(request, "Your account has been deleted successfully.")
+#             return redirect('homepage')  # Redirect to homepage after deletion
+#
+#         # Handle other POST actions here, such as updating user details
+#     return TemplateResponse(request, "settings.html", {"title": "Settings"})
 
 def privacy_policy(request):
     return render(request, "privacy_policy.html")
