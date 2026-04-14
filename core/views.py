@@ -11,10 +11,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, FormView
 
-
-from EP.settings import RECIPIENT_EMAIL, DEFAULT_FROM_EMAIL
-from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
-from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm, ContactForm
+from EP.settings import RECIPIENT_EMAIL
+from core.tasks import send_contact_email
+from core.models import Expense, ProjectEmployeeAllocatedBudget, Employee, FundRequest, Project
+from .forms import ExpenseForm, RegisterForm, FundRequestForm, ContactForm, SigninForm
 from django.utils import timezone
 
 def testimonials_view(request):
@@ -38,13 +38,18 @@ class ContactView(FormView):
         message = form.cleaned_data['message']
         #format the message
         full_message = f"Message from {name} <{email}>:\n\n{message}"
-    #send mail remains the same!
-        send_mail(
+        send_contact_email.delay(
             subject='New Contact Message',
             message=full_message,
-            from_email=DEFAULT_FROM_EMAIL,  # Use configured sender
-            recipient_list=[RECIPIENT_EMAIL],
-                 )
+            recipient_list=[RECIPIENT_EMAIL]
+        )
+    #send mail remains the same!
+        # send_mail(
+        #     subject='New Contact Message',
+        #     message=full_message,
+        #     from_email=DEFAULT_FROM_EMAIL,  # Use configured sender
+        #     recipient_list=[RECIPIENT_EMAIL],
+        #          )
         messages.success(self.request, "Thanks for your message! We'll be in touch.")
         return super().form_valid(form)
 
