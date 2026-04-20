@@ -5,7 +5,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from core.views import ExpenseListView, ContactView, RegisterView, RequestFundsView, ManagerDashboardView, \
-    ActiveProjectView, SettingsView, ExpenseFormView
+    ActiveProjectView, SettingsView, ExpenseFormView, TeamExpenseView
 from .import views
 from core.forms import CustomAuthenticationForm
 
@@ -18,7 +18,7 @@ urlpatterns = [
         form_class=CustomAuthenticationForm,
         template_name='signin.html'
     ), name='signin'),
-    path('team_expense/', views.team_expense_view, name='team_expense'),
+    path('team_expense/', TeamExpenseView.as_view(), name='team_expense'),
     path('employees_csv/', views.employee_csv, name='employees_csv'),
     path('expense_form/', ExpenseFormView.as_view(), name='expense_form'),
     path('active_project/', ActiveProjectView.as_view(), name='active_project'),

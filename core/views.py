@@ -253,75 +253,84 @@ class RegisterView(CreateView):
 
 from calendar import month_name
 
-@login_required
-def team_expense_view(request):
-    quarter = int(request.GET.get('quarter', 0))
-    month = int(request.GET.get('month', 0))
 
-    allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-        employee=request.user, is_active=True).first()
+class TeamExpenseView(LoginRequiredMixin, TemplateView):
+    template_name = 'team_expense.html'
 
-    if not allocated_budget_record:
-        messages.error(request, "You are not part of any active project.")
-        return redirect('homepage')
+    def get(self, request, *args, **kwargs):
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=request.user, is_active=True).first()
 
-    project = allocated_budget_record.project
-    project_users = ProjectEmployeeAllocatedBudget.objects.filter(
-        project=project, is_active=True
-    ).select_related('employee')
+        if not allocated_budget_record:
+            messages.error(request, "You are not part of any active project.")
+            return redirect('homepage')
 
-    # Get all expenses for the project
-    expenses = Expense.objects.filter(project=project)
+        return super().get(request, *args, **kwargs)
 
-    # Apply filters if selected
-    if quarter:
-        expenses = expenses.filter(created_date__quarter=quarter)
-    if month:
-        expenses = expenses.filter(created_date__month=month)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    expenses = expenses.order_by('-created_date')
+        quarter = int(self.request.GET.get('quarter', 0))
+        month = int(self.request.GET.get('month', 0))
 
-    # Calculate totals
-    total_spent_all = expenses.aggregate(total=Sum("initial_amount"))["total"] or Decimal('0.00')
-    total_budget_all = project_users.aggregate(total=Sum('allocated_budget'))["total"] or Decimal('0.00')
-    remaining_all = total_budget_all - total_spent_all
-    remaining_pct = round((remaining_all / total_budget_all * 100), 2) if total_budget_all else 0
+        allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
+            employee=self.request.user, is_active=True).first()
 
-    team_expenses = []
-    for record in project_users:
-        employee_expenses = expenses.filter(employee=record.employee)
-        emp_total = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or Decimal('0.00')
-        budget_used_pct = (emp_total / record.allocated_budget * 100) if record.allocated_budget else Decimal('0.00')
+        project = allocated_budget_record.project
+        project_users = ProjectEmployeeAllocatedBudget.objects.filter(
+            project=project, is_active=True
+        ).select_related('employee')
 
-        # Set color status
-        if budget_used_pct >= 90:
-            color = 'red'
-        elif budget_used_pct >= 70:
-            color = 'yellow'
-        else:
-            color = 'green'
+        expenses = Expense.objects.filter(project=project)
 
-        team_expenses.append({
-            'name': f"{record.employee.first_name} {record.employee.last_name}",
-            'allocated_budget': emp_total,
-            'budget_used_pct': round(budget_used_pct, 2),
-            'status_color': color,
+        if quarter:
+            expenses = expenses.filter(created_date__quarter=quarter)
+        if month:
+            expenses = expenses.filter(created_date__month=month)
+
+        expenses = expenses.order_by('-created_date')
+
+        total_spent_all = expenses.aggregate(total=Sum("initial_amount"))["total"] or Decimal('0.00')
+        total_budget_all = project_users.aggregate(total=Sum('allocated_budget'))["total"] or Decimal('0.00')
+        remaining_all = total_budget_all - total_spent_all
+        remaining_pct = round((remaining_all / total_budget_all * 100), 2) if total_budget_all else 0
+
+        team_expenses = []
+        for record in project_users:
+            employee_expenses = expenses.filter(employee=record.employee)
+            emp_total = employee_expenses.aggregate(total=Sum('initial_amount'))['total'] or Decimal('0.00')
+            budget_used_pct = (emp_total / record.allocated_budget * 100) if record.allocated_budget else Decimal(
+                '0.00')
+
+            if budget_used_pct >= 90:
+                color = 'red'
+            elif budget_used_pct >= 70:
+                color = 'yellow'
+            else:
+                color = 'green'
+
+            team_expenses.append({
+                'name': f"{record.employee.first_name} {record.employee.last_name}",
+                'allocated_budget': emp_total,
+                'budget_used_pct': round(budget_used_pct, 2),
+                'status_color': color,
+            })
+
+        context.update({
+            'expenses': expenses,
+            'project': project,
+            'team_expenses': team_expenses,
+            'selected_quarter': quarter,
+            'selected_month': month,
+            'months': list(enumerate(month_name))[1:],
+            'quarters': [1, 2, 3, 4],
+            'total_spent_all': total_spent_all,
+            'total_budget_all': total_budget_all,
+            'remaining_all': remaining_all,
+            'remaining_pct': remaining_pct,
         })
 
-    context = {
-        'expenses': expenses,
-        'project': project,
-        'team_expenses': team_expenses,
-        'selected_quarter': quarter,
-        'selected_month': month,
-        'months': list(enumerate(month_name))[1:],
-        'quarters': [1, 2, 3, 4],
-        'total_spent_all': total_spent_all,
-        'total_budget_all': total_budget_all,
-        'remaining_all': remaining_all,
-        'remaining_pct': remaining_pct,
-    }
-    return render(request, 'team_expense.html', context)
+        return context
 
 
 @login_required
