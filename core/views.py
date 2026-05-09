@@ -21,8 +21,8 @@ from django.utils import timezone
 def testimonials_view(request):
     return render(request, "testimonials.html")
 
-def pricing_view(request):
-    return render(request, "pricing.html")
+# def pricing_view(request):
+#     return render(request, "pricing.html")
 
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
@@ -61,7 +61,7 @@ class RequestFundsView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('request_funds')
 
     def form_valid(self, form):
-        form.instance.employee = self.request.user
+        form.instance.requester = self.request.user
         messages.success(self.request, "Thanks for your request!")
         return super().form_valid(form)
 
@@ -79,10 +79,12 @@ class ManagerDashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        managed_projects = Project.objects.filter(manager=self.request.user)
+        request = self.request
+        managed_teams = Team.objects.filter(manager=request.user)
+        managed_projects = Project.objects.filter(teams__in=managed_teams)
         context['pending_requests'] = FundRequest.objects.filter(
-            status='pending',
-            projects__in=managed_projects,
+            status='Pending',
+            project__in=managed_projects,
         )
         return context
 #
@@ -523,27 +525,6 @@ class ActiveProjectView(LoginRequiredMixin, TemplateView):
 
         return context
 
-
-# @login_required
-# def active_project(request):
-#     #here we find the active budget record
-#     active_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-#         employee=request.user, is_active=True).first()
-#     #check if active budget exists - this would be nice to have
-#     if not active_budget_record:
-#         messages.error(request, "You do not have an active budget")
-#         return redirect('homepage')
-#     #pull project from active budget record
-#     active_project = active_budget_record.project
-#     #fetch related expenses for current project
-#     expenses = Expense.objects.filter(employee=request.user, project=active_project)
-#     # here we render as always, passing the project and expenses
-#     return render(request,
-#       'active_project.html', {
-#                     'active_project': active_project,
-#                     'expenses': expenses
-#     })
-
 class SettingsView(LoginRequiredMixin, TemplateView):
     template_name = 'settings.html'
 
@@ -560,18 +541,7 @@ class SettingsView(LoginRequiredMixin, TemplateView):
             messages.success(request, "Your account has been deleted successfully.")
             return redirect('homepage')
         return super().get(request, *args, **kwargs)
-# @login_required
-# def settings(request):
-#     if request.method == "POST":
-#         if "delete_account" in request.POST:  # Check if the delete button was clicked
-#             user = request.user
-#             user.delete()
-#             logout(request)
-#             messages.success(request, "Your account has been deleted successfully.")
-#             return redirect('homepage')  # Redirect to homepage after deletion
-#
-#         # Handle other POST actions here, such as updating user details
-#     return TemplateResponse(request, "settings.html", {"title": "Settings"})
+
 
 def privacy_policy(request):
     return render(request, "privacy_policy.html")

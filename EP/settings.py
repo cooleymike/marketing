@@ -1,7 +1,6 @@
 import environ
-import os
+import os, stripe
 from pathlib import Path
-
 
 
 env = environ.Env(
@@ -11,6 +10,15 @@ env = environ.Env(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+ #Stripe Settings
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PRICE_STARTER = os.getenv('STRIPE_PRICE_STARTER')
+STRIPE_PRICE_PROFESSIONAL = os.getenv('STRIPE_PRICE_PROFESSIONAL')
+STRIPE_PRICE_ENTERPRISE = os.getenv('STRIPE_PRICE_ENTERPRISE')
+# Initialize Stripe
+stripe.api_key = STRIPE_SECRET_KEY
 
 AUTH_USER_MODEL = "core.Employee"
 
@@ -54,6 +62,7 @@ INSTALLED_APPS = [
     'accounts',
     'django.contrib.sites',
     'django.contrib.humanize',
+    'payment'
 
 ]
 

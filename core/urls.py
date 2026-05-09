@@ -24,7 +24,6 @@ urlpatterns = [
     path('active_project/', ActiveProjectView.as_view(), name='active_project'),
     path('settings/', SettingsView.as_view(), name='settings'),
     path('testimonials/', views.testimonials_view, name='testimonials'),
-    path('pricing/', views.pricing_view, name='pricing'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('privacy_policy/', views.privacy_policy, name='privacy_policy'),
     path('terms_of_service/', views.terms_of_service, name='terms_of_service'),
