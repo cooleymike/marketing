@@ -10,6 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("",include("core.urls")),
     path("",include("accounts.urls")),
+    path("", include("payment.urls")),
     path('contact/', ContactView.as_view(), name='contact'),
 
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)
