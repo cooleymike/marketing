@@ -1,10 +1,10 @@
-{% load socialaccount %}
+ {% load socialaccount %}
 {% providers_media_js %}
 
 {% if style == "full" %}
 <div class="{% if side == 1 %} grid gap-4 grid-cols-2 grid-rows-1 {% endif %}">
     <!-- Google button with link -->
-    <form method="post" action="/socials/google/login/">
+    <form method="post" action="/socials/google/login/" class="mb-3">
 {% csrf_token %}
       <button type="submit" class="login-with-google-btn flex items-center bg-white border
       border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium text-gray-700
@@ -30,8 +30,9 @@
        <span>Login with Google</span>
       </button>
     </form>
-</div>
-    <div>
+
+
+
      <!-- Facebook button with link -->
         <form method="post" action="/socials/facebook/login/">
         {% csrf_token %}
@@ -51,7 +52,7 @@
 
   {% elif style == "icons" %}
      <!-- Icon-only buttons for signin -->
-  <div class="flex justify-center flex-wrap gap-3 mt-6">
+  <div class="flex justify-center flex-wrap gap-2 mt-4">
     <form method="post" action="/socials/google/login/" class="inline">
       {% csrf_token %}
       <button type="submit" class="w-6 hover:scale-110 transition" title="Login with Google">

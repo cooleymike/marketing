@@ -35,8 +35,8 @@ def pricing_view(request):
                     "quantity": 1,
                 }],
                 mode="subscription",
-                # + "?session_id={CHECKOUT_SESSION_ID}"
-                success_url=request.build_absolute_uri(reverse("success")),
+
+                success_url=request.build_absolute_uri(reverse("success")) + "?session_id={CHECKOUT_SESSION_ID}",
                 cancel_url=request.build_absolute_uri(reverse("cancel")),
             )
             return redirect(checkout_session.url, code=303)
