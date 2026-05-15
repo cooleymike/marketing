@@ -5,7 +5,7 @@ from django.db import models
 
 class Employee(AbstractUser):
     account_number = models.CharField(max_length=10, unique=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
+    avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png', null=False)
     team = models.ForeignKey("Team", null=True, on_delete=models.PROTECT, blank=True )
 
     def is_manager(self):
