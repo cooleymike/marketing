@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Sum, F
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template.response import TemplateResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, FormView, CreateView, UpdateView, DeleteView
@@ -21,10 +20,6 @@ from django.utils import timezone
 def testimonials_view(request):
     return render(request, "testimonials.html")
 
-# def pricing_view(request):
-#     return render(request, "pricing.html")
-
-from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
@@ -44,13 +39,7 @@ class ContactView(FormView):
             message=full_message,
             recipient_list=[RECIPIENT_EMAIL]
         )
-    #send mail remains the same!
-        # send_mail(
-        #     subject='New Contact Message',
-        #     message=full_message,
-        #     from_email=DEFAULT_FROM_EMAIL,  # Use configured sender
-        #     recipient_list=[RECIPIENT_EMAIL],
-        #          )
+
         messages.success(self.request, "Thanks for your message! We'll be in touch.")
         return super().form_valid(form)
 
@@ -87,20 +76,7 @@ class ManagerDashboardView(LoginRequiredMixin, TemplateView):
             project__in=managed_projects,
         )
         return context
-#
-# @user_passes_test(is_manager, login_url='manager_singin')
-# def manager_dashboard(request):
-#     managed_teams = Team.objects.filter(manager=request.user)
-#     managed_projects = Project.objects.filter(teams__in=managed_teams)
-#     pending_requests = FundRequest.objects.filter(
-#         status="Pending",
-#         project__in=managed_projects,
-#     )
-#
-#     context = {
-#         'pending_requests': pending_requests,
-#     }
-#     return render(request, "manager_dashboard.html", context)
+
 class ApproveFundsView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
     model = FundRequest
     fields = []
@@ -129,28 +105,6 @@ class ApproveFundsView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
 
     def get_object(self):
         return get_object_or_404(FundRequest, pk=self.kwargs['pk'])
-
-# @user_passes_test(is_manager, login_url='manager_signin')
-# def approve_funds_requests(request, pk, decision):
-#     if request.method != 'POST':
-#         return redirect('manager_dashboard')  # Change this
-#
-#     fund_request = get_object_or_404(FundRequest, pk=pk, status="Pending")
-#
-#     if decision == "approve":
-#         fund_request.status = "Approved"
-#         fund_request.save()
-#     elif decision == "reject":
-#         fund_request.status = "Rejected"
-#     else:
-#         messages.error(request, "Not a valid decision.")
-#         return redirect('manager_dashboard')
-#
-#     fund_request.reviewer = request.user
-#     fund_request.reviewed_at = timezone.now()
-#     fund_request.save()
-#     messages.success(request, f"Request {decision}d.")
-#     return redirect("manager_dashboard")  # Change this too
 
 class ExpanseListByQuarterView(LoginRequiredMixin, ListView):
     template_name = 'admin_expense_viewer.html'
@@ -190,8 +144,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
         expenses = Expense.objects.filter(employee=user)
         emp_total = expenses.aggregate(total=Sum("initial_amount"))["total"] or 0
-
-        # Calculate remaining budget and percentage
         remaining_budget = current_allocated_budget.allocated_budget - emp_total
         percentage_left = (
             (remaining_budget / current_allocated_budget.allocated_budget) * 100
@@ -236,25 +188,7 @@ class RegisterView(CreateView):
         messages.success(self.request, "Registration successful")
         return super().form_valid(form)
 
-
-# def register(request):
-#    if request.method == 'POST':
-#         form = RegisterForm(request.POST, request.FILES)
-#
-#         if form.is_valid():
-#             form.instance.set_password(form.cleaned_data['password1'])
-#             form.save()
-#             messages.success(request, "Registration successful")
-#             return redirect('homepage') # redirect to signin or maybe home
-#
-#    else:
-#         form = RegisterForm()
-#
-#    return TemplateResponse(request,'register.html',
-#                             {"form":form})
-
 from calendar import month_name
-
 
 class TeamExpenseView(LoginRequiredMixin, TemplateView):
     template_name = 'team_expense.html'
@@ -430,67 +364,6 @@ class ExpenseFormView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Expense recorded successfully.")
         return super().form_valid(form)
 
-
-# @login_required
-# def expense_form(request):
-#     print("***")
-#     print(request.FILES)
-#     print("---")
-#     # Get the project ID from the request or default to 1
-#     #project_id = request.GET.get('project_id', 1)
-#
-#     # Fetch allocated budget for the project
-#     allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
-#         employee=request.user, is_active=True).first()
-#
-#     if allocated_budget_record is None:
-#         messages.error(request, "You are not part of any active project.")
-#         return redirect('homepage')
-#
-#     project_id = allocated_budget_record.project_id
-#     if request.method == 'POST':
-#         print(request.POST)
-#         form = ExpenseForm(request.POST, request.FILES)
-#         if form.is_valid():
-#
-#             if not allocated_budget_record:
-#                 messages.error(request,
-#                                "You do not have an allocated budget for this project.")
-#                 return redirect('homepage')  # or another appropriate page
-#             print(form.cleaned_data)
-#             expense_to_save = form.save(commit=False)
-#             expense_to_save.employee = request.user
-#             expense_to_save.project_id = project_id # this sets the project id
-#             print(expense_to_save.type)
-#             expense_to_save.save()
-#             messages.success(request, "Expense recorded successfully.")
-#             return redirect('homepage')  # Redirect to the same page or
-#             # another page
-#         else:
-#             print(form.errors)
-#     else:
-#         form = ExpenseForm(initial={
-#
-#             "employee": request.user,
-#             "team": request.user.team
-#         })
-#     # For GET request
-#     active_entry = Expense.objects.filter(employee=request.user,
-#                                           project_id=project_id)
-#     emp_total = active_entry.aggregate(total=Sum('initial_amount'))[
-#                       'total'] or 0
-#
-#     total_budget = allocated_budget_record.allocated_budget if (
-#         allocated_budget_record) else 0
-#     remaining_budget = total_budget - emp_total
-#
-#     context = {
-#         'form': form,
-#         'active_entry': active_entry,
-#         'total_expense': emp_total,
-#         'remaining_budget': remaining_budget
-#     }
-#     return render(request, "expense_form.html", context)
 
 def total_allocated_expense(request):
     total_expense = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
