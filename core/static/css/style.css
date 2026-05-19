@@ -47,4 +47,5 @@
   opacity: 0;
 }
 
-
+.invalid { color: #ef4444 !important; }
+.valid { color: #22c55e !important; font-weight: bold; }
