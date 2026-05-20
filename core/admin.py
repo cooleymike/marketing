@@ -87,7 +87,7 @@ admin.site.register(FundRequest)
 
 
 class EmployeeAdmin(UserAdmin):
-    list_display = ["username", "email",  "account_number","avatar","team"]
+    list_display = ["first_name","last_name", "username", "email",  "account_number","avatar","team"]
     search_fields = ['username', 'email', 'first_name', 'last_name']
     form = UserChangeForm
     fieldsets = (
