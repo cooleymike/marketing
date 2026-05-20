@@ -11,6 +11,7 @@
     <!-- Main Card with Gradient Border -->
     <div class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 rounded-3xl p-1 shadow-2xl">
       <div class="bg-white dark:bg-gray-900 rounded-[22px] overflow-hidden">
+       <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
         <!-- Header Section -->
         <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 px-8 py-6 border-b border-gray-100 dark:border-gray-700">
@@ -248,7 +249,7 @@
     </div>
   </div>
 
-<script src="/static/js/validation.js"></script>
+<script src="{% static 'js/validation.js' %}"></script>
   {% block extra_js %}
     {% endblock %}
         {% endblock %}
