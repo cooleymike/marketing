@@ -14,6 +14,7 @@ from core.tasks import send_contact_email
 
 from EP.settings import RECIPIENT_EMAIL, DEFAULT_FROM_EMAIL
 from core.models import Expense, ProjectEmployeeAllocatedBudget, Team, Employee, FundRequest, Project
+from emails.utils import send_email_notification
 from .forms import ExpenseForm, CreateUserForm, SigninForm, RegisterForm, FundRequestForm, ContactForm
 from django.utils import timezone
 
@@ -91,16 +92,17 @@ class ApproveFundsView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
 
         if decision == 'approve':
             self.object.status = 'Approved'
-        elif decision == 'deny':
-            self.object.status = 'rejected'
+            messages.success(self.request, "The request has been approved!")
+
         else:
-            messages.error(self.request, "Invalid decision.")
-            return redirect('manager_dashboard')
+            self.object.status = 'Rejected'
+            messages.info(self.request, "The request has been rejected!")
+
+        send_email_notification(decision)
 
         self.object.reviewer = self.request.user
         self.object.reviewed_at = timezone.now()
         self.object.save()
-        messages.success(self.request, f"Request {decision}d.")
         return redirect('manager_dashboard')
 
     def get_object(self):

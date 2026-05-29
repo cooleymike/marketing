@@ -73,7 +73,7 @@
                 {% if user.has_active_allocated_budget %}
                     <a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a>
                     <a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a>
-                    <a href="{% url 'active_project' %}" class="hover:text-purple-600">Current Project</a>
+                    <a href="{% url 'active_project' %}" class="hover:text-purple-600">Active Project</a>
                 {% else %}
                     No active allocated budget
                 {% endif %}
@@ -115,7 +115,7 @@
         {% if user.is_authenticated %}
             <li><a href="{% url 'expenses' %}" class="hover:text-purple-600">My Expenses</a></li>
             <li><a href="{% url 'team_expense' %}" class="hover:text-purple-600">Team Expenses</a></li>
-            <li><a href="{% url 'active_project' %}" class="hover:text-purple-600">Current Project</a></li>
+            <li><a href="{% url 'active_project' %}" class="hover:text-purple-600">Active Project</a></li>
             {% if request.user.is_manager %}
                 <li><a href="{% url 'manager_dashboard' %}" class="text-indigo-600 hover:underline">Manager Dashboard</a></li>
             {% endif %}
