@@ -92,6 +92,7 @@ class ApproveFundsView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
 
         if decision == 'approve':
             self.object.status = 'Approved'
+            self.object.apply_to_budget()
             messages.success(self.request, "The request has been approved!")
 
         else:
@@ -174,6 +175,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
             "percentage_left": round(percentage_left, 2),
             "active_quarter": current_allocated_budget.quarter,
             "datapoints": datapoints,  # Pass to template
+            "expenses": expenses,
         })
 
         return context_data
@@ -208,7 +210,6 @@ class TeamExpenseView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        quarter = int(self.request.GET.get('quarter', 0))
         month = int(self.request.GET.get('month', 0))
 
         allocated_budget_record = ProjectEmployeeAllocatedBudget.objects.filter(
@@ -221,8 +222,6 @@ class TeamExpenseView(LoginRequiredMixin, TemplateView):
 
         expenses = Expense.objects.filter(project=project)
 
-        if quarter:
-            expenses = expenses.filter(created_date__quarter=quarter)
         if month:
             expenses = expenses.filter(created_date__month=month)
 
@@ -258,7 +257,6 @@ class TeamExpenseView(LoginRequiredMixin, TemplateView):
             'expenses': expenses,
             'project': project,
             'team_expenses': team_expenses,
-            'selected_quarter': quarter,
             'selected_month': month,
             'months': list(enumerate(month_name))[1:],
             'quarters': [1, 2, 3, 4],
