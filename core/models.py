@@ -83,15 +83,14 @@ class FundRequest(models.Model):
     def __str__(self):
         return f"{self.requester.username} - {self.project.name} - {self.amount_requested} ({self.status})"
 
-def apply_to_budget(self):
-    if self.status == 'Approved':
-        budget = ProjectEmployeeAllocatedBudget.objects.get(
-            project=self.project,
-            quarter=self.quarter,
-            employee=self.requester,
-        )
-        budget.allocated_budget = self.amount_requested
-        budget.save()
+    def apply_to_budget(self):
+        if self.status == 'Approved':
+            budget = ProjectEmployeeAllocatedBudget.objects.get(
+                employee=self.requester,
+                is_active=True,
+            )
+            budget.allocated_budget += self.amount_requested
+            budget.save()
 
 class Meta:
     unique_together = ('employee', 'project', 'quarter')
