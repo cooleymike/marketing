@@ -1,5 +1,3 @@
-// budget-chart.js
-
 function updateProgressBar() {
     // Get data from the global variable set in HTML
     const chartData = window.BUDGET_DATA?.datapoints || [];
